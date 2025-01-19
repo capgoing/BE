@@ -121,7 +121,7 @@ jobs:
           key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
-            export DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+            export DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/capgoing:latest
             export DOCKER_COMPOSE_PATH=${{ secrets.DOCKER_COMPOSE_PATH }}
             
             cd /home/ubuntu/scripts
