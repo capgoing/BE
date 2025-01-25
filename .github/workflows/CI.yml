@@ -41,6 +41,8 @@ jobs:
           sleep 10 
 
       - name: Build and Test with Gradle Wrapper
+        env:
+          SPRING_DATA_MONGODB_URI: "mongodb://test:testPW@localhost:27017/testdb"
+          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
         run: |
-          export SPRING_DATA_MONGODB_URI=mongodb://test:testPW@localhost:27017/testdb
           ./gradlew build test

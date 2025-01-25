@@ -8,6 +8,7 @@ on:
 
 env:
   DOCKERHUB_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+  FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
 
 jobs:
   CI:
@@ -44,8 +45,10 @@ jobs:
         run: sleep 10
 
       - name: Build and Test with Gradle Wrapper
+        env:
+          SPRING_DATA_MONGODB_URI: "mongodb://test:testPW@localhost:27017/testdb"
+          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
         run: |
-          export SPRING_DATA_MONGODB_URI=mongodb://test:testPW@localhost:27017/testdb
           ./gradlew build test
 
       - name: Upload jar file to Artifact
@@ -96,6 +99,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           IMAGE_TAG: ${{ steps.slug.outputs.sha7 }}
+          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
 
         run: |
           docker build -t $USERNAME/$DOCKERHUB_REPOSITORY:$IMAGE_TAG -t $USERNAME/$DOCKERHUB_REPOSITORY:latest .
@@ -123,6 +127,7 @@ jobs:
           script: |
             export DOCKER_IMAGE="${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest"
             export DOCKER_COMPOSE_PATH="${{ secrets.DOCKER_COMPOSE_PATH }}"
+            export FASTAPI_BASE_URL="${{ secrets.FASTAPI_BASE_URL }}"
             
             cd /home/ubuntu/scripts
             ./rolling-update.sh
