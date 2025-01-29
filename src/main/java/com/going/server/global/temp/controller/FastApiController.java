@@ -48,16 +48,6 @@ public class FastApiController {
 
     @GetMapping()
     @Operation(summary = "FastAPI 클러스터 결과 조회", description = "FastAPI 서버에서 클러스터링 결과를 가져옵니다.")
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "FastAPI에서 클러스터링 데이터를 성공적으로 반환",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(example = "{ \"message\": \"클러스터링 완료!\", \"clusters\": [{ \"cluster_id\": 0, \"word_sentences\": { \"정서진\": [ \"문장1\", \"문장2\" ] } }] }")
-                    )
-            )
-    })
     public SuccessResponse<List<WordResponseDto>> getCluster() {
         return fastApiService.getCluster();
     }
