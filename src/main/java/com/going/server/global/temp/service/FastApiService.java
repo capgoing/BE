@@ -64,6 +64,7 @@ public class FastApiService {
         }
 
         List<Map<String, Object>> clusters = (List<Map<String, Object>>) response.get("clusters");
+        String imageUrl = response.get("image_url").toString();
         List<Word> wordEntities = new ArrayList<>();
         List<WordResponseDto> responseDtos = new ArrayList<>();
 
@@ -75,7 +76,7 @@ public class FastApiService {
                 String firstKey = wordSentences.keySet().iterator().next(); // 첫 번째 키 가져오기
                 Word wordEntity = new Word(firstKey);
                 wordEntities.add(wordEntity);
-                responseDtos.add(new WordResponseDto(clusterId, firstKey)); // 첫 번째 키와 클러스터 ID 저장
+                responseDtos.add(new WordResponseDto(clusterId, firstKey,imageUrl)); // 첫 번째 키와 클러스터 ID 저장
             }
         }
 
