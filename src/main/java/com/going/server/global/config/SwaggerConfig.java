@@ -30,6 +30,7 @@ public class SwaggerConfig {
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(false);
+
             }
         };
     }
