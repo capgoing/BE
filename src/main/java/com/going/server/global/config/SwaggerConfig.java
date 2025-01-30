@@ -10,16 +10,24 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SwaggerConfig {
+
     @Bean
     public OpenAPI OpenAPI() {
         Info info = new Info()
-            .title("Test SpringBoot API")
-            .description("<h3>CapGoing API</h3>")
-            .version("1.0.0");
+                .title("Test SpringBoot API")
+                .description("<h3>CapGoing API</h3>")
+                .version("1.0.0");
 
         return new OpenAPI()
-            .info(info);
+                .info(info);
     }
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .addServersItem(new Server().url("http://43.201.251.243:8000/")); // FastAPI 서버 URL 추가
+    }
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -30,7 +38,6 @@ public class SwaggerConfig {
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(false);
-
             }
         };
     }
