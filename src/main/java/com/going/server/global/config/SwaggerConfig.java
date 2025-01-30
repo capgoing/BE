@@ -14,7 +14,7 @@ public class SwaggerConfig {
     public OpenAPI OpenAPI() {
         Info info = new Info()
             .title("Test SpringBoot API")
-            .description("<h3>CapGoing API 명세서</h3>")
+            .description("<h3>CapGoing API</h3>")
             .version("1.0.0");
 
         return new OpenAPI()
@@ -26,7 +26,7 @@ public class SwaggerConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
+                        .allowedOrigins("https://www.capgoing.shop", "https://capgoing.shop")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(false);
