@@ -17,8 +17,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Test SpringBoot API")
                         .description("<h3>CapGoing API</h3>")
-                        .version("1.0.0"))
-                .addServersItem(new Server().url("http://43.201.251.243:8000/")); // FastAPI 서버 추가
+                        .version("1.0.0")); // FastAPI 서버 추가
     }
 
     @Bean
@@ -27,7 +26,7 @@ public class SwaggerConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://www.capgoing.shop", "https://capgoing.shop")
+                        .allowedOrigins("http://localhost:5173/","http://localhost:5173","https://www.capgoing.shop", "https://capgoing.shop")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(false);
