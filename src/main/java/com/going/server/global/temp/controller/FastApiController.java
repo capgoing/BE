@@ -1,10 +1,5 @@
 package com.going.server.global.temp.controller;
 
-import com.going.server.domain.word.dto.CompositionClusterResponseDto;
-import com.going.server.domain.word.dto.CompositionWordResponseDto;
-import com.going.server.domain.word.dto.WordResponseDto;
-import com.going.server.domain.word.entity.CompositionWord;
-import com.going.server.global.response.SuccessResponse;
 import com.going.server.global.temp.service.FastApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,9 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,19 +38,4 @@ public class FastApiController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping()
-    @Operation(summary = "FastAPI 클러스터 결과 조회", description = "FastAPI 서버에서 클러스터링 결과를 가져옵니다.")
-    public SuccessResponse<List<WordResponseDto>> getCluster() {
-        return fastApiService.getCluster();
-    }
-
-    @GetMapping("/composition-word")
-    public SuccessResponse<List<CompositionClusterResponseDto>> getCompositionWords(@RequestParam Long clusterId) {
-        return fastApiService.getCompositionWords(clusterId);
-    }
-
-    @GetMapping("/{clusterId}/{compositionWord}")
-    public SuccessResponse<List<String>> getSentence(@PathVariable Long clusterId, @PathVariable String compositionWord) {
-        return fastApiService.getSentence(clusterId,compositionWord);
-    }
 }
