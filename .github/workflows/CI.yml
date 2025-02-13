@@ -16,6 +16,7 @@ jobs:
     services:
       mysql:
         image: mysql:8.0
+        options: --network-alias mysql
         ports:
           - 3306:3306
         env:
@@ -41,7 +42,7 @@ jobs:
         run: |
           echo "Waiting for MySQL to start..."
           for i in {1..30}; do
-            mysql -h mysql -u test -ptestPW -e "SELECT 1" && echo "MySQL is up!" && exit 0
+            mysql -h 127.0.0.1 -u test -ptestPW -e "SELECT 1" && echo "MySQL is up!" && exit 0
             sleep 2
           done
           echo "MySQL did not start in time!"
