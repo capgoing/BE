@@ -44,5 +44,7 @@ jobs:
         env:
           SPRING_DATA_MONGODB_URI: "mongodb://test:testPW@localhost:27017/testdb"
           FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
+          SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
+
         run: |
           ./gradlew build test
