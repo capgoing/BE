@@ -8,7 +8,9 @@ on:
 
 env:
   DOCKERHUB_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
-  SPRING_DATA_MONGODB_URI: ${{ secrets.SPRING_DATA_MONGODB_URI }}
+  SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+  SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
   FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
   SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
 
@@ -20,13 +22,15 @@ jobs:
       contents: read
 
     services:
-      mongo:
-        image: mongo:6.0
+      mysql:
+        image: mysql:8.0
         ports:
-          - 27017:27017
+          - 3306:3306
         env:
-          MONGO_INITDB_ROOT_USERNAME: test
-          MONGO_INITDB_ROOT_PASSWORD: testPW
+          MYSQL_ROOT_PASSWORD: testPW
+          MYSQL_DATABASE: testDB
+          MYSQL_USER: test
+          MYSQL_PASSWORD: testPW
 
     steps:
       - name: Get short SHA
@@ -43,12 +47,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Wait for MongoDB to start
-        run: sleep 10
+      - name: Wait for MySQL to start
+        run: sleep 15
 
       - name: Build and Test with Gradle Wrapper
         env:
-          SPRING_DATA_MONGODB_URI: mongodb://test:testPW@localhost:27017/test_db
+          SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/testDB?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+          SPRING_DATASOURCE_USERNAME: test
+          SPRING_DATASOURCE_PASSWORD: testPW
           FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
           SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
 
@@ -105,7 +111,9 @@ jobs:
           IMAGE_TAG: ${{ steps.slug.outputs.sha7 }}
           FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
           SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
-          SPRING_DATA_MONGODB_URI: ${{ secrets.SPRING_DATA_MONGODB_URI }}
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
         run: |
           docker build -t $USERNAME/$DOCKERHUB_REPOSITORY:$IMAGE_TAG -t $USERNAME/$DOCKERHUB_REPOSITORY:latest .
@@ -135,7 +143,9 @@ jobs:
             export DOCKER_COMPOSE_PATH="${{ secrets.DOCKER_COMPOSE_PATH }}"
             export FASTAPI_BASE_URL="${{ secrets.FASTAPI_BASE_URL }}"
             export SERVER_BASE_URL="${{ secrets.SERVER_BASE_URL }}"
-            export SPRING_DATA_MONGODB_URI="${{ secrets.SPRING_DATA_MONGODB_URI }}"
+            export SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}"
+            export SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}"
+            export SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}"
             
             cd /home/ubuntu/scripts
             ./rolling-update.sh

@@ -14,13 +14,15 @@ jobs:
       contents: read
 
     services:
-      mongo:
-        image: mongo:6.0
+      mysql:
+        image: mysql:8.0
         ports:
-          - 27017:27017
+          - 3306:3306
         env:
-          MONGO_INITDB_ROOT_USERNAME: test
-          MONGO_INITDB_ROOT_PASSWORD: testPW
+          MYSQL_ROOT_PASSWORD: testPW
+          MYSQL_DATABASE: testDB
+          MYSQL_USER: test
+          MYSQL_PASSWORD: testPW
 
     steps:
       - name: Checkout repository
@@ -35,16 +37,18 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Wait for MongoDB to be ready
+      - name: Wait for MySQL to be ready
         run: |
-          echo "Waiting for MongoDB to start..."
-          sleep 10 
+          echo "Waiting for MySQL to start..."
+          sleep 15 
 
       - name: Build and Test with Gradle Wrapper
         env:
-          SPRING_DATA_MONGODB_URI: mongodb://test:testPW@localhost:27017/test_db
-          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
+          SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/testDB?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+          SPRING_DATASOURCE_USERNAME: test
+          SPRING_DATASOURCE_PASSWORD: testPW
           SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
+          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
 
         run: |
           ./gradlew build test
