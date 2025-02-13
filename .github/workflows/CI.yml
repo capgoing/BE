@@ -51,7 +51,7 @@ jobs:
       - name: Verify MySQL Connection
         run: |
           echo "Checking MySQL connection..."
-          mysql -h mysql -u test -ptestPW -D testDB -e "SHOW TABLES;"
+          mysql -h 127.0.0.1 -u test -ptestPW -D testDB -e "SHOW TABLES;"
 
 
       - name: Build and Test with Gradle Wrapper
