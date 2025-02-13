@@ -42,7 +42,7 @@ jobs:
 
       - name: Build and Test with Gradle Wrapper
         env:
-          SPRING_DATA_MONGODB_URI: ${{ secrets.SPRING_DATA_MONGODB_URI }}
+          SPRING_DATA_MONGODB_URI: mongodb://test:testPW@localhost:27017/test_db
           FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
           SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
 
