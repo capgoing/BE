@@ -1,0 +1,48 @@
+name: CI with Gradle
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - develop
+
+jobs:
+  CI:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    services:
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: test
+          MONGO_INITDB_ROOT_PASSWORD: testPW
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Wait for MongoDB to be ready
+        run: |
+          echo "Waiting for MongoDB to start..."
+          sleep 10 
+
+      - name: Build and Test with Gradle Wrapper
+        env:
+          SPRING_DATA_MONGODB_URI: "mongodb://test:testPW@localhost:27017/testdb"
+          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
+        run: |
+          ./gradlew build test
