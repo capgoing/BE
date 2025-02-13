@@ -47,19 +47,32 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Wait for MySQL to start
-        run: sleep 15
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL to start..."
+          for i in {1..30}; do
+            mysql -h 127.0.0.1 -u test -ptestPW -e "SELECT 1" && echo "MySQL is up!" && exit 0
+            sleep 2
+          done
+          echo "MySQL did not start in time!"
+          exit 1
+
+      - name: Verify MySQL Connection
+        run: |
+          echo "Checking MySQL connection..."
+          mysql -h 127.0.0.1 -u test -ptestPW -D testDB -e "SHOW TABLES;"
 
       - name: Build and Test with Gradle Wrapper
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/testDB?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+          SPRING_PROFILES_ACTIVE: test
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/testDB?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
           SPRING_DATASOURCE_USERNAME: test
           SPRING_DATASOURCE_PASSWORD: testPW
           FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
           SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
 
         run: |
-          ./gradlew build test
+          ./gradlew --no-daemon clean build test --info --stacktrace
 
       - name: Upload jar file to Artifact
         uses: actions/upload-artifact@v4
