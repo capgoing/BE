@@ -16,7 +16,7 @@ jobs:
     services:
       mysql:
         image: mysql:8.0
-        options: --network-alias mysql
+        options: --network-alias=mysql
         ports:
           - 3306:3306
         env:
@@ -24,6 +24,9 @@ jobs:
           MYSQL_DATABASE: testDB
           MYSQL_USER: test
           MYSQL_PASSWORD: testPW
+          SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
+          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
+
 
     steps:
       - name: Checkout repository
