@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/words")
+@RequestMapping("/api")
 @Tag(name = "FastAPI 통신 테스트", description = "FastAPI 서버와의 통신을 테스트하는 API")
 @Slf4j
 public class FastApiController {
@@ -35,6 +35,23 @@ public class FastApiController {
     })
     public ResponseEntity<String> testFastApi() {
         String response = fastApiService.callFastApi();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/save-cluster")
+    @Operation(summary = "클러스터링 결과 저장", description = "클러스터링 결과를 DB에 저장합니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "클러스터링 결과를 DB에 저장",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"message\":\"Successfully save clustering results!\"}")
+                    )
+            )
+    })
+    public ResponseEntity<String> setCluster() {
+        String response = fastApiService.setCluster();
         return ResponseEntity.ok(response);
     }
 
