@@ -2,7 +2,6 @@ package com.going.server.global.temp.service;
 
 import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.domain.cluster.repository.ClusterRepository;
-import com.going.server.domain.word.entity.Word;
 import com.going.server.domain.word.repository.WordRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,15 +60,18 @@ public class FastApiService {
         //모든 클러스터링 결과 저장
         List<Map<String, Object>> clusters = (List<Map<String, Object>>) response.get("clusters");
 
+        //클러스터링 결과 이미지 저장
+        String imageUrl = response.get("image_url").toString();
+
         for (Map<String, Object> cluster : clusters) {
             Map<String, List<String>> wordSentences = (Map<String, List<String>>) cluster.get("word_sentences");
 
             if (wordSentences.isEmpty()) continue; // 빈 클러스터 예외 처리
 
-            // 첫 번째 키(단어)를 대표 어휘로 설정
+            //첫 번째 단어를 대표 어휘로 설정
             String representWord = wordSentences.keySet().iterator().next();
             //엔티티 저장
-            Cluster clusterEntity = Cluster.toEntity(representWord);
+            Cluster clusterEntity = Cluster.toEntity(representWord,imageUrl);
             //클러스터 결과 DB에 저장
             clusterRepository.save(clusterEntity);
 

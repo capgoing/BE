@@ -20,7 +20,10 @@ public class Cluster extends BaseEntity {
     @Column(name="represent_word")
     private String representWord;
 
-    public static Cluster toEntity(String representWord) {
-        return Cluster.builder().representWord(representWord).build();
+    @Column(name="result_img")
+    private String resultImg;
+
+    public static Cluster toEntity(String representWord, String resultImg) {
+        return Cluster.builder().representWord(representWord).resultImg(resultImg).build();
     }
 }

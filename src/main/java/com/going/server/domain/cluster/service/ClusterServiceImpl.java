@@ -13,6 +13,7 @@ import java.util.List;
 public class ClusterServiceImpl implements ClusterService {
     @Override
     public List<ClusterResponseDto> getCluster() {
+
         return List.of();
     }
 }
