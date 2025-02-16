@@ -9,9 +9,10 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class WordDto {
+    private Long wordId;
     private String compositionWord;
     private Boolean isRepresent;
-    public static WordDto from(String compositionWord, Boolean isRepresent) {
-        return WordDto.builder().compositionWord(compositionWord).isRepresent(isRepresent).build();
+    public static WordDto from(Long wordId, String compositionWord, Boolean isRepresent) {
+        return WordDto.builder().wordId(wordId).compositionWord(compositionWord).isRepresent(isRepresent).build();
     }
 }

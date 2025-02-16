@@ -59,9 +59,6 @@ public class FastApiService {
                 .bodyToMono(Map.class)
                 .block();
 
-        // 응답 메시지 확인
-        log.info("📌 FastAPI 클러스터링 응답: {}", response);
-
         //모든 클러스터링 결과 저장
         List<Map<String, Object>> clusters = (List<Map<String, Object>>) response.get("clusters");
 
