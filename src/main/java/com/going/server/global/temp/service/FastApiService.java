@@ -2,6 +2,8 @@ package com.going.server.global.temp.service;
 
 import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.domain.cluster.repository.ClusterRepository;
+import com.going.server.domain.sentence.entity.Sentence;
+import com.going.server.domain.sentence.repository.SentenceRepository;
 import com.going.server.domain.word.entity.Word;
 import com.going.server.domain.word.repository.WordRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -17,16 +19,18 @@ import java.util.Map;
 public class FastApiService {
 
     private final WordRepository wordRepository;
+    private final SentenceRepository sentenceRepository;
     @Value("${fastapi.base-url}")
     private String baseUrl;
 
     private final WebClient webClient;
     private final ClusterRepository clusterRepository;
 
-    public FastApiService(WebClient.Builder webClientBuilder, ClusterRepository clusterResultRepository, WordRepository wordRepository) {
+    public FastApiService(WebClient.Builder webClientBuilder, ClusterRepository clusterResultRepository, WordRepository wordRepository, SentenceRepository sentenceRepository) {
         this.webClient = webClientBuilder.build();
         this.clusterRepository = clusterResultRepository;
         this.wordRepository = wordRepository;
+        this.sentenceRepository = sentenceRepository;
     }
 
     /**
@@ -84,10 +88,14 @@ public class FastApiService {
                 //Word 엔티티 생성
                 Word wordEntity = Word.toEntity(word,saveCluster);
                 //DB에 저장
-                wordRepository.save(wordEntity);
+                Word saveWord = wordRepository.save(wordEntity);
+                for (String sentence : sentences) {
+                    //Sentence 엔티티 생성
+                    Sentence sententEntity = Sentence.toEntity(sentence,saveWord);
+                    sentenceRepository.save(sententEntity);
+                }
             }
         }
-
         return "클러스터링 저장 완료!";
     }
 }

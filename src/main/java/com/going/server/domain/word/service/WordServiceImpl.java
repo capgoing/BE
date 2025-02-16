@@ -22,7 +22,7 @@ public class WordServiceImpl implements WordService {
     @Override
     public WordResponseDto getWordList(Long clusterId) {
         Optional<Cluster> cluster = clusterRepository.findById(clusterId);
-        //TODO: 존재하지 않는 클러스터 번호 예외처리
+        //TODO: 존재하지 않는 클러스터 예외처리
 
         //요청한 클러스터의 기본키로 구성어휘 찾기
         List<Word> words = wordRepository.findByCluster_ClusterId(clusterId);
