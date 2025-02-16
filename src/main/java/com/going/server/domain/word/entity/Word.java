@@ -1,5 +1,6 @@
 package com.going.server.domain.word.entity;
 
+import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +21,11 @@ public class Word extends BaseEntity {
     @Column(name="compose_word")
     private String composeWord;
 
-    public static Word toEntity(String composeWord) {
-        return Word.builder().composeWord(composeWord).build();
+    @ManyToOne
+    @JoinColumn(name="cluster_id")
+    private Cluster cluster;
+
+    public static Word toEntity(String composeWord, Cluster cluster) {
+        return Word.builder().composeWord(composeWord).cluster(cluster).build();
     }
 }

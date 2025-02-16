@@ -1,5 +1,6 @@
 package com.going.server.global.temp.controller;
 
+import com.going.server.global.response.SuccessResponse;
 import com.going.server.global.temp.service.FastApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -50,9 +51,9 @@ public class FastApiController {
                     )
             )
     })
-    public ResponseEntity<String> setCluster() {
+    public SuccessResponse<String> setCluster() {
         String response = fastApiService.setCluster();
-        return ResponseEntity.ok(response);
+        return SuccessResponse.of(response);
     }
 
 }

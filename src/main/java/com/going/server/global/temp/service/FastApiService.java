@@ -2,6 +2,7 @@ package com.going.server.global.temp.service;
 
 import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.domain.cluster.repository.ClusterRepository;
+import com.going.server.domain.word.entity.Word;
 import com.going.server.domain.word.repository.WordRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,24 +74,20 @@ public class FastApiService {
             //엔티티 저장
             Cluster clusterEntity = Cluster.toEntity(representWord,imageUrl);
             //클러스터 결과 DB에 저장
-            clusterRepository.save(clusterEntity);
+            Cluster saveCluster = clusterRepository.save(clusterEntity);
 
-//            for (Map.Entry<String, List<String>> entry : wordSentences.entrySet()) {
-//                //단어
-//                String word = entry.getKey();
-//                //문장들
-//                List<String> sentences = entry.getValue();
-//
-//                //Word 엔티티 생성
-//                Word wordEntity = Word.toEntity(word);
-//                //Sentence 엔티티 생성
-//
-//                //DB에 저장
-//                wordRepository.save(wordEntity);
-//                log.info("✅ 클러스터 저장 완료 (대표어휘: {}): {}", representativeWord, entity);
-//            }
+            for (Map.Entry<String, List<String>> entry : wordSentences.entrySet()) {
+                //단어
+                String word = entry.getKey();
+                //문장들
+                List<String> sentences = entry.getValue();
+                //Word 엔티티 생성
+                Word wordEntity = Word.toEntity(word,saveCluster);
+                //DB에 저장
+                wordRepository.save(wordEntity);
+            }
         }
 
-        return "클러스터링 결과 저장 완료!";
+        return "클러스터링 저장 완료!";
     }
 }
