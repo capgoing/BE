@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/sentence")
 @RequiredArgsConstructor
 public class SentenceController {
     private final SentenceService sentenceService;
 
-    @GetMapping("/sentence/{wordId}")
+    @GetMapping("/{wordId}")
     public SuccessResponse<List<String>> getSentence(@PathVariable Long wordId) {
         List<String> list = sentenceService.getSentence(wordId);
         return SuccessResponse.of(list);
