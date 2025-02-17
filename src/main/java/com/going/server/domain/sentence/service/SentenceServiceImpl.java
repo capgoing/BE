@@ -20,8 +20,8 @@ public class SentenceServiceImpl implements SentenceService{
 
     @Override
     public List<String> getSentence(Long wordId) {
-
-        List<Sentence> sentences = sentenceRepository.findByWord_WordId(wordId);
+        Word word = wordRepository.getByWord(wordId);
+        List<Sentence> sentences = sentenceRepository.findByWord_WordId(word.getWordId());
         List<String> sentenceList = new ArrayList<>();
         sentences.forEach(sentence -> {
             sentenceList.add(sentence.getSentence());
