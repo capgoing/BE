@@ -7,6 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ModifyRequestDto {
+public class AddRequestDto {
+    private Long clusterId;
     private String word;
 }

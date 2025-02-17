@@ -1,5 +1,6 @@
 package com.going.server.domain.word.controller;
 
+import com.going.server.domain.word.dto.AddRequestDto;
 import com.going.server.domain.word.dto.ModifyRequestDto;
 import com.going.server.domain.word.dto.WordResponseDto;
 import com.going.server.domain.word.service.WordService;
@@ -21,17 +22,24 @@ public class WordController {
         return SuccessResponse.of(dto);
     }
 
-    //TODO: 구성어휘 삭제
+    //구성어휘 삭제
     @DeleteMapping("/{wordId}")
     public SuccessResponse<?> deleteWord(@PathVariable Long wordId){
         wordService.deleteWord(wordId);
         return SuccessResponse.empty();
     }
 
-    //TODO: 구성어휘 수정
+    //구성어휘 수정
     @PatchMapping("/{wordId}")
     public SuccessResponse<?> modifyWord(@PathVariable Long wordId, @RequestBody ModifyRequestDto dto) {
         wordService.modifyWord(wordId, dto);
+        return SuccessResponse.empty();
+    }
+
+    //구성어휘 추가
+    @PostMapping()
+    public SuccessResponse<?> addWord(@RequestBody AddRequestDto dto) {
+        wordService.addWord(dto);
         return SuccessResponse.empty();
     }
 }

@@ -2,6 +2,7 @@ package com.going.server.domain.word.service;
 
 import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.domain.cluster.repository.ClusterRepository;
+import com.going.server.domain.word.dto.AddRequestDto;
 import com.going.server.domain.word.dto.ModifyRequestDto;
 import com.going.server.domain.word.dto.WordDto;
 import com.going.server.domain.word.dto.WordResponseDto;
@@ -49,10 +50,20 @@ public class WordServiceImpl implements WordService {
     @Transactional
     @Override
     public void modifyWord(Long wordId, ModifyRequestDto dto) {
+        //TODO : 검증로직 수정
         Word findWord = wordRepository.findById(wordId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 단어를 찾을 수 없습니다. ID: " + wordId));
 
         findWord.setComposeWord(dto.getWord());
         wordRepository.save(findWord);
+    }
+
+    @Override
+    public void addWord(AddRequestDto dto) {
+        String word = dto.getWord();
+        //TODO : 검증 로직 추가
+        Optional<Cluster> cluster = clusterRepository.findById(dto.getClusterId());
+        Word newWord = Word.toEntity(word,cluster.get());
+        wordRepository.save(newWord);
     }
 }
