@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +46,7 @@ public class FastApiService {
     /**
      * FastAPI에서 클러스터링 결과 가져와 DB에 저장 (POST 요청)
      */
-    public String setCluster() {
+    public void setCluster() {
         // FastAPI 요청 데이터 (필요시 변경)
         Map<String, Object> requestData = Map.of("input_text", "클러스터링할 데이터 예제");
 
@@ -73,7 +72,7 @@ public class FastApiService {
             //첫 번째 단어를 대표 어휘로 설정
             String representWord = wordSentences.keySet().iterator().next();
             //엔티티 저장
-            Cluster clusterEntity = Cluster.toEntity(representWord,imageUrl);
+            Cluster clusterEntity = Cluster.toEntity(representWord, imageUrl);
             //클러스터 결과 DB에 저장
             Cluster saveCluster = clusterRepository.save(clusterEntity);
 
@@ -83,16 +82,15 @@ public class FastApiService {
                 //문장들
                 List<String> sentences = entry.getValue();
                 //Word 엔티티 생성
-                Word wordEntity = Word.toEntity(word,saveCluster);
+                Word wordEntity = Word.toEntity(word, saveCluster);
                 //DB에 저장
                 Word saveWord = wordRepository.save(wordEntity);
                 for (String sentence : sentences) {
                     //Sentence 엔티티 생성
-                    Sentence sententEntity = Sentence.toEntity(sentence,saveWord);
+                    Sentence sententEntity = Sentence.toEntity(sentence, saveWord);
                     sentenceRepository.save(sententEntity);
                 }
             }
         }
-        return "클러스터링 저장 완료!";
     }
 }

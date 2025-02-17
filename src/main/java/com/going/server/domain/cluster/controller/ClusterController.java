@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/cluster")
 @RequiredArgsConstructor
 public class ClusterController {
     private final ClusterService clusterServic;
     //대표어휘 조회
-    @GetMapping("/cluster")
+    @GetMapping()
     public SuccessResponse<ClusterResponseDto> getCluster() {
         ClusterResponseDto response = clusterServic.getCluster();
         return SuccessResponse.of(response);
