@@ -51,9 +51,9 @@ public class FastApiController {
                     )
             )
     })
-    public SuccessResponse<String> setCluster() {
-        String response = fastApiService.setCluster();
-        return SuccessResponse.of(response);
+    public SuccessResponse<?> setCluster() {
+        fastApiService.setCluster();
+        return SuccessResponse.empty();
     }
 
 }
