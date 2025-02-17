@@ -34,4 +34,12 @@ public class WordServiceImpl implements WordService {
         WordResponseDto wordResponseDto = WordResponseDto.of(cluster.get().getClusterId(),wordDto);
         return wordResponseDto;
     }
+
+    @Override
+    public void deleteWord(Long wordId) {
+        Optional<Word> word = wordRepository.findById(wordId);
+        //TODO : 검증로직 추가
+        //삭제
+        wordRepository.delete(word.get());
+    }
 }
