@@ -2,10 +2,13 @@ package com.going.server.domain.word.service;
 
 import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.domain.cluster.repository.ClusterRepository;
+import com.going.server.domain.word.dto.ModifyRequestDto;
 import com.going.server.domain.word.dto.WordDto;
 import com.going.server.domain.word.dto.WordResponseDto;
 import com.going.server.domain.word.entity.Word;
 import com.going.server.domain.word.repository.WordRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +44,15 @@ public class WordServiceImpl implements WordService {
         //TODO : 검증로직 추가
         //삭제
         wordRepository.delete(word.get());
+    }
+
+    @Transactional
+    @Override
+    public void modifyWord(Long wordId, ModifyRequestDto dto) {
+        Word findWord = wordRepository.findById(wordId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 단어를 찾을 수 없습니다. ID: " + wordId));
+
+        findWord.setComposeWord(dto.getWord());
+        wordRepository.save(findWord);
     }
 }
