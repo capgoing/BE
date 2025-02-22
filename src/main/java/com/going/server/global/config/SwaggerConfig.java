@@ -37,6 +37,7 @@ public class SwaggerConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173/","http://localhost:5173","https://www.capgoing.shop",
                             "https://capgoing.shop",
+                            "https://cap-going.netlify.app/",
                             "https://api.capgoing.shop")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
