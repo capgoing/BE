@@ -2,6 +2,9 @@ package com.going.server.domain.word.service;
 
 import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.domain.cluster.repository.ClusterRepository;
+import com.going.server.domain.history.entity.History;
+import com.going.server.domain.history.repository.HistoryRepository;
+import com.going.server.domain.history.service.HistoryServiceImpl;
 import com.going.server.domain.word.dto.AddRequestDto;
 import com.going.server.domain.word.dto.ModifyRequestDto;
 import com.going.server.domain.word.dto.WordDto;
@@ -22,6 +25,7 @@ import java.util.Optional;
 public class WordServiceImpl implements WordService {
     private final WordRepository wordRepository;
     private final ClusterRepository clusterRepository;
+    private final HistoryRepository historyRepository;
 
     @Override
     public WordResponseDto getWordList(Long clusterId) {
@@ -42,6 +46,9 @@ public class WordServiceImpl implements WordService {
     @Override
     public void deleteWord(Long wordId) {
         Word word = wordRepository.getByWord(wordId);
+        //변경사항 저장
+        History history = History.toEntity(word.getComposeWord(),"",word);
+//        historyRepository.save(history);
         wordRepository.delete(word);
     }
 
@@ -49,6 +56,12 @@ public class WordServiceImpl implements WordService {
     @Override
     public void modifyWord(Long wordId, ModifyRequestDto dto) {
         Word findWord = wordRepository.getByWord(wordId);
+        String modifiedWord = dto.getWord();
+
+        //변경사항 저장
+        History history = History.toEntity(findWord.getComposeWord(),modifiedWord,findWord);
+        historyRepository.save(history);
+
         findWord.setComposeWord(dto.getWord());
         wordRepository.save(findWord);
     }
@@ -58,6 +71,9 @@ public class WordServiceImpl implements WordService {
         String word = dto.getWord();
         Cluster cluster = clusterRepository.getByCluster(dto.getClusterId());
         Word newWord = Word.toEntity(word,cluster);
+        //변경사항 저장
+        History history = History.toEntity("",word,newWord);
         wordRepository.save(newWord);
+        historyRepository.save(history);
     }
 }

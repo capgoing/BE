@@ -17,7 +17,7 @@ public class History {
     @Column(name="history_id")
     private Long historyId;
 
-    @Column(name="before")
+    @Column(name="`before`")
     private String before;
 
     @Column(name="after")
