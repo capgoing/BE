@@ -37,4 +37,4 @@ out/
 .vscode/
 .DS_Store
 docker-compose.yml
-application-dev.properties
+src/main/resources/*.properties

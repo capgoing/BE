@@ -41,3 +41,11 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+task copyYml(type: Copy){
+	copy{
+		from './Backend_Config'
+		include '*.properties'
+		into 'src/main/resources'
+	}
+}
