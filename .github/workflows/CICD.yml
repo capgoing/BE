@@ -41,7 +41,7 @@ jobs:
       - name: Checkout with submodules
         uses: actions/checkout@v4
         with:
-          ssh-key: ${{ secrets.ACCESS_TOKEN }}
+          token: ${{ secrets.ACCESS_TOKEN }}
           submodules: recursive
           fetch-depth: 0
 
