@@ -5,9 +5,7 @@ on:
     branches-ignore:
       - main
       - develop
-#env:
-#  SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
-#  FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
+
 
 
 jobs:
