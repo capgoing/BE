@@ -9,10 +9,10 @@ on:
 env:
   DOCKERHUB_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
   SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-  SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-  FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
-  SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
+#  SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+#  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+#  FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
+#  SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
 
 jobs:
   CI:
@@ -76,10 +76,10 @@ jobs:
         env:
           SPRING_PROFILES_ACTIVE: test
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/testDB?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
-          SPRING_DATASOURCE_USERNAME: test
-          SPRING_DATASOURCE_PASSWORD: testPW
-          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
-          SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
+#          SPRING_DATASOURCE_USERNAME: test
+#          SPRING_DATASOURCE_PASSWORD: testPW
+#          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
+#          SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
 
         run: |
           ./gradlew --no-daemon clean build test --info --stacktrace
@@ -143,11 +143,11 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           IMAGE_TAG: ${{ steps.slug.outputs.sha7 }}
-          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
-          SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
-          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+#          FASTAPI_BASE_URL: ${{ secrets.FASTAPI_BASE_URL }}
+#          SERVER_BASE_URL: ${{ secrets.SERVER_BASE_URL }}
+#          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+#          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+#          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
         run: |
           docker build -t $USERNAME/$DOCKERHUB_REPOSITORY:$IMAGE_TAG -t $USERNAME/$DOCKERHUB_REPOSITORY:latest .
@@ -186,11 +186,11 @@ jobs:
           script: |
             export DOCKER_IMAGE="${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest"
             export DOCKER_COMPOSE_PATH="${{ secrets.DOCKER_COMPOSE_PATH }}"
-            export FASTAPI_BASE_URL="${{ secrets.FASTAPI_BASE_URL }}"
-            export SERVER_BASE_URL="${{ secrets.SERVER_BASE_URL }}"
-            export SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}"
-            export SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}"
-            export SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}"
+#            export FASTAPI_BASE_URL="${{ secrets.FASTAPI_BASE_URL }}"
+#            export SERVER_BASE_URL="${{ secrets.SERVER_BASE_URL }}"
+#            export SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}"
+#            export SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}"
+#            export SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}"
             
             cd /home/ubuntu/scripts
             ./rolling-update.sh
