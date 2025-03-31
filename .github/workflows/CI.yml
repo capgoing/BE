@@ -6,27 +6,12 @@ on:
       - main
       - develop
 
-
-
 jobs:
   CI:
     name: Continuous Integration
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
-    services:
-      mysql:
-        image: mysql:8.0
-        options: --network-alias=mysql
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_ROOT_PASSWORD: testPW
-          MYSQL_DATABASE: testDB
-          MYSQL_USER: test
-          MYSQL_PASSWORD: testPW
-
 
     steps:
       - name: Checkout with submodules
@@ -49,21 +34,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Wait for MySQL to be ready
-        run: |
-          echo "Waiting for MySQL to start..."
-          for i in {1..30}; do
-            mysql -h 127.0.0.1 -u test -ptestPW -e "SELECT 1" && echo "MySQL is up!" && exit 0
-            sleep 2
-          done
-          echo "MySQL did not start in time!"
-          exit 1
-
-      - name: Verify MySQL Connection
-        run: |
-          echo "Checking MySQL connection..."
-          mysql -h 127.0.0.1 -u test -ptestPW -D testDB -e "SHOW TABLES;"
-
       - name: Verify Backend_Config files
         run: ls -al Backend_Config
 
@@ -72,4 +42,16 @@ jobs:
         env:
           SPRING_PROFILES_ACTIVE: test
         run: |
+          echo "▶ Running Gradle build and test..."
           ./gradlew --no-daemon clean build test --info --stacktrace
+
+      - name: Show test results summary
+        if: success()
+        run: |
+          echo "All Spring Boot tests passed successfully!"
+
+      - name: Mark failure if tests failed
+        if: failure()
+        run: |
+          echo "Tests failed. Please check the test logs for detail"
+          exit 1
