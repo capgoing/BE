@@ -1,5 +1,6 @@
 package com.going.server.global.temp.controller;
 
+import com.going.server.domain.word.entity.Word;
 import com.going.server.global.response.SuccessResponse;
 import com.going.server.global.temp.service.FastApiService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-@Tag(name = "FastAPI 통신 테스트", description = "FastAPI 서버와의 통신을 테스트하는 API")
+@Tag(name = "통신 테스트", description = "FastAPI 서버 및 neo4j 데이터베이스와의 통신을 테스트하는 API")
 @Slf4j
 public class FastApiController {
 
@@ -54,6 +55,13 @@ public class FastApiController {
     public SuccessResponse<?> setCluster() {
         fastApiService.setCluster();
         return SuccessResponse.empty();
+    }
+
+    @PostMapping("/test-neo4j")
+    @Operation(summary = "neo4j 데이터베이스 확인", description = "composeWord를 저장하여 Word 노드를 생성합니다.")
+    public String saveWord(@RequestParam String word) {
+        Word savedWord = fastApiService.testWord(word);
+        return "저장된 테스트용 단어 : " + savedWord.getComposeWord();
     }
 
 }

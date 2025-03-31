@@ -7,15 +7,16 @@ import com.going.server.domain.sentence.repository.SentenceRepository;
 import com.going.server.domain.word.entity.Word;
 import com.going.server.domain.word.repository.WordRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class FastApiService {
 
@@ -23,16 +24,16 @@ public class FastApiService {
     private final SentenceRepository sentenceRepository;
     @Value("${fastapi.base-url}")
     private String baseUrl;
-
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
     private final ClusterRepository clusterRepository;
+    private WebClient webClient;
 
-    public FastApiService(WebClient.Builder webClientBuilder, ClusterRepository clusterResultRepository, WordRepository wordRepository, SentenceRepository sentenceRepository) {
+    @PostConstruct
+    public void init() {
         this.webClient = webClientBuilder.build();
-        this.clusterRepository = clusterResultRepository;
-        this.wordRepository = wordRepository;
-        this.sentenceRepository = sentenceRepository;
     }
+
+
 
     /**
      * FastAPI 서버의 기본 상태 확인 (GET 요청)
@@ -48,7 +49,7 @@ public class FastApiService {
     /**
      * FastAPI에서 클러스터링 결과 가져와 DB에 저장 (POST 요청)
      */
-    @PostConstruct
+//    @PostConstruct
     public void setCluster() {
         // FastAPI 요청 데이터 (필요시 변경)
         Map<String, Object> requestData = Map.of("input_text", "클러스터링할 데이터 예제");
@@ -96,4 +97,11 @@ public class FastApiService {
             }
         }
     }
+
+    public Word testWord(String word) {
+        Word wordEntity = Word.toEntity(word, null);
+        return wordRepository.save(wordEntity);
+
+    }
+
 }
