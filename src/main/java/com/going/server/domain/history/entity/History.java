@@ -1,33 +1,35 @@
 package com.going.server.domain.history.entity;
 
 import com.going.server.domain.word.entity.Word;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.neo4j.core.schema.*;
 
-@Entity
+@Node("History")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="history")
 public class History {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="history_id")
+    @GeneratedValue
     private Long historyId;
 
-    @Column(name="`before`")
+    @Property("before")
     private String before;
 
-    @Column(name="after")
+    @Property("after")
     private String after;
 
-    @ManyToOne
-    @JoinColumn(name="word_id")
+    @Relationship(type = "RELATED_TO", direction = Relationship.Direction.OUTGOING)
     private Word word;
 
     public static History toEntity(String before, String after, Word word){
-        return History.builder().before(before).after(after).word(word).build();
+        return History.builder()
+                .before(before)
+                .after(after)
+                .word(word)
+                .build();
     }
 }

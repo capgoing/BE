@@ -1,30 +1,31 @@
 package com.going.server.domain.sentence.entity;
 
 import com.going.server.domain.word.entity.Word;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.neo4j.core.schema.*;
 
-@Entity
+@Node("Sentence")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="sentence")
 public class Sentence {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="sentence_id")
+    @GeneratedValue
     private Long sentenceId;
 
-    @Column(name="sentence")
+    @Property("sentence")
     private String sentence;
 
-    @ManyToOne
-    @JoinColumn(name="word_id")
+    @Relationship(type = "USES", direction = Relationship.Direction.OUTGOING)
     private Word word;
 
-    public static Sentence toEntity(String sentence,Word word) {
-        return Sentence.builder().word(word).sentence(sentence).build();
+    public static Sentence toEntity(String sentence, Word word) {
+        return Sentence.builder()
+                .sentence(sentence)
+                .word(word)
+                .build();
     }
 }
