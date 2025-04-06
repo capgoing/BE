@@ -19,6 +19,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Profile("!test")
 public class FastApiService {
 
     private final WordRepository wordRepository;
