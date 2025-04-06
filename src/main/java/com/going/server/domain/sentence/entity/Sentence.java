@@ -18,7 +18,7 @@ public class Sentence {
 
     @Property("sentence")
     private String sentence;
-
+    // 문장은 단어를 사용한다.
     @Relationship(type = "USES", direction = Relationship.Direction.OUTGOING)
     private Word word;
 

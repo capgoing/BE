@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface SentenceRepository extends Neo4jRepository<Sentence, Long> {
-//    List<Sentence> findByWord_WordId(Long wordId);
+    List<Sentence> findByWord_WordId(Long wordId);
 }

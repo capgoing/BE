@@ -9,9 +9,9 @@ import java.util.List;
 
 @Repository
 public interface WordRepository extends Neo4jRepository<Word, Long> {
-//    List<Word> findByCluster_ClusterId(Long clusterId);
-//
-//    default Word getByWord(Long wordId) {
-//        return findById(wordId).orElseThrow(WordNotFoundException::new);
-//    }
+    List<Word> findByCluster_ClusterId(Long clusterId);
+
+    default Word getByWord(Long wordId) {
+        return findById(wordId).orElseThrow(WordNotFoundException::new);
+    }
 }
