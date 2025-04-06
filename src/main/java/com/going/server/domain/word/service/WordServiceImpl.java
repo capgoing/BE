@@ -4,21 +4,18 @@ import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.domain.cluster.repository.ClusterRepository;
 import com.going.server.domain.history.entity.History;
 import com.going.server.domain.history.repository.HistoryRepository;
-import com.going.server.domain.history.service.HistoryServiceImpl;
 import com.going.server.domain.word.dto.AddRequestDto;
 import com.going.server.domain.word.dto.ModifyRequestDto;
 import com.going.server.domain.word.dto.WordDto;
 import com.going.server.domain.word.dto.WordResponseDto;
 import com.going.server.domain.word.entity.Word;
 import com.going.server.domain.word.repository.WordRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

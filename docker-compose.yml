@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:5
+    container_name: neo4j-db
+    restart: always
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/testPass123
+    volumes:
+      - neo4j-data:/data
+    networks:
+      - backend-network
+
+volumes:
+  neo4j-data:
+
+networks:
+  backend-network:
+    driver: bridge

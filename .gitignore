@@ -36,5 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 .DS_Store
-docker-compose.yml
 src/main/resources/*.properties

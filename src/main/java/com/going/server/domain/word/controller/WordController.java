@@ -4,7 +4,6 @@ import com.going.server.domain.word.dto.AddRequestDto;
 import com.going.server.domain.word.dto.ModifyRequestDto;
 import com.going.server.domain.word.dto.WordResponseDto;
 import com.going.server.domain.word.service.WordService;
-import com.going.server.domain.word.service.WordServiceImpl;
 import com.going.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

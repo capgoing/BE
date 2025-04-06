@@ -1,7 +1,6 @@
 package com.going.server.domain.sentence.controller;
 
 import com.going.server.domain.sentence.service.SentenceService;
-import com.going.server.domain.sentence.service.SentenceServiceImpl;
 import com.going.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

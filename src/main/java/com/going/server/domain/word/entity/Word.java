@@ -1,31 +1,35 @@
 package com.going.server.domain.word.entity;
 
 import com.going.server.domain.cluster.entity.Cluster;
-import com.going.server.global.common.BaseEntity;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.neo4j.core.schema.*;
 
-@Entity
+@Node("Word")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="word")
-public class Word extends BaseEntity {
+public class Word {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="word_id")
+    @GeneratedValue
     private Long wordId;
 
-    @Column(name="compose_word")
+    @Property("compose_word")
     private String composeWord;
 
-    @ManyToOne
-    @JoinColumn(name="cluster_id")
+    // Neo4j 관계 설정
+    // 하나의 단어는 해당 클러스터에 속한다. Word -> Cluster 라는 의미
+    // BELONGS_TO 는 속한다는 관계를 나타내고, OUTGOING은 방향성을 나타냄
+    @Relationship(type = "BELONGS_TO", direction = Relationship.Direction.OUTGOING)
     private Cluster cluster;
 
     public static Word toEntity(String composeWord, Cluster cluster) {
-        return Word.builder().composeWord(composeWord).cluster(cluster).build();
+        return Word.builder()
+                .composeWord(composeWord)
+                .cluster(cluster)
+                .build();
     }
 }
+

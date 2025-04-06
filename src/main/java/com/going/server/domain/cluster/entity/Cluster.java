@@ -1,29 +1,33 @@
 package com.going.server.domain.cluster.entity;
 
-import com.going.server.global.common.BaseEntity;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
 
-@Entity
+
+@Node("Cluster")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="cluster")
-public class Cluster extends BaseEntity {
+public class Cluster {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="cluster_id")
+    @GeneratedValue
     private Long clusterId;
 
-    @Column(name="represent_word")
+    @Property("represent_word")
     private String representWord;
 
-    @Column(name="result_img")
+    @Property("result_img")
     private String resultImg;
 
     public static Cluster toEntity(String representWord, String resultImg) {
-        return Cluster.builder().representWord(representWord).resultImg(resultImg).build();
+        return Cluster.builder()
+                .representWord(representWord)
+                .resultImg(resultImg)
+                .build();
     }
 }
