@@ -10,6 +10,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
@@ -49,6 +50,7 @@ public class FastApiService {
     /**
      * FastAPI에서 클러스터링 결과 가져와 DB에 저장 (POST 요청)
      */
+    @Profile("!test")
     @PostConstruct
     public void setCluster() {
         // FastAPI 요청 데이터 (필요시 변경)
