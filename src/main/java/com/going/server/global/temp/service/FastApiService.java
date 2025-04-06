@@ -51,8 +51,6 @@ public class FastApiService {
     /**
      * FastAPI에서 클러스터링 결과 가져와 DB에 저장 (POST 요청)
      */
-    @Profile("!test")
-    @PostConstruct
     public void setCluster() {
         // FastAPI 요청 데이터 (필요시 변경)
         Map<String, Object> requestData = Map.of("input_text", "클러스터링할 데이터 예제");
