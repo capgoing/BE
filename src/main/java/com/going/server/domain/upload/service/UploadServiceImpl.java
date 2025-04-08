@@ -33,7 +33,16 @@ public class UploadServiceImpl implements  UploadService {
             
             String text = paresData.get("6학년 읽기자료 내용");
 
-            return UploadResponseDto.builder().text(text).build();
+            //TODO : 그래프 생성을 위한 FastApi 호출 코드 작성
+
+            return UploadResponseDto.from(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
         } catch (IllegalArgumentException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }  catch (IOException e){
