@@ -14,6 +14,9 @@ public class Sentence {
 
     @Id
     @GeneratedValue
+    private Long id;
+
+    @Property("sentence_id")
     private Long sentenceId;
 
     @Property("sentence")

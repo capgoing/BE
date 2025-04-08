@@ -14,6 +14,9 @@ public class Word {
 
     @Id
     @GeneratedValue
+    private Long id;
+
+    @Property("word_id")
     private Long wordId;
 
     @Property("compose_word")

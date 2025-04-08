@@ -16,6 +16,9 @@ import org.springframework.data.neo4j.core.schema.Property;
 public class Cluster {
     @Id
     @GeneratedValue
+    private Long id;
+
+    @Property("cluster_id")
     private Long clusterId;
 
     @Property("represent_word")
