@@ -12,4 +12,10 @@ public class graphServiceImpl implements graphService {
         //TODO : DB에서 값 받아오는 코드 작성
         return graphListDto.of(null);
     }
+
+    @Override
+    public void deleteGraph(Long graphId) {
+        //TODO : graphId로 그래프 찾기
+        //TODO : 그래프 삭제하는 코드 작성
+    }
 }

@@ -10,9 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/graph")
@@ -35,6 +33,23 @@ public class graphController {
     public SuccessResponse<graphListDto> getGraphList() {
         graphListDto result = graphService.getGraphList();
         return SuccessResponse.of(result);
+    }
+
+    @DeleteMapping("/{graphId}")
+    @Operation(summary = "[메인화면] pdf파일 (지식그래프) 삭제", description = "워크 스페이스에서 지식 그래프 자체를 삭제하는 기능입니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "그래프가 성공적으로 삭제되었습니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"message\":\"\"}")
+                    )
+            )
+    })
+    public SuccessResponse<?> deleteGraph(@PathVariable("graphId") Long graphId) {
+        graphService.deleteGraph(graphId);
+        return SuccessResponse.empty();
     }
 
 }
