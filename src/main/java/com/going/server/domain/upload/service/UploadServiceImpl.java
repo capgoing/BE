@@ -29,11 +29,14 @@ public class UploadServiceImpl implements  UploadService {
             String jsonResponse = ocrService.processOcr(dto.getFile(),apiUrl,secretKey);
             //System.out.println("jsonResponse: "+jsonResponse);
             Map<String, String> paresData = pdfOcrService.parse(jsonResponse);
-            System.out.println("paresData: "+paresData);
+            //System.out.println("paresData: "+paresData);
             
             String text = paresData.get("6학년 읽기자료 내용");
+            System.out.println("추출된 텍스트: "+text);
 
             //TODO : 그래프 생성을 위한 FastApi 호출 코드 작성
+
+            //TODO : 데이터 받아와서 DB에 저장
 
             return UploadResponseDto.from(
                     null,
