@@ -33,4 +33,11 @@ public class graphServiceImpl implements graphService {
 
         return knowledgeGraphDto.of(nodeDto,edgeDto);
     }
+
+    @Override
+    public nodeDetailDto getNode(Long graphId, Long nodeId) {
+        //TODO : graphId로 그래프 찾기
+        //TODO : nodeId로 노드 찾기
+        return nodeDetailDto.from(null,null,null,null,null);
+    }
 }
