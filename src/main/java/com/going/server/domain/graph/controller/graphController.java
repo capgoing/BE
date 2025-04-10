@@ -9,12 +9,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/graph")
 @RequiredArgsConstructor
+@Tag(name = "[캡스톤]Graph", description = "지식그래프 관련 통신을 위한 API")
 public class graphController {
     private final graphService graphService;
 
