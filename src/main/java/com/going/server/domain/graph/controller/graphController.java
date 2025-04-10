@@ -2,6 +2,8 @@ package com.going.server.domain.graph.controller;
 
 import com.going.server.domain.graph.dto.graphDto;
 import com.going.server.domain.graph.dto.graphListDto;
+import com.going.server.domain.graph.dto.knowledgeGraphDto;
+import com.going.server.domain.graph.dto.nodeDetailDto;
 import com.going.server.domain.graph.service.graphService;
 import com.going.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,6 +54,40 @@ public class graphController {
     public SuccessResponse<?> deleteGraph(@PathVariable("graphId") Long graphId) {
         graphService.deleteGraph(graphId);
         return SuccessResponse.empty();
+    }
+
+    @GetMapping("/{graphId}")
+    @Operation(summary = "지식 그래프 전체 데이터(전체 화면) 조회", description = "현재 저장된 전체 지식 그래프 데이터를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "지식 그래프가 성공적으로 조회되었습니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"message\":\"\"}")
+                    )
+            )
+    })
+    public SuccessResponse<knowledgeGraphDto> getGraph(@PathVariable("graphId") Long graphId) {
+        knowledgeGraphDto result = graphService.getGraph(graphId);
+        return SuccessResponse.of(result);
+    }
+
+    @GetMapping("/{graphId}/{nodeId}")
+    @Operation(summary = "지식 그래프 상세 조회 (노드 상세 조회)", description = "특정 노드의 상세 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "노드가 성공적으로 조회되었습니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"message\":\"\"}")
+                    )
+            )
+    })
+    public SuccessResponse<nodeDetailDto> getNode(@PathVariable("graphId") Long graphId, @PathVariable("nodeId") Long nodeId) {
+        nodeDetailDto result = graphService.getNode(graphId,nodeId);
+        return SuccessResponse.of(result);
     }
 
 }
