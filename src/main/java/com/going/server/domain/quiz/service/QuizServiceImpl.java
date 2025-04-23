@@ -18,20 +18,20 @@ public class QuizServiceImpl implements QuizService{
         Long graphId = Long.valueOf(graphIdStr);
 
         // 404 : 지식그래프 찾을 수 없음
-        Graph foundGraph = graphRepository.findById(graphId)
+        Graph graph = graphRepository.findById(graphId)
                 .orElseThrow(GraphNotFoundException::new);
 
         Object quizDto = null;
 
         switch (mode) {
             case "listenUp":
-                quizDto = listenUpQuizCreate();
+                quizDto = listenUpQuizCreate(graph);
                 break;
             case "connect":
-                quizDto = connectQuizCreate();
+                quizDto = connectQuizCreate(graph);
                 break;
             case "picture":
-                quizDto = pictureQuizCreate();
+                quizDto = pictureQuizCreate(graph);
                 break;
             default:
                 // TODO : 퀴즈 모드 관련 예외처리 필요
@@ -41,19 +41,19 @@ public class QuizServiceImpl implements QuizService{
     }
 
     // listenUp 퀴즈 생성 메서드
-    private ListenUpQuizDto listenUpQuizCreate() {
+    private ListenUpQuizDto listenUpQuizCreate(Graph graph) {
         // TODO : listenUp 퀴즈 생성 로직 작성
         return new ListenUpQuizDto();
     }
 
     // connect 퀴즈 생성 메서드
-    private ConnectQuizDto connectQuizCreate() {
+    private ConnectQuizDto connectQuizCreate(Graph graph) {
         // TODO : connect 퀴즈 생성 로직 작성
         return new ConnectQuizDto();
     }
 
     // picture 퀴즈 생성 메서드
-    private PictureQuizDto pictureQuizCreate() {
+    private PictureQuizDto pictureQuizCreate(Graph graph) {
         // TODO : picture 퀴즈 생성 로직 작성
         return new PictureQuizDto();
     }
