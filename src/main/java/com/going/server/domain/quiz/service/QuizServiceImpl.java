@@ -6,8 +6,14 @@ public class QuizServiceImpl implements QuizService{
 
 
     @Override
-    public QuizCreateResponseDto QuizCreate(String mode, String graphId) {
+    public QuizCreateResponseDto quizCreate(String mode, String graphId) {
+        // 404 : 지식그래프 찾을 수 없음
+
+
         // TODO : mode별 분기 필요
+        switch (mode) {
+
+        }
 
         // TODO : graphId로 지식그래프 예시 문장 3개 랜덤으로 가져오기
 

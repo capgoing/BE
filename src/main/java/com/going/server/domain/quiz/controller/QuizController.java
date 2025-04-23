@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/quiz")
 @RequiredArgsConstructor
-@Tag(name="[캡스톤]Quiz", description = "퀴즈 관련 통신을 위한 API")
+@Tag(name="[캡스톤]ListenUpQuiz", description = "퀴즈 관련 통신을 위한 API")
 public class QuizController {
 
     private QuizServiceImpl quizService;
@@ -33,7 +33,7 @@ public class QuizController {
             )
     })
     public SuccessResponse<?> createQuiz(@PathVariable String graphId, @RequestParam String mode) {
-        QuizCreateResponseDto result = quizService.QuizCreate(graphId, mode);
+        QuizCreateResponseDto result = quizService.quizCreate(graphId, mode);
         return SuccessResponse.of(result);
     }
 
