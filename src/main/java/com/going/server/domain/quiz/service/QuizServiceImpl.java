@@ -3,15 +3,21 @@ package com.going.server.domain.quiz.service;
 import com.going.server.domain.quiz.dto.QuizCreateResponseDto;
 
 public class QuizServiceImpl implements QuizService{
-
+    private final GraphRepository graphRepository;
 
     @Override
     public QuizCreateResponseDto quizCreate(String mode, String graphId) {
-        // 404 : 지식그래프 찾을 수 없음
+        // TODO : 404 : 지식그래프 찾을 수 없음
+
 
 
         // TODO : mode별 분기 필요
         switch (mode) {
+            case "listenUp":
+                listenUpQuizCreate();
+
+                break;
+
 
         }
 
