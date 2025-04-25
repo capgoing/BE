@@ -40,4 +40,19 @@ public class graphServiceImpl implements graphService {
         //TODO : nodeId로 노드 찾기
         return nodeDetailDto.from(null,null,null,null,null);
     }
+
+    @Override
+    public knowledgeGraphDto addNode(Long graphId,String group,String label) {
+        //TODO : graphId로 그래프 찾기
+        //TODO : group 추가하는 코드 작성
+        //TODO : label 추가하는 코드 작성
+
+        //TODO : nodeDto에 값 매핑하는 코드 작성
+        List<nodeDto> nodeDto = new ArrayList<>();
+
+        //TODO : edgeDto에 값 매핑하는 코드 작성
+        List<edgeDto> edgeDto = new ArrayList<>();
+
+        return knowledgeGraphDto.of(nodeDto,edgeDto);
+    }
 }

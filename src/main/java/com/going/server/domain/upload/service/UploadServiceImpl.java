@@ -1,5 +1,12 @@
 package com.going.server.domain.upload.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.going.server.domain.graph.dto.edgeDto;
+import com.going.server.domain.graph.dto.nodeDto;
+import com.going.server.domain.graph.entity.Edge;
+import com.going.server.domain.graph.repository.EdgeRepository;
 import com.going.server.domain.ocr.OcrService;
 import com.going.server.domain.ocr.PdfOcrService;
 import com.going.server.domain.upload.dto.UploadRequestDto;
@@ -11,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -18,6 +28,7 @@ import java.util.Map;
 public class UploadServiceImpl implements  UploadService {
     private final OcrService ocrService;
     private final PdfOcrService pdfOcrService;
+    private final EdgeRepository edgeRepository;
     @Value("${ocr.api.url}")
     private String apiUrl;
     @Value("${ocr.api.secret-key}")
@@ -26,17 +37,40 @@ public class UploadServiceImpl implements  UploadService {
     @Override
     public UploadResponseDto uploadFile(UploadRequestDto dto) {
         try {
-            String jsonResponse = ocrService.processOcr(dto.getFile(),apiUrl,secretKey);
-            //System.out.println("jsonResponse: "+jsonResponse);
+            String jsonResponse = ocrService.processOcr(dto.getFile(), apiUrl, secretKey);
             Map<String, String> paresData = pdfOcrService.parse(jsonResponse);
-            //System.out.println("paresData: "+paresData);
-            
             String text = paresData.get("6학년 읽기자료 내용");
-            System.out.println("추출된 텍스트: "+text);
+            System.out.println("추출된 텍스트: " + text);
 
-            //TODO : 그래프 생성을 위한 FastApi 호출 코드 작성
+            ObjectMapper mapper = new ObjectMapper();
+            InputStream is = getClass().getClassLoader().getResourceAsStream("data.json");
+            JsonNode root = mapper.readTree(is);
+            JsonNode dataNode = root.get("data");
+            JsonNode edgesNode = dataNode.get("edges");
 
-            //TODO : 데이터 받아와서 DB에 저장
+            List<Edge> edgeList = new ArrayList<>();
+
+            for (JsonNode edgeNode : edgesNode) {
+                if (!edgeNode.has("source") || !edgeNode.has("target") || !edgeNode.has("label")) {
+                    System.out.println("필드 누락: " + edgeNode.toPrettyString());
+                    continue;
+                }
+
+                String source = edgeNode.get("source").asText();
+                String target = edgeNode.get("target").asText();
+                String label = edgeNode.get("label").asText();
+
+                Edge edge = Edge.builder()
+                        .source(source)
+                        .target(target)
+                        .label(label)
+                        .build();
+
+                edgeList.add(edge);
+            }
+
+            edgeRepository.saveAll(edgeList);
+            System.out.println("총 " + edgeList.size() + "개의 edge가 저장되었습니다.");
 
             return UploadResponseDto.from(
                     null,
@@ -46,9 +80,9 @@ public class UploadServiceImpl implements  UploadService {
                     null,
                     null
             );
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }  catch (IOException e){
+        } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }

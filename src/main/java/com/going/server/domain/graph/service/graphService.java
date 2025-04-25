@@ -12,4 +12,6 @@ public interface graphService {
     knowledgeGraphDto getGraph(Long graphId);
 
     nodeDetailDto getNode(Long graphId, Long nodeId);
+
+    knowledgeGraphDto addNode(Long graphId, String group,String label);
 }
