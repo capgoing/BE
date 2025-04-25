@@ -11,6 +11,7 @@ public class GraphNode {
 
     @Id @GeneratedValue
     private Long id;
+
     private String label;
     private int level;
     private String description;
