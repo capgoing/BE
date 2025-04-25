@@ -10,7 +10,7 @@ import org.springframework.data.neo4j.core.schema.*;
 public class GraphNode {
 
     @Id @GeneratedValue
-    private String id;
+    private Long id;
     private String label;
     private int level;
     private String description;
