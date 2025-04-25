@@ -18,4 +18,9 @@ public class GraphNode {
 
     @Relationship(type = "HAS_GRAPH", direction = Relationship.Direction.INCOMING)
     private Graph graph;
+
+    // Long → String 변환 (프론트 전송 시)
+    public String getIdAsString() {
+        return id != null ? String.valueOf(id) : null;
+    }
 }

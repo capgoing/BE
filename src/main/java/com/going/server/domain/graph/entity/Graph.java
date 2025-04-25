@@ -26,4 +26,9 @@ public class Graph extends BaseEntity {
 
     @Relationship(type = "HAS_NODE", direction = Relationship.Direction.OUTGOING)
     private List<GraphNode> nodes;
+
+    // Long → String 변환 (프론트 전송 시)
+    public String getIdAsString() {
+        return id != null ? String.valueOf(id) : null;
+    }
 }
