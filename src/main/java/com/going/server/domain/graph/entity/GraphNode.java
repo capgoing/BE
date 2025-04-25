@@ -21,7 +21,7 @@ public class GraphNode {
 
     private String label;
     private int level;
-    private String description;
+    private String includeSentence; //해당 노드(단어)가 포함된 문장(,로 구분)
 
     @Relationship(type = "HAS_GRAPH", direction = Relationship.Direction.INCOMING)
     private Graph graph;
