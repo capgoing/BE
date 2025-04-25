@@ -97,12 +97,14 @@ public class QuizServiceImpl implements QuizService{
     // connect 퀴즈 생성 메서드
     private ConnectQuizDto connectQuizCreate(Graph graph) {
         // TODO : connect 퀴즈 생성 로직 작성
-        return new ConnectQuizDto();
+        return ConnectQuizDto.builder()
+                .build();
     }
 
     // picture 퀴즈 생성 메서드
     private PictureQuizDto pictureQuizCreate(Graph graph) {
         // TODO : picture 퀴즈 생성 로직 작성
-        return new PictureQuizDto();
+        return PictureQuizDto.builder()
+                .build();
     }
 }

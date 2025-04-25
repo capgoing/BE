@@ -39,7 +39,6 @@ OPTIONAL MATCH (n)-[r:RELATED]->(m:GraphNode)
 
 
 
-/*
 package com.going.server.domain.graph;
 
 import com.going.server.domain.graph.entity.Graph;
@@ -95,7 +94,7 @@ public class GraphMockDataLoader implements CommandLineRunner {
             node.setId(Long.valueOf(arr[0]));
             node.setLabel(arr[1]);
             node.setLevel(Integer.parseInt(arr[2]));
-            node.setDescription(arr[3]);
+            node.setIncludeSentence(arr[3]);
             node.setGraph(graph);
             nodeMap.put(arr[0], node);
         }
@@ -126,5 +125,5 @@ public class GraphMockDataLoader implements CommandLineRunner {
         edge.setTarget(target);
         return edge;
     }
-}*/
+}
 

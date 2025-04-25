@@ -35,7 +35,7 @@ public class QuizController {
     })
     public SuccessResponse<?> createQuiz(@PathVariable String graphId, @RequestParam String mode) {
         QuizCreateResponseDto result = quizService.quizCreate(graphId, mode);
-        return SuccessResponse.of(result);
+        return SuccessResponse.of(result, "201");
     }
 
 }
