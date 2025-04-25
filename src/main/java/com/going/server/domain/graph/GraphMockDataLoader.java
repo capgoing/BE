@@ -1,4 +1,5 @@
-/* 사이퍼 쿼리문 예시
+// 사이퍼 쿼리문 예시
+/*
 import com.going.server.domain.graph.entity.GraphNode;
 
 CREATE (g:KnowledgeGraph {
@@ -32,14 +33,15 @@ CREATE (a)-[:RELATED { label: "응결" }]->(b);
 MATCH (a:GraphNode { nodeId: 2 }), (b:GraphNode { nodeId: 3 })
 CREATE (a)-[:RELATED { label: "응고" }]->(b);
 
+// 전체 조회
 MATCH (g:KnowledgeGraph { title: "물의 상태 변화" })-[:HAS_NODE]->(n:GraphNode)
 OPTIONAL MATCH (n)-[r:RELATED]->(m:GraphNode)
         RETURN g, n, r, m;
 */
 
 
-
-package com.going.server.domain.graph;
+// 목 데이터 삽입
+/*package com.going.server.domain.graph;
 
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphEdge;
@@ -125,5 +127,4 @@ public class GraphMockDataLoader implements CommandLineRunner {
         edge.setTarget(target);
         return edge;
     }
-}
-
+}*/
