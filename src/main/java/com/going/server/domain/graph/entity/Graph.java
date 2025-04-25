@@ -1,18 +1,17 @@
 package com.going.server.domain.graph.entity;
 
 import com.going.server.global.common.BaseEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.List;
 
-@Node("KnowledgeGraph")
+@Node("Graph")
 @Getter
 @Setter
+@Builder
 public class Graph extends BaseEntity {
     @Id
     @GeneratedValue
