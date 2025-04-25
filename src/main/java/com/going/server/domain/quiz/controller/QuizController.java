@@ -1,6 +1,7 @@
 package com.going.server.domain.quiz.controller;
 
 import com.going.server.domain.quiz.dto.QuizCreateResponseDto;
+import com.going.server.domain.quiz.service.QuizService;
 import com.going.server.domain.quiz.service.QuizServiceImpl;
 import com.going.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,9 +19,9 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name="[캡스톤]ListenUpQuiz", description = "퀴즈 관련 통신을 위한 API")
 public class QuizController {
 
-    private QuizServiceImpl quizService;
+    private final QuizService quizService;
 
-    @PostMapping("/{graphId}?mode={mode}")
+    @PostMapping("/{graphId}")
     @Operation(summary = "[퀴즈화면] 퀴즈 생성", description = "퀴즈 화면에서 해당 모드의 퀴즈를 생성합니다.")
     @ApiResponses({
             @ApiResponse(
