@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -87,6 +89,30 @@ public class graphController {
     })
     public SuccessResponse<nodeDetailDto> getNode(@PathVariable("graphId") Long graphId, @PathVariable("nodeId") Long nodeId) {
         nodeDetailDto result = graphService.getNode(graphId,nodeId);
+        return SuccessResponse.of(result);
+    }
+
+    @PostMapping("/{graphId}")
+    @Operation(summary = "노드 추가", description = "지식 그래프에서 노드를 추가합니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "노드가 성공적으로 추가되었습니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"message\":\"\"}")
+                    )
+            )
+    })
+
+    public SuccessResponse<knowledgeGraphDto> addNode(
+            @PathVariable("graphId")
+            Long graphId,
+            @RequestBody @Valid @NotNull(message = "추가할 그룹을 입력해주세요.")
+            String group,
+            @RequestBody @Valid @NotNull(message = "추가할 라벨을 입력해주세요.")
+            String label) {
+        knowledgeGraphDto result = graphService.addNode(graphId,group,label);
         return SuccessResponse.of(result);
     }
 
