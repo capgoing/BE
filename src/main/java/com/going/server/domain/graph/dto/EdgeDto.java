@@ -7,12 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class edgeDto {
+public class EdgeDto {
     private String source;
     private String target;
     private String label;
 
-    public static edgeDto from(String source, String target, String label) {
-        return edgeDto.builder().source(source).target(target).label(label).build();
+    public static EdgeDto from(String source, String target, String label) {
+        return EdgeDto.builder().source(source).target(target).label(label).build();
     }
 }

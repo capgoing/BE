@@ -1,10 +1,9 @@
 package com.going.server.domain.graph.controller;
 
-import com.going.server.domain.graph.dto.graphDto;
-import com.going.server.domain.graph.dto.graphListDto;
-import com.going.server.domain.graph.dto.knowledgeGraphDto;
-import com.going.server.domain.graph.dto.nodeDetailDto;
-import com.going.server.domain.graph.service.graphService;
+import com.going.server.domain.graph.dto.GraphListDto;
+import com.going.server.domain.graph.dto.KnowledgeGraphDto;
+import com.going.server.domain.graph.dto.NodeDetailDto;
+import com.going.server.domain.graph.service.GraphService;
 import com.going.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,8 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/graph")
 @RequiredArgsConstructor
 @Tag(name = "[캡스톤]Graph", description = "지식그래프 관련 통신을 위한 API")
-public class graphController {
-    private final graphService graphService;
+public class GraphController {
+    private final GraphService graphService;
 
     @GetMapping()
     @Operation(summary = "[메인화면] 그래프 리스트 조회", description = "메인화면에서 그래프 리스트를 조회합니다.")
@@ -36,8 +35,8 @@ public class graphController {
                     )
             )
     })
-    public SuccessResponse<graphListDto> getGraphList() {
-        graphListDto result = graphService.getGraphList();
+    public SuccessResponse<GraphListDto> getGraphList() {
+        GraphListDto result = graphService.getGraphList();
         return SuccessResponse.of(result);
     }
 
@@ -70,8 +69,8 @@ public class graphController {
                     )
             )
     })
-    public SuccessResponse<knowledgeGraphDto> getGraph(@PathVariable("graphId") Long graphId) {
-        knowledgeGraphDto result = graphService.getGraph(graphId);
+    public SuccessResponse<KnowledgeGraphDto> getGraph(@PathVariable("graphId") Long graphId) {
+        KnowledgeGraphDto result = graphService.getGraph(graphId);
         return SuccessResponse.of(result);
     }
 
@@ -87,8 +86,8 @@ public class graphController {
                     )
             )
     })
-    public SuccessResponse<nodeDetailDto> getNode(@PathVariable("graphId") Long graphId, @PathVariable("nodeId") Long nodeId) {
-        nodeDetailDto result = graphService.getNode(graphId,nodeId);
+    public SuccessResponse<NodeDetailDto> getNode(@PathVariable("graphId") Long graphId, @PathVariable("nodeId") Long nodeId) {
+        NodeDetailDto result = graphService.getNode(graphId,nodeId);
         return SuccessResponse.of(result);
     }
 
@@ -105,14 +104,14 @@ public class graphController {
             )
     })
 
-    public SuccessResponse<knowledgeGraphDto> addNode(
+    public SuccessResponse<KnowledgeGraphDto> addNode(
             @PathVariable("graphId")
             Long graphId,
             @RequestBody @Valid @NotNull(message = "추가할 그룹을 입력해주세요.")
             String group,
             @RequestBody @Valid @NotNull(message = "추가할 라벨을 입력해주세요.")
             String label) {
-        knowledgeGraphDto result = graphService.addNode(graphId,group,label);
+        KnowledgeGraphDto result = graphService.addNode(graphId,group,label);
         return SuccessResponse.of(result);
     }
 

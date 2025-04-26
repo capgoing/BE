@@ -1,5 +1,6 @@
 package com.going.server.domain.graph.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +28,8 @@ public class GraphNode {
     private Long level;
     private String includeSentence; //해당 노드(단어)가 포함된 문장
 
-    @Relationship(type = "HAS_GRAPH", direction = Relationship.Direction.INCOMING)
-    private Graph graph;
+//    @Relationship(type = "HAS_GRAPH", direction = Relationship.Direction.INCOMING)
+//    private Graph graph;
 
     @Relationship(type = "RELATED", direction = Relationship.Direction.OUTGOING)
     private Set<GraphEdge> edges;

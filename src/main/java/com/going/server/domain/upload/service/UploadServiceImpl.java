@@ -119,14 +119,14 @@ public class UploadServiceImpl implements  UploadService {
                     .build();
             graphRepository.save(graphEntity);
 
-            // 양방향 연결 설정 (GraphNode → Graph)
-            for (GraphNode graphNode : nodeList) {
-                graphNode.setGraph(graphEntity);
-            }
-
-            // 저장 (이제 연결된 상태로 저장됨)
-            graphRepository.save(graphEntity);
-            graphNodeRepository.saveAll(nodeList);
+//            // 양방향 연결 설정 (GraphNode → Graph)
+//            for (GraphNode graphNode : nodeList) {
+//                graphNode.setGraph(graphEntity);
+//            }
+//
+//            // 저장 (이제 연결된 상태로 저장됨)
+//            graphRepository.save(graphEntity);
+//            graphNodeRepository.saveAll(nodeList);
 
             return UploadResponseDto.from(
                     graphEntity.getId()
