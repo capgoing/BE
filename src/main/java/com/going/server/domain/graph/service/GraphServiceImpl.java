@@ -32,8 +32,8 @@ public class GraphServiceImpl implements GraphService {
 
     @Override
     public void deleteGraph(Long graphId) {
-        //TODO : graphId로 그래프 찾기
-        //TODO : 그래프 삭제하는 코드 작성
+        Graph graph = graphRepository.getByGraph(graphId);
+        graphRepository.deleteById(graph.getId());
     }
 
     @Override
