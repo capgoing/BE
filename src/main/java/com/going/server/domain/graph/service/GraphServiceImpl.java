@@ -4,6 +4,7 @@ import com.going.server.domain.graph.dto.*;
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphEdge;
 import com.going.server.domain.graph.entity.GraphNode;
+import com.going.server.domain.graph.repository.GraphNodeRepository;
 import com.going.server.domain.graph.repository.GraphRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,11 @@ import java.util.List;
 public class GraphServiceImpl implements GraphService {
 
     private final GraphRepository graphRepository;
+    private final GraphNodeRepository graphNodeRepository;
 
-    public GraphServiceImpl(GraphRepository graphRepository) {
+    public GraphServiceImpl(GraphRepository graphRepository, GraphNodeRepository graphNodeRepository) {
         this.graphRepository = graphRepository;
+        this.graphNodeRepository = graphNodeRepository;
     }
 
     @Override
@@ -61,10 +64,10 @@ public class GraphServiceImpl implements GraphService {
     }
 
     @Override
-    public NodeDetailDto getNode(Long graphId, Long nodeId) {
-        //TODO : graphId로 그래프 찾기
-        //TODO : nodeId로 노드 찾기
-        return NodeDetailDto.from(null,null,null,null,null);
+    public NodeDto getNode(Long graphId, Long nodeId) {
+        graphRepository.getByGraph(graphId);
+        GraphNode node = graphNodeRepository.geyByNode(nodeId);
+        return NodeDto.from(node,null);
     }
 
     @Override

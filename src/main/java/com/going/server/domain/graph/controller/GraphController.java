@@ -2,7 +2,7 @@ package com.going.server.domain.graph.controller;
 
 import com.going.server.domain.graph.dto.GraphListDto;
 import com.going.server.domain.graph.dto.KnowledgeGraphDto;
-import com.going.server.domain.graph.dto.NodeDetailDto;
+import com.going.server.domain.graph.dto.NodeDto;
 import com.going.server.domain.graph.service.GraphService;
 import com.going.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,8 +86,8 @@ public class GraphController {
                     )
             )
     })
-    public SuccessResponse<NodeDetailDto> getNode(@PathVariable("graphId") Long graphId, @PathVariable("nodeId") Long nodeId) {
-        NodeDetailDto result = graphService.getNode(graphId,nodeId);
+    public SuccessResponse<NodeDto> getNode(@PathVariable("graphId") Long graphId, @PathVariable("nodeId") Long nodeId) {
+        NodeDto result = graphService.getNode(graphId,nodeId);
         return SuccessResponse.of(result);
     }
 
