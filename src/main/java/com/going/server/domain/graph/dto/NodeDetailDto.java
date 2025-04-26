@@ -7,14 +7,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class nodeDetailDto {
+public class NodeDetailDto {
     private String id;
     private String word;
     private String sentence;
     private String image_url;
     private String audio_url;
 
-    public static nodeDetailDto from(String id, String word, String sentence, String image_url, String audio_url) {
-        return nodeDetailDto.builder().id(id).word(word).image_url(image_url).audio_url(audio_url).build();
+    public static NodeDetailDto from(String id, String word, String sentence, String image_url, String audio_url) {
+        return NodeDetailDto.builder().id(id).word(word).image_url(image_url).audio_url(audio_url).build();
     }
 }
