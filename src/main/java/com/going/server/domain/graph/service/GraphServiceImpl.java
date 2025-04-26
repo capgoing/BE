@@ -1,19 +1,33 @@
 package com.going.server.domain.graph.service;
 
 import com.going.server.domain.graph.dto.*;
+import com.going.server.domain.graph.entity.Graph;
+import com.going.server.domain.graph.repository.GraphRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class GraphServiceImpl implements GraphService {
+
+    private final GraphRepository graphRepository;
+
+    public GraphServiceImpl(GraphRepository graphRepository) {
+        this.graphRepository = graphRepository;
+    }
 
     @Override
     public GraphListDto getGraphList() {
-        //TODO : DB에서 값 받아오는 코드 작성
-
-        return GraphListDto.of(null);
+        List<Graph> graphs = graphRepository.findAll();
+        List<GraphDto> graphDtos = new ArrayList<>();
+        for (Graph graph : graphs) {
+            GraphDto graphDto = GraphDto.of(graph,null,false,false);
+            graphDtos.add(graphDto);
+        }
+        return GraphListDto.of(graphDtos);
     }
 
     @Override
