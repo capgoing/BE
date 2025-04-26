@@ -2,6 +2,8 @@ package com.going.server.domain.graph.service;
 
 import com.going.server.domain.graph.dto.*;
 import com.going.server.domain.graph.entity.Graph;
+import com.going.server.domain.graph.entity.GraphEdge;
+import com.going.server.domain.graph.entity.GraphNode;
 import com.going.server.domain.graph.repository.GraphRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,15 +40,24 @@ public class GraphServiceImpl implements GraphService {
 
     @Override
     public KnowledgeGraphDto getGraph(Long graphId) {
-        //TODO : graphId로 그래프 찾기
+        Graph graph = graphRepository.getByGraph(graphId);
 
-        //TODO : nodeDto에 값 매핑하는 코드 작성
-        List<NodeDto> nodeDto = new ArrayList<>();
+        List<NodeDto> nodeDtoList = new ArrayList<>();
+        List<EdgeDto> edgeDtoList = new ArrayList<>();
 
-        //TODO : edgeDto에 값 매핑하는 코드 작성
-        List<EdgeDto> edgeDto = new ArrayList<>();
+        for (GraphNode node : graph.getNodes()) {
+            NodeDto nodeDto = NodeDto.from(node, null);
+            nodeDtoList.add(nodeDto);
 
-        return KnowledgeGraphDto.of(nodeDto,edgeDto);
+            if (node.getEdges() != null) {
+                for (GraphEdge edge : node.getEdges()) {
+                    EdgeDto edgeDto = EdgeDto.from(edge.getSource(),edge.getTarget().getNodeId().toString(),edge.getLabel());
+                    edgeDtoList.add(edgeDto);
+                }
+            }
+        }
+
+        return KnowledgeGraphDto.of(nodeDtoList, edgeDtoList);
     }
 
     @Override
