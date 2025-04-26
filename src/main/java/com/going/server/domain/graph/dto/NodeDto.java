@@ -1,5 +1,6 @@
 package com.going.server.domain.graph.dto;
 
+import com.going.server.domain.graph.entity.GraphNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ public class NodeDto {
     private String image; //노드 이미지 주소
     private String description; //노드 확대 시 나올 설명
 
-    public static NodeDto from(String id, String label, Long level, String image, String description) {
-        return NodeDto.builder().id(id).label(label).level(level).image(image).description(description).build();
+    public static NodeDto from(GraphNode node, String image) {
+        return NodeDto.builder().id(node.getIdAsString()).label(node.getLabel()).level(node.getLevel()).image(image).description(node.getIncludeSentence()).build();
     }
 }
