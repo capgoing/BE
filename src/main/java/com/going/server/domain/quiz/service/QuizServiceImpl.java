@@ -6,6 +6,7 @@ import com.going.server.domain.graph.dto.NodeDto;
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphEdge;
 import com.going.server.domain.graph.entity.GraphNode;
+import com.going.server.domain.graph.exception.GraphNotFoundException;
 import com.going.server.domain.graph.repository.GraphRepository;
 import com.going.server.domain.quiz.dto.ConnectQuizDto;
 import com.going.server.domain.quiz.dto.ListenUpQuizDto;
@@ -39,7 +40,7 @@ public class QuizServiceImpl implements QuizService{
             case "listenUp" -> listenUpQuizGenerator.generate(graph);
             case "connect" -> connectQuizGenerator.generate(graph);
             case "picture" -> pictureQuizGenerator.generate(graph);
-            default -> throw new IllegalArgumentException("지원하지 않는 모드입니다: " + mode);
+            default -> throw new UnsupportedQuizModeException();
         };
 
         return new QuizCreateResponseDto<>(graphIdStr, mode, quizDto);
