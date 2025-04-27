@@ -47,48 +47,78 @@ public class QuizServiceImpl implements QuizService{
 
     // listenUp 퀴즈 생성 메서드
     private ListenUpQuizDto listenUpQuizCreate(Graph graph) {
-        // 최종 리턴할 퀴즈 리스트 (3개)
-        List<ListenUpQuizDto.ListenUpQuiz> quizzes = new ArrayList<>();
-
         Random random = new Random();
+        List<ListenUpQuizDto.ListenUpQuiz> quizzes = new ArrayList<>();
+        Set<String> usedSentences = new HashSet<>();
+        List<String> candidates = new ArrayList<>();
 
-        // 몇 개 퀴즈 만들었는지 세기 위한 변수 (3개까지만 만들 거임)
-        int count = 0;
-
-        // 그래프에 연결된 노드를 하나씩 확인
+        // 1. 그래프 노드에서 문장 추출
         for (GraphNode node : graph.getNodes()) {
+            if (node.getIncludeSentence() == null || node.getIncludeSentence().isBlank()) continue;
 
-            // includeSentence가 null이거나 공백이면 건너뛰기
-            if (node.getIncludeSentence() == null || node.getIncludeSentence().isBlank()) {
-                continue;
+            // "." 으로 문장 나누기
+            String[] splitSentences = node.getIncludeSentence().split("\\.");
+
+            for (String rawSentence : splitSentences) {
+                String sentence = rawSentence.trim();
+                if (sentence.isBlank()) continue; // 공백은 스킵
+                if (usedSentences.contains(sentence)) continue;
+
+                String[] words = sentence.split("\\s+");
+                if (words.length < 5) continue; // 5단어 미만은 스킵
+
+                candidates.add(sentence);
             }
-
-            // includeSentence 문장을 띄어쓰기 기준으로 단어 분리
-            String[] words = node.getIncludeSentence().trim().split("\\s+");
-
-            // 단어 리스트를 정답 리스트로 저장
-            List<String> answer = Arrays.asList(words);
-
-            // 정답 리스트를 복사해서 셔플할 리스트로 사용
-            List<String> shuffled = new ArrayList<>(answer);
-            Collections.shuffle(shuffled, random); // 무작위로 단어 순서 섞기
-
-            // 하나의 퀴즈 생성
-            ListenUpQuizDto.ListenUpQuiz quiz = ListenUpQuizDto.ListenUpQuiz.builder()
-                    .answer(answer)               // 정답 리스트
-                    .shuffled(shuffled)           // 섞인(문제) 리스트
-                    .description(node.getIncludeSentence()) // TTS로 읽어줄 원문 문장
-                    .build();
-
-            // 퀴즈 리스트에 추가
-            quizzes.add(quiz);
-            count++;
-
-            // 3개 만들었으면 종료
-            if (count >= 3) break;
         }
 
-        // 최종 퀴즈 DTO에 담아서 리턴
+        // 2. 단어 수 기준 정렬 (5단어에 가까운 순서)
+        candidates.sort(Comparator.comparingInt(
+                s -> Math.abs(s.trim().split("\\s+").length - 5)
+        ));
+
+        int count = 0;
+
+        for (String sentence : candidates) {
+            if (count >= 3) break;
+
+            String[] words = sentence.split("\\s+");
+
+            List<String> answer = new ArrayList<>();
+
+            if (words.length == 5) { // 5단어면 그대로
+                answer = Arrays.asList(words);
+            } else {
+                // 6단어 이상이면 랜덤하게 5개로 압축
+                int mergeCount = words.length - 5; // 합쳐야 할 횟수
+                List<String> wordList = new ArrayList<>(Arrays.asList(words));
+
+                for (int i = 0; i < mergeCount; i++) {
+                    int mergeIdx = random.nextInt(wordList.size() - 1); // 마지막 단어는 제외
+                    String merged = wordList.get(mergeIdx) + " " + wordList.get(mergeIdx + 1);
+                    wordList.set(mergeIdx, merged);
+                    wordList.remove(mergeIdx + 1);
+                }
+                answer = wordList;
+            }
+
+            if (answer.size() != 5) continue; // 안전망
+
+            List<String> shuffled = new ArrayList<>(answer);
+            Collections.shuffle(shuffled, random);
+
+            // 퀴즈 생성
+            ListenUpQuizDto.ListenUpQuiz quiz = ListenUpQuizDto.ListenUpQuiz.builder()
+                    .answer(answer)
+                    .shuffled(shuffled)
+                    .description(sentence) // 이 문장 전체가 TTS로 읽힐 문장
+                    .build();
+
+            quizzes.add(quiz);
+            usedSentences.add(sentence);
+            count++;
+        }
+
+        // 최종 퀴즈 DTO에 담아서 번환
         return ListenUpQuizDto.builder()
                 .quizzes(quizzes)
                 .build();
