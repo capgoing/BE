@@ -70,13 +70,8 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
 
     // 이미지 생성 프롬프트 생성 메서드
     private String buildImagePrompt(String answer) {
-        return "Create an illustration based on the following description.\n"
-                + "- Do NOT include any text, letters, numbers, words, or any kind of written symbols.\n"
-                + "- Only draw objects, scenes, and their relationships visually.\n"
-                + "- Focus purely on visual elements without any writing.\n"
-                + "- Realistic drawing is acceptable.\n"
-                + "- Keep the background clean and simple.\n\n"
-                + "[Description]\n" + answer;
+        return "아래 설명을 이미지로 표현해주세요.\n\n"
+                + "[설명]\n" + answer;
     }
 
 }
