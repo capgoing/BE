@@ -19,6 +19,7 @@ public class ListenUpQuizGenerator implements QuizGenerator<ListenUpQuizDto> {
 
         // 1. 그래프 노드에서 문장 추출
         for (GraphNode node : graph.getNodes()) {
+            // IncludeSentence가 비어있는 경우 넘어가기
             if (node.getIncludeSentence() == null || node.getIncludeSentence().isBlank()) continue;
 
             // "." 으로 문장 나누기
