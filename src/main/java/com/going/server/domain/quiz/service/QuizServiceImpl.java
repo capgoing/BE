@@ -6,7 +6,6 @@ import com.going.server.domain.graph.dto.NodeDto;
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphEdge;
 import com.going.server.domain.graph.entity.GraphNode;
-import com.going.server.domain.graph.exception.GraphNotFoundException;
 import com.going.server.domain.graph.repository.GraphRepository;
 import com.going.server.domain.quiz.dto.ConnectQuizDto;
 import com.going.server.domain.quiz.dto.ListenUpQuizDto;
@@ -27,8 +26,7 @@ public class QuizServiceImpl implements QuizService{
         Long graphId = Long.valueOf(graphIdStr);
 
         // 404 : 지식그래프 찾을 수 없음
-        Graph graph = graphRepository.findById(graphId)
-                .orElseThrow(GraphNotFoundException::new);
+        Graph graph = graphRepository.getByGraph(graphId);
 
         Object quizDto = null;
 
@@ -37,7 +35,7 @@ public class QuizServiceImpl implements QuizService{
                 quizDto = listenUpQuizCreate(graph);
                 break;
             case "connect":
-                quizDto = connectQuizCreate(graph);
+                quizDto = createConnectQuizDto(graph);
                 break;
             case "picture":
                 quizDto = pictureQuizCreate(graph);
@@ -54,7 +52,7 @@ public class QuizServiceImpl implements QuizService{
         Random random = new Random();
         List<ListenUpQuizDto.ListenUpQuiz> quizzes = new ArrayList<>();
         Set<String> usedSentences = new HashSet<>();
-        List<String> candidates = new ArrayList<>();
+        List<String> options = new ArrayList<>();
 
         // 1. 그래프 노드에서 문장 추출
         for (GraphNode node : graph.getNodes()) {
@@ -71,18 +69,18 @@ public class QuizServiceImpl implements QuizService{
                 String[] words = sentence.split("\\s+");
                 if (words.length < 5) continue; // 5단어 미만은 스킵
 
-                candidates.add(sentence);
+                options.add(sentence);
             }
         }
 
         // 2. 단어 수 기준 정렬 (5단어에 가까운 순서)
-        candidates.sort(Comparator.comparingInt(
+        options.sort(Comparator.comparingInt(
                 s -> Math.abs(s.trim().split("\\s+").length - 5)
         ));
 
         int count = 0;
 
-        for (String sentence : candidates) {
+        for (String sentence : options) {
             if (count >= 3) break;
 
             String[] words = sentence.split("\\s+");
@@ -128,10 +126,10 @@ public class QuizServiceImpl implements QuizService{
                 .build();
     }
 
-    // connect 퀴즈 생성 메서드
-    private ConnectQuizDto connectQuizCreate(Graph graph) {
+    // ConnectQuizDto 생성 메서드
+    private ConnectQuizDto createConnectQuizDto(Graph graph) {
 
-        // 지식그래프 찾기
+        // 1. 지식그래프 조회
         List<NodeDto> nodeDtoList = new ArrayList<>();
         List<EdgeDto> edgeDtoList = new ArrayList<>();
 
@@ -146,15 +144,56 @@ public class QuizServiceImpl implements QuizService{
                 }
             }
         }
-//       KnowledgeGraphDto.of(nodeDtoList, edgeDtoList);
 
-        // TODO : connect 퀴즈 생성 로직 작성
+        // 2. 문제 생성
+        Random random = new Random();
+        // 최종 문제 리스트
+        List<ConnectQuizDto.ConnectQuiz> quizList = new ArrayList<>();
+
+        // 문제 3개 만들기
+        for (int i = 0; i < 3; i++) {
+            createConnectQuiz(random, nodeDtoList, quizList);
+        }
+
+        // 3. 반환
         return ConnectQuizDto.builder()
                 .knowledgeGraph(KnowledgeGraphDto.of(nodeDtoList, edgeDtoList))
-                .questionTargetId()
-                .shuffledOptions()
-                .answer()
+                .quizList(quizList)
                 .build();
+    }
+
+    // connect 퀴즈 문제 생성
+    private static void createConnectQuiz(Random random, List<NodeDto> nodeDtoList, List<ConnectQuizDto.ConnectQuiz> quizList) {
+        // nodeDtoList 중 1개의 id로 랜덤 선택
+        int questionTargetId = random.nextInt(nodeDtoList.size());
+        NodeDto targetNode = nodeDtoList.get(questionTargetId);
+
+        // 정답
+        String answer = targetNode.getLabel();
+
+        // 정답 포함 5개 보기 생성
+        Set<String> options = new HashSet<>();
+        options.add(answer); // 정답 보기 추가
+
+        while (options.size() < 5) { // 랜덤 보기 추가
+            int randomIndex = random.nextInt(nodeDtoList.size());
+            String option = nodeDtoList.get(randomIndex).getLabel();
+            options.add(option);
+        }
+
+        // 보기 리스트 랜덤 배치
+        List<String> shuffledOptions = new ArrayList<>(options);
+        Collections.shuffle(shuffledOptions);
+
+        // 문제 하나 생성
+        ConnectQuizDto.ConnectQuiz quiz = ConnectQuizDto.ConnectQuiz.builder()
+                .questionTargetId(String.valueOf(questionTargetId))
+                .shuffledOptions(shuffledOptions)
+                .answer(answer)
+                .build();
+
+        // 문제 리스트에 추가
+        quizList.add(quiz);
     }
 
     // picture 퀴즈 생성 메서드
