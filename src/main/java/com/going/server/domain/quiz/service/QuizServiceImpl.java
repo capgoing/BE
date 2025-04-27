@@ -11,6 +11,10 @@ import com.going.server.domain.quiz.dto.ConnectQuizDto;
 import com.going.server.domain.quiz.dto.ListenUpQuizDto;
 import com.going.server.domain.quiz.dto.PictureQuizDto;
 import com.going.server.domain.quiz.dto.QuizCreateResponseDto;
+import com.going.server.domain.quiz.generate.ConnectQuizGenerator;
+import com.going.server.domain.quiz.generate.ListenUpQuizGenerator;
+import com.going.server.domain.quiz.generate.PictureQuizGenerator;
+import com.going.server.domain.quiz.generate.QuizGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,9 @@ import java.util.*;
 @AllArgsConstructor
 public class QuizServiceImpl implements QuizService{
     private final GraphRepository graphRepository;
+    private final ListenUpQuizGenerator listenUpQuizGenerator;
+    private final ConnectQuizGenerator connectQuizGenerator;
+    private final PictureQuizGenerator pictureQuizGenerator;
 
     @Override
     public QuizCreateResponseDto quizCreate(String graphIdStr, String mode) {
@@ -28,26 +35,17 @@ public class QuizServiceImpl implements QuizService{
         // 404 : 지식그래프 찾을 수 없음
         Graph graph = graphRepository.getByGraph(graphId);
 
-        Object quizDto = null;
-
-        switch (mode) {
-            case "listenUp":
-                quizDto = listenUpQuizCreate(graph);
-                break;
-            case "connect":
-                quizDto = createConnectQuizDto(graph);
-                break;
-            case "picture":
-                quizDto = pictureQuizCreate(graph);
-                break;
-            default:
-                // TODO : 퀴즈 모드 관련 예외처리 필요
-        }
+        Object quizDto = switch (mode) {
+            case "listenUp" -> listenUpQuizGenerator.generate(graph);
+            case "connect" -> connectQuizGenerator.generate(graph);
+            case "picture" -> pictureQuizGenerator.generate(graph);
+            default -> throw new IllegalArgumentException("지원하지 않는 모드입니다: " + mode);
+        };
 
         return new QuizCreateResponseDto<>(graphIdStr, mode, quizDto);
     }
 
-    // listenUp 퀴즈 생성 메서드
+    // listenUpQuizDto 생성 메서드
     private ListenUpQuizDto listenUpQuizCreate(Graph graph) {
         Random random = new Random();
         List<ListenUpQuizDto.ListenUpQuiz> quizzes = new ArrayList<>();
@@ -162,6 +160,13 @@ public class QuizServiceImpl implements QuizService{
                 .build();
     }
 
+    // picture 퀴즈 생성 메서드
+    private PictureQuizDto pictureQuizCreate(Graph graph) {
+        // TODO : picture 퀴즈 생성 로직 작성
+        return PictureQuizDto.builder()
+                .build();
+    }
+
     // connect 퀴즈 문제 생성
     private static void createConnectQuiz(Random random, List<NodeDto> nodeDtoList, List<ConnectQuizDto.ConnectQuiz> quizList) {
         // nodeDtoList 중 1개의 id로 랜덤 선택
@@ -196,10 +201,4 @@ public class QuizServiceImpl implements QuizService{
         quizList.add(quiz);
     }
 
-    // picture 퀴즈 생성 메서드
-    private PictureQuizDto pictureQuizCreate(Graph graph) {
-        // TODO : picture 퀴즈 생성 로직 작성
-        return PictureQuizDto.builder()
-                .build();
-    }
 }
