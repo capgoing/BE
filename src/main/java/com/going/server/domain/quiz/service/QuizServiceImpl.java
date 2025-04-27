@@ -12,6 +12,7 @@ import com.going.server.domain.quiz.dto.ConnectQuizDto;
 import com.going.server.domain.quiz.dto.ListenUpQuizDto;
 import com.going.server.domain.quiz.dto.PictureQuizDto;
 import com.going.server.domain.quiz.dto.QuizCreateResponseDto;
+import com.going.server.domain.quiz.exception.UnsupportedQuizModeException;
 import com.going.server.domain.quiz.generate.ConnectQuizGenerator;
 import com.going.server.domain.quiz.generate.ListenUpQuizGenerator;
 import com.going.server.domain.quiz.generate.PictureQuizGenerator;
