@@ -37,10 +37,12 @@ public class ConnectQuizGenerator implements QuizGenerator<ConnectQuizDto> {
         Random random = new Random();
         // 최종 문제 리스트
         List<ConnectQuizDto.ConnectQuiz> quizList = new ArrayList<>();
+        // 이미 사용한 노드 Id 기록용 (중복 방지)
+        Set<Integer> usedNodeIds = new HashSet<>();
 
         // 문제 3개 만들기
         for (int i = 0; i < 3; i++) {
-            createConnectQuiz(random, nodeDtoList, quizList);
+            createConnectQuiz(random, nodeDtoList, quizList, usedNodeIds);
         }
 
         // 3. 반환
@@ -51,10 +53,21 @@ public class ConnectQuizGenerator implements QuizGenerator<ConnectQuizDto> {
     }
 
     // connect 퀴즈 문제 생성
-    private static void createConnectQuiz(Random random, List<NodeDto> nodeDtoList, List<ConnectQuizDto.ConnectQuiz> quizList) {
-        // nodeDtoList 중 1개의 id로 랜덤 선택
-        int questionTargetId = random.nextInt(nodeDtoList.size());
+    private static void createConnectQuiz(Random random, List<NodeDto> nodeDtoList, List<ConnectQuizDto.ConnectQuiz> quizList, Set<Integer> usedNodeIndices) {
+        if(usedNodeIndices.size() >= nodeDtoList.size()) {
+            // 모든 노드를 다 사용했으면 추가 생성 불가
+            return;
+        }
+
+        int questionTargetId;
+
+        // nodeDtoList 중 1개의 id로 랜덤 선택 (중복 방지)
+        do {
+            questionTargetId = random.nextInt(nodeDtoList.size());
+        } while (usedNodeIndices.contains(questionTargetId));
+
         NodeDto targetNode = nodeDtoList.get(questionTargetId);
+        usedNodeIndices.add(questionTargetId); // 사용한 Id 추가
 
         // 정답
         String answer = targetNode.getLabel();

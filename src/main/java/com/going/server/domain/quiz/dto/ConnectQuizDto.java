@@ -13,6 +13,7 @@ public class ConnectQuizDto {
     private List<ConnectQuiz> quizList;
 
     @Builder
+    @Getter
     public static class ConnectQuiz{
         private String questionTargetId; // ? 띄울 노드 id
         private List<String> shuffledOptions; // 문제 리스트
