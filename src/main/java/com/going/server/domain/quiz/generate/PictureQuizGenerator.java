@@ -10,6 +10,7 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
     @Override
     public PictureQuizDto generate(Graph graph) {
         // TODO: picture 퀴즈 생성 로직
+
         return null;
     }
 }
