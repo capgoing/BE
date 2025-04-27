@@ -2,13 +2,17 @@ package com.going.server.domain.quiz.generate;
 
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphNode;
+import com.going.server.domain.openai.ImageCreateService;
 import com.going.server.domain.quiz.dto.PictureQuizDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Component
+@AllArgsConstructor
 public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
+    private final ImageCreateService imageCreateService;
 
     @Override
     public PictureQuizDto generate(Graph graph) {
@@ -44,20 +48,18 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
 
         // 보기용 문장 추가
         Set<String> selectedSentences = new LinkedHashSet<>();
-        for (int i = 0; i < shuffledListSize; i++) {
-            selectedSentences.add(candidateSentences.get(i));
+        int index = 0;
+        while (selectedSentences.size() < shuffledListSize && index < candidateSentences.size()) {
+            selectedSentences.add(candidateSentences.get(index));
+            index++;
         }
 
         // 무작위로 정답 보기 설정
         int answerIndex = random.nextInt(shuffledListSize);
         String answer = new ArrayList<>(selectedSentences).get(answerIndex);
 
-        // TODO : 정답 보기 기반으로 이미지 생성
-
-        // TODO : S3에 이미지 업로드
-
-        // TODO : S3 업로드 후 이미지 URL 받아오기
-        String imageUrl = "https://s3-ap-northeast-2.amazonaws.com/~.png"; // 예시 url
+        String prompt = buildImagePrompt(answer);
+        String imageUrl = imageCreateService.generatePicture(prompt);
 
         return PictureQuizDto.builder()
                 .imageUrl(imageUrl)
@@ -65,4 +67,11 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
                 .answer(answer)
                 .build();
     }
+
+    // 이미지 생성 프롬프트 생성 메서드
+    private String buildImagePrompt(String answer) {
+        return "아래 설명을 이미지로 표현해주세요.\n\n"
+                + "[설명]\n" + answer;
+    }
+
 }
