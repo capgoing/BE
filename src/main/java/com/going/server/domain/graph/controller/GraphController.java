@@ -53,8 +53,8 @@ public class GraphController {
                     )
             )
     })
-    public SuccessResponse<?> deleteGraph(@PathVariable("graphId") Long graphId) {
-        graphService.deleteGraph(graphId);
+    public SuccessResponse<?> deleteGraph(@PathVariable("graphId") String graphId) {
+        graphService.deleteGraph(Long.parseLong(graphId));
         return SuccessResponse.empty();
     }
 
@@ -70,8 +70,8 @@ public class GraphController {
                     )
             )
     })
-    public SuccessResponse<KnowledgeGraphDto> getGraph(@PathVariable("graphId") Long graphId) {
-        KnowledgeGraphDto result = graphService.getGraph(graphId);
+    public SuccessResponse<KnowledgeGraphDto> getGraph(@PathVariable("graphId") String graphId) {
+        KnowledgeGraphDto result = graphService.getGraph(Long.parseLong(graphId));
         return SuccessResponse.of(result);
     }
 
@@ -87,8 +87,8 @@ public class GraphController {
                     )
             )
     })
-    public SuccessResponse<NodeDto> getNode(@PathVariable("graphId") Long graphId, @PathVariable("nodeId") Long nodeId) {
-        NodeDto result = graphService.getNode(graphId,nodeId);
+    public SuccessResponse<NodeDto> getNode(@PathVariable("graphId") String graphId, @PathVariable("nodeId") String nodeId) {
+        NodeDto result = graphService.getNode(Long.parseLong(graphId),Long.parseLong(nodeId));
         return SuccessResponse.of(result);
     }
 
@@ -107,11 +107,11 @@ public class GraphController {
 
     public SuccessResponse<?> addNode(
             @PathVariable("graphId")
-            Long graphId,
+            String graphId,
             @RequestBody @Valid
             NodeAddDto dto
     ) {
-        graphService.addNode(graphId,dto);
+        graphService.addNode(Long.parseLong(graphId),dto);
         return SuccessResponse.empty();
     }
 
@@ -130,11 +130,11 @@ public class GraphController {
 
     public SuccessResponse<?> deleteNode(
             @PathVariable("graphId")
-            Long graphId,
+            String graphId,
             @PathVariable("nodeId")
-            Long nodeId
+            String nodeId
     ) {
-        graphService.deleteNode(graphId, nodeId);
+        graphService.deleteNode(Long.parseLong(graphId), Long.parseLong(nodeId));
         return SuccessResponse.empty();
     }
 
