@@ -1,9 +1,6 @@
 package com.going.server.domain.graph.controller;
 
-import com.going.server.domain.graph.dto.GraphListDto;
-import com.going.server.domain.graph.dto.KnowledgeGraphDto;
-import com.going.server.domain.graph.dto.NodeAddDto;
-import com.going.server.domain.graph.dto.NodeDto;
+import com.going.server.domain.graph.dto.*;
 import com.going.server.domain.graph.service.GraphService;
 import com.going.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -115,7 +112,7 @@ public class GraphController {
         return SuccessResponse.empty();
     }
 
-    @PostMapping("/{graphId}/{nodeId}")
+    @DeleteMapping("/{graphId}/{nodeId}")
     @Operation(summary = "노드 삭제", description = "지식 그래프에서 노드를 삭제합니다.")
     @ApiResponses({
             @ApiResponse(
@@ -135,6 +132,32 @@ public class GraphController {
             String nodeId
     ) {
         graphService.deleteNode(Long.parseLong(graphId), Long.parseLong(nodeId));
+        return SuccessResponse.empty();
+    }
+
+    @PatchMapping("/{graphId}/{nodeId}")
+    @Operation(summary = "노드 수정", description = "지식 그래프에서 노드를 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "노드가 성공적으로 수정되었습니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"message\":\"\"}")
+                    )
+            )
+    })
+
+    public SuccessResponse<?> modifyNode(
+            @PathVariable("graphId")
+            String graphId,
+            @PathVariable("nodeId")
+            String nodeId,
+            @RequestBody
+            @Valid
+            NodeModifyDto dto
+    ) {
+        graphService.modifyNode(Long.parseLong(graphId), Long.parseLong(nodeId),dto);
         return SuccessResponse.empty();
     }
 
