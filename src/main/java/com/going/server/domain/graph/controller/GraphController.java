@@ -2,6 +2,7 @@ package com.going.server.domain.graph.controller;
 
 import com.going.server.domain.graph.dto.GraphListDto;
 import com.going.server.domain.graph.dto.KnowledgeGraphDto;
+import com.going.server.domain.graph.dto.NodeAddDto;
 import com.going.server.domain.graph.dto.NodeDto;
 import com.going.server.domain.graph.service.GraphService;
 import com.going.server.global.response.SuccessResponse;
@@ -104,15 +105,37 @@ public class GraphController {
             )
     })
 
-    public SuccessResponse<KnowledgeGraphDto> addNode(
+    public SuccessResponse<?> addNode(
             @PathVariable("graphId")
             Long graphId,
-            @RequestBody @Valid @NotNull(message = "추가할 그룹을 입력해주세요.")
-            String group,
-            @RequestBody @Valid @NotNull(message = "추가할 라벨을 입력해주세요.")
-            String label) {
-        KnowledgeGraphDto result = graphService.addNode(graphId,group,label);
-        return SuccessResponse.of(result);
+            @RequestBody @Valid
+            NodeAddDto dto
+    ) {
+        graphService.addNode(graphId,dto);
+        return SuccessResponse.empty();
+    }
+
+    @PostMapping("/{graphId}/{nodeId}")
+    @Operation(summary = "노드 삭제", description = "지식 그래프에서 노드를 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "노드가 성공적으로 삭제되었습니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"message\":\"\"}")
+                    )
+            )
+    })
+
+    public SuccessResponse<?> deleteNode(
+            @PathVariable("graphId")
+            Long graphId,
+            @PathVariable("nodeId")
+            Long nodeId
+    ) {
+        graphService.deleteNode(graphId, nodeId);
+        return SuccessResponse.empty();
     }
 
 }

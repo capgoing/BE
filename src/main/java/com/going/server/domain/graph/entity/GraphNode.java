@@ -15,7 +15,6 @@ import java.util.Set;
 @Setter
 @Builder
 public class GraphNode {
-
     @Id
     @GeneratedValue
     private Long id;
