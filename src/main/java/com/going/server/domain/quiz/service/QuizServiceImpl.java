@@ -1,6 +1,10 @@
 package com.going.server.domain.quiz.service;
 
+import com.going.server.domain.graph.dto.EdgeDto;
+import com.going.server.domain.graph.dto.KnowledgeGraphDto;
+import com.going.server.domain.graph.dto.NodeDto;
 import com.going.server.domain.graph.entity.Graph;
+import com.going.server.domain.graph.entity.GraphEdge;
 import com.going.server.domain.graph.entity.GraphNode;
 import com.going.server.domain.graph.exception.GraphNotFoundException;
 import com.going.server.domain.graph.repository.GraphRepository;
@@ -126,8 +130,30 @@ public class QuizServiceImpl implements QuizService{
 
     // connect 퀴즈 생성 메서드
     private ConnectQuizDto connectQuizCreate(Graph graph) {
+
+        // 지식그래프 찾기
+        List<NodeDto> nodeDtoList = new ArrayList<>();
+        List<EdgeDto> edgeDtoList = new ArrayList<>();
+
+        for (GraphNode node : graph.getNodes()) {
+            NodeDto nodeDto = NodeDto.from(node, null);
+            nodeDtoList.add(nodeDto);
+
+            if (node.getEdges() != null) {
+                for (GraphEdge edge : node.getEdges()) {
+                    EdgeDto edgeDto = EdgeDto.from(edge.getSource(),edge.getTarget().getNodeId().toString(),edge.getLabel());
+                    edgeDtoList.add(edgeDto);
+                }
+            }
+        }
+//       KnowledgeGraphDto.of(nodeDtoList, edgeDtoList);
+
         // TODO : connect 퀴즈 생성 로직 작성
         return ConnectQuizDto.builder()
+                .knowledgeGraph(KnowledgeGraphDto.of(nodeDtoList, edgeDtoList))
+                .questionTargetId()
+                .shuffledOptions()
+                .answer()
                 .build();
     }
 
