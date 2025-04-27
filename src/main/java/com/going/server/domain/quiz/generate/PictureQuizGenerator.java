@@ -70,12 +70,15 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
 
     // 이미지 생성 프롬프트 생성 메서드
     private String buildImagePrompt(String answer) {
-        return "Create a flat cartoon-style diagram illustration based on the following description:\n"
-                + "Use emoji-style elements and simple, minimalistic shapes with pastel colors.\n"
-                + "Focus on clearly visualizing the relationships between objects.\n"
-                + "Avoid realistic rendering. Do not use any text or letters in the image.\n"
-                + "Keep the background clean and light.\n\n"
+        return "Create a simple flat-style emoji-based diagram illustration based on the following description:\n"
+                + "- ONLY use emoji-style icons to represent objects.\n"
+                + "- DO NOT use any text, letters, numbers, or labels.\n"
+                + "- Draw clear arrows or lines to show relationships between objects.\n"
+                + "- Keep the background plain white and very minimal.\n"
+                + "- Use simple shapes and pastel colors.\n"
+                + "- NO realistic details, NO 3D effects, NO gradients.\n\n"
                 + "[Description]\n" + answer;
     }
+
 
 }
