@@ -15,7 +15,7 @@ public class ListenUpQuizGenerator implements QuizGenerator<ListenUpQuizDto> {
         Random random = new Random();
         List<ListenUpQuizDto.ListenUpQuiz> quizzes = new ArrayList<>();
         Set<String> usedSentences = new HashSet<>();
-        List<String> options = new ArrayList<>();
+        List<String> candidateSentences = new ArrayList<>(); // 전처리한 includeSentence
 
         // 1. 그래프 노드에서 문장 추출
         for (GraphNode node : graph.getNodes()) {
@@ -33,18 +33,18 @@ public class ListenUpQuizGenerator implements QuizGenerator<ListenUpQuizDto> {
                 String[] words = sentence.split("\\s+");
                 if (words.length < 5) continue; // 5단어 미만은 스킵
 
-                options.add(sentence);
+                candidateSentences.add(sentence);
             }
         }
 
         // 2. 단어 수 기준 정렬 (5단어에 가까운 순서)
-        options.sort(Comparator.comparingInt(
+        candidateSentences.sort(Comparator.comparingInt(
                 s -> Math.abs(s.trim().split("\\s+").length - 5)
         ));
 
         int count = 0;
 
-        for (String sentence : options) {
+        for (String sentence : candidateSentences) {
             if (count >= 3) break;
 
             String[] words = sentence.split("\\s+");
