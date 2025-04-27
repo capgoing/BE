@@ -1,9 +1,6 @@
 package com.going.server.domain.graph.service;
 
-import com.going.server.domain.graph.dto.GraphListDto;
-import com.going.server.domain.graph.dto.KnowledgeGraphDto;
-import com.going.server.domain.graph.dto.NodeAddDto;
-import com.going.server.domain.graph.dto.NodeDto;
+import com.going.server.domain.graph.dto.*;
 
 public interface GraphService {
     GraphListDto getGraphList();
@@ -16,4 +13,6 @@ public interface GraphService {
     void addNode(Long graphId, NodeAddDto dto);
 
     void deleteNode(Long graphId, Long nodeId);
+
+    void modifyNode(Long graphId, Long nodeId, NodeModifyDto dto);
 }

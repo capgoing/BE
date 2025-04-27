@@ -139,9 +139,24 @@ public class GraphServiceImpl implements GraphService {
 
     @Override
     public void deleteNode(Long graphId, Long nodeId) {
+        //그래프 검증
+        graphRepository.getByGraph(graphId);
         //노드 찾기
         GraphNode node = graphNodeRepository.getByNode(nodeId);
         //노드 삭제
         graphNodeRepository.deleteById(node.getId());
+    }
+
+    @Override
+    public void modifyNode(Long graphId, Long nodeId, NodeModifyDto nodeModifyDto) {
+        //그래프 검증
+        graphRepository.getByGraph(graphId);
+        //노드 찾기
+        GraphNode node = graphNodeRepository.getByNode(nodeId);
+        //변경사항 수정
+        node.setLabel(nodeModifyDto.getLabel());
+        node.setIncludeSentence(nodeModifyDto.getIncludeSentence());
+        //저장
+        graphNodeRepository.save(node);
     }
 }

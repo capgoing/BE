@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 public class NodeAddDto {
     @NotNull(message = "추가할 부모 노드의 ID를 입력해주세요.")
     String parentId;
