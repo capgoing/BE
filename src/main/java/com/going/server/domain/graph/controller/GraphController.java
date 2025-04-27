@@ -2,6 +2,7 @@ package com.going.server.domain.graph.controller;
 
 import com.going.server.domain.graph.dto.GraphListDto;
 import com.going.server.domain.graph.dto.KnowledgeGraphDto;
+import com.going.server.domain.graph.dto.NodeAddDto;
 import com.going.server.domain.graph.dto.NodeDto;
 import com.going.server.domain.graph.service.GraphService;
 import com.going.server.global.response.SuccessResponse;
@@ -107,11 +108,10 @@ public class GraphController {
     public SuccessResponse<KnowledgeGraphDto> addNode(
             @PathVariable("graphId")
             Long graphId,
-            @RequestBody @Valid @NotNull(message = "추가할 그룹을 입력해주세요.")
-            String group,
-            @RequestBody @Valid @NotNull(message = "추가할 라벨을 입력해주세요.")
-            String label) {
-        KnowledgeGraphDto result = graphService.addNode(graphId,group,label);
+            @RequestBody @Valid
+            NodeAddDto dto
+    ) {
+        KnowledgeGraphDto result = graphService.addNode(graphId,dto);
         return SuccessResponse.of(result);
     }
 

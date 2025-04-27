@@ -91,6 +91,8 @@ public class UploadServiceImpl implements  UploadService {
                     continue;
                 }
 
+
+
                 //edge 엔티티 생성
                 GraphEdge edge = GraphEdge.builder()
                         .source(sourceId)

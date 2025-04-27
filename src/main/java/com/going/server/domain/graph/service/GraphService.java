@@ -2,6 +2,7 @@ package com.going.server.domain.graph.service;
 
 import com.going.server.domain.graph.dto.GraphListDto;
 import com.going.server.domain.graph.dto.KnowledgeGraphDto;
+import com.going.server.domain.graph.dto.NodeAddDto;
 import com.going.server.domain.graph.dto.NodeDto;
 
 public interface GraphService {
@@ -12,5 +13,5 @@ public interface GraphService {
 
     NodeDto getNode(Long graphId, Long nodeId);
 
-    KnowledgeGraphDto addNode(Long graphId, String group, String label);
+    KnowledgeGraphDto addNode(Long graphId, NodeAddDto dto);
 }
