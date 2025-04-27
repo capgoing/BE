@@ -115,7 +115,7 @@ public class GraphController {
         return SuccessResponse.empty();
     }
 
-    @PostMapping("/{graphId}/{nodeId}")
+    @DeleteMapping("/{graphId}/{nodeId}")
     @Operation(summary = "노드 삭제", description = "지식 그래프에서 노드를 삭제합니다.")
     @ApiResponses({
             @ApiResponse(
