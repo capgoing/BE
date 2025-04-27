@@ -105,14 +105,37 @@ public class GraphController {
             )
     })
 
-    public SuccessResponse<KnowledgeGraphDto> addNode(
+    public SuccessResponse<?> addNode(
             @PathVariable("graphId")
             Long graphId,
             @RequestBody @Valid
             NodeAddDto dto
     ) {
-        KnowledgeGraphDto result = graphService.addNode(graphId,dto);
-        return SuccessResponse.of(result);
+        graphService.addNode(graphId,dto);
+        return SuccessResponse.empty();
+    }
+
+    @PostMapping("/{graphId}/{nodeId}")
+    @Operation(summary = "노드 삭제", description = "지식 그래프에서 노드를 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "노드가 성공적으로 삭제되었습니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = "{\"message\":\"\"}")
+                    )
+            )
+    })
+
+    public SuccessResponse<?> deleteNode(
+            @PathVariable("graphId")
+            Long graphId,
+            @PathVariable("nodeId")
+            Long nodeId
+    ) {
+        graphService.deleteNode(graphId, nodeId);
+        return SuccessResponse.empty();
     }
 
 }

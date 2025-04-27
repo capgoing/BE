@@ -13,5 +13,7 @@ public interface GraphService {
 
     NodeDto getNode(Long graphId, Long nodeId);
 
-    KnowledgeGraphDto addNode(Long graphId, NodeAddDto dto);
+    void addNode(Long graphId, NodeAddDto dto);
+
+    void deleteNode(Long graphId, Long nodeId);
 }

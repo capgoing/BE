@@ -74,7 +74,7 @@ public class GraphServiceImpl implements GraphService {
 
     @Override
     @Transactional
-    public KnowledgeGraphDto addNode(Long graphId, NodeAddDto nodeAddDto) {
+    public void addNode(Long graphId, NodeAddDto nodeAddDto) {
         //graphId로 그래프 찾기
         graphRepository.getByGraph(graphId);
 
@@ -108,31 +108,40 @@ public class GraphServiceImpl implements GraphService {
         parentNode.getEdges().add(newEdge);
         graphNodeRepository.save(parentNode);
 
-        Graph graph = graphRepository.getByGraph(graphId);
-        List<NodeDto> nodeDtoList = new ArrayList<>();
-        List<EdgeDto> edgeDtoList = new ArrayList<>();
+        /* 추가 후 응답 dto 생성 로직 -> 불필요*/
+//        Graph graph = graphRepository.getByGraph(graphId);
+//        List<NodeDto> nodeDtoList = new ArrayList<>();
+//        List<EdgeDto> edgeDtoList = new ArrayList<>();
+//
+//        for (GraphNode node : graph.getNodes()) {
+//            NodeDto nodeDto = NodeDto.from(node, null);
+//            nodeDtoList.add(nodeDto);
+//
+//            if (node.getEdges() != null) {
+//                for (GraphEdge edge : node.getEdges()) {
+//                    EdgeDto edgeDto = EdgeDto.from(edge.getSource(),edge.getTarget().getNodeId().toString(),edge.getLabel());
+//                    edgeDtoList.add(edgeDto);
+//                }
+//            }
+//        }
+//        //새 노드,엣지 추가
+//        NodeDto newNodeDto = NodeDto.from(newNode, null);
+//        EdgeDto newEdgeDto = EdgeDto.from(
+//                newEdge.getSource(),
+//                newEdge.getTarget().getNodeId().toString(),
+//                newEdge.getLabel()
+//        );
+//        nodeDtoList.add(newNodeDto);
+//        edgeDtoList.add(newEdgeDto);
+//
+//        return KnowledgeGraphDto.of(nodeDtoList,edgeDtoList);
+    }
 
-        for (GraphNode node : graph.getNodes()) {
-            NodeDto nodeDto = NodeDto.from(node, null);
-            nodeDtoList.add(nodeDto);
-
-            if (node.getEdges() != null) {
-                for (GraphEdge edge : node.getEdges()) {
-                    EdgeDto edgeDto = EdgeDto.from(edge.getSource(),edge.getTarget().getNodeId().toString(),edge.getLabel());
-                    edgeDtoList.add(edgeDto);
-                }
-            }
-        }
-        //새 노드,엣지 추가
-        NodeDto newNodeDto = NodeDto.from(newNode, null);
-        EdgeDto newEdgeDto = EdgeDto.from(
-                newEdge.getSource(),
-                newEdge.getTarget().getNodeId().toString(),
-                newEdge.getLabel()
-        );
-        nodeDtoList.add(newNodeDto);
-        edgeDtoList.add(newEdgeDto);
-
-        return KnowledgeGraphDto.of(nodeDtoList,edgeDtoList);
+    @Override
+    public void deleteNode(Long graphId, Long nodeId) {
+        //노드 찾기
+        GraphNode node = graphNodeRepository.getByNode(nodeId);
+        //노드 삭제
+        graphNodeRepository.deleteById(node.getId());
     }
 }
