@@ -37,7 +37,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-
       - name: Set Spring Profile Based on Branch
         id: set-profile
         run: |
@@ -47,31 +46,17 @@ jobs:
             echo "SPRING_PROFILE=dev" >> $GITHUB_ENV
           fi
 
-      - name: Verify Backend_Config files
-        run: ls -al Backend_Config
-
-      - name: Build BootJar without Clean
+      - name: Build BootJar (No Clean)
         run: |
+          echo "▶ Building bootJar with $SPRING_PROFILE profile..."
           ./gradlew bootJar \
           -Dspring.profiles.active=$SPRING_PROFILE \
           -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties
 
-      - name: Show test results summary
-        if: success()
-        run: echo "All Spring Boot tests passed successfully!"
-
-      - name: Mark failure if tests failed
-        if: failure()
+      - name: Check jar manifest
         run: |
-          echo "Tests failed. Please check the test report/logs for details."
-          exit 1
-
-
-#      - name: Find latest jar file
-#        id: find-jar
-#        run: echo "LATEST_JAR=$(find build/libs -type f -name '*.jar' ! -name '*plain*' | head -n 1)" >> $GITHUB_ENV
-
-
+          echo "▶ Checking built jar manifest..."
+          unzip -p build/libs/server-0.0.1-SNAPSHOT.jar META-INF/MANIFEST.MF || true
 
       - name: Upload jar file to Artifact
         uses: actions/upload-artifact@v4
@@ -113,19 +98,11 @@ jobs:
           name: Dockerfile
           path: ./
 
-      - name: Update git submodules
-        run: git submodule update --init --recursive
-
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Get short SHA
-        id: slug
-        run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Build, tag, and push image to DockerHub
         id: build-image
@@ -136,8 +113,6 @@ jobs:
         run: |
           docker build -t $USERNAME/$DOCKERHUB_REPOSITORY:$IMAGE_TAG -t $USERNAME/$DOCKERHUB_REPOSITORY:latest .
           docker push $USERNAME/$DOCKERHUB_REPOSITORY --all-tags
-          echo "image=$USERNAME/$DOCKERHUB_REPOSITORY:$IMAGE_TAG&latest" >> $GITHUB_OUTPUT
-
 
   CD_Deploy:
     name: CD_Deploy
@@ -145,20 +120,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout with submodules
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           submodules: recursive
           fetch-depth: 0
-
-      - name: Update git submodules
-        run: git submodule update --init --recursive
-
-      - name: Get short SHA
-        id: slug
-        run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Executing remote ssh commands
         uses: appleboy/ssh-action@v0.1.6
@@ -170,15 +137,10 @@ jobs:
           script: |
             export DOCKER_IMAGE="${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest"
             export DOCKER_COMPOSE_PATH="${{ secrets.DOCKER_COMPOSE_PATH }}"
-   
+
             cd /home/ubuntu/scripts
             ./rolling-update.sh
-            
-             echo "Stopping current containers..."
+
             docker compose -f $DOCKER_COMPOSE_PATH down
-            
-            echo "Pulling the latest image..."
             docker compose -f $DOCKER_COMPOSE_PATH pull
-            
-            echo "Starting new deployment..."
             docker compose -f $DOCKER_COMPOSE_PATH up -d
