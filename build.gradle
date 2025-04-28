@@ -61,22 +61,22 @@ task copyYml(type: Copy){
 	}
 }
 
+jar {
+	enabled = false
+}
 
-tasks.named('jar') {
-	configure {
-		enabled = false
+bootJar {
+	enabled = true
+	manifest {
+		attributes(
+				'Main-Class': 'com.going.server.ServerApplication'
+		)
 	}
 }
 
 
-
-tasks.named('bootJar') {
-	configure {
-		enabled = true
-		manifest {
-			attributes(
-					'Main-Class': 'com.going.server.ServerApplication'
-			)
-		}
-	}
+springBoot {
+	mainClass = 'com.going.server.ServerApplication'
 }
+
+
