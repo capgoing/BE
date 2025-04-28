@@ -127,9 +127,17 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public void deleteNode(Long graphId, Long nodeId) {
         //그래프 검증
-        graphRepository.getByGraph(graphId);
-        //노드 찾기
-        GraphNode node = graphNodeRepository.getByNode(nodeId);
+        Graph graph = graphRepository.getByGraph(graphId);
+        GraphNode node = null;
+        for (GraphNode n : graph.getNodes()) {
+            if (n.getNodeId().equals(nodeId)) {
+                node = n;
+                break;
+            }
+        }
+        if (node == null) {
+            throw new NodeNotFoundException(); // 직접 만든 예외 던지기
+        }
         //노드 삭제
         graphNodeRepository.deleteById(node.getId());
     }
@@ -137,9 +145,18 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public void modifyNode(Long graphId, Long nodeId, NodeModifyDto nodeModifyDto) {
         //그래프 검증
-        graphRepository.getByGraph(graphId);
+        Graph graph = graphRepository.getByGraph(graphId);
         //노드 찾기
-        GraphNode node = graphNodeRepository.getByNode(nodeId);
+        GraphNode node = null;
+        for (GraphNode n : graph.getNodes()) {
+            if (n.getNodeId().equals(nodeId)) {
+                node = n;
+                break;
+            }
+        }
+        if (node == null) {
+            throw new NodeNotFoundException(); // 직접 만든 예외 던지기
+        }
         //변경사항 수정
         node.setLabel(nodeModifyDto.getLabel());
         node.setIncludeSentence(nodeModifyDto.getIncludeSentence());
