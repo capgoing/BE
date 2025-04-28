@@ -63,6 +63,7 @@ jobs:
         id: find-jar
         run: echo "LATEST_JAR=$(find build/libs -type f -name '*.jar' ! -name '*plain*' | head -n 1)" >> $GITHUB_ENV
 
+
       - name: Upload jar file to Artifact
         uses: actions/upload-artifact@v4
         with:
