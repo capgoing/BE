@@ -39,6 +39,10 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public void deleteGraph(Long graphId) {
         Graph graph = graphRepository.getByGraph(graphId);
+        //그래프에 연결된 노드 삭제
+        if (graph.getNodes() != null) {
+            graph.getNodes().forEach(node -> graphNodeRepository.deleteById(node.getId()));
+        }
         graphRepository.deleteById(graph.getId());
     }
 
