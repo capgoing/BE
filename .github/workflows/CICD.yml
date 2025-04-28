@@ -19,7 +19,8 @@ jobs:
     steps:
       - name: Get short SHA
         id: slug
-        run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+        run: |
+          echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Checkout with submodules
         uses: actions/checkout@v4
