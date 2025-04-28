@@ -16,6 +16,9 @@ jobs:
     permissions:
       contents: read
 
+    outputs:
+      sha7: ${{ steps.slug.outputs.sha7 }}
+
     steps:
       - name: Get short SHA
         id: slug
@@ -106,14 +109,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build, tag, and push image to DockerHub
-        id: build-image
-        env:
-          USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          IMAGE_TAG: ${{ steps.slug.outputs.sha7 }}
-
         run: |
-          docker build -t $USERNAME/$DOCKERHUB_REPOSITORY:$IMAGE_TAG -t $USERNAME/$DOCKERHUB_REPOSITORY:latest .
-          docker push $USERNAME/$DOCKERHUB_REPOSITORY --all-tags
+          echo "▶ Building Docker image..."
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ needs.CI.outputs.sha7 }} -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }} --all-tags
+
 
   CD_Deploy:
     name: CD_Deploy
