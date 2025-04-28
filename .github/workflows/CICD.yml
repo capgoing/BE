@@ -50,10 +50,9 @@ jobs:
       - name: Verify Backend_Config files
         run: ls -al Backend_Config
 
-      - name: Build with Gradle Wrapper
+      - name: Clean and Build BootJar
         run: |
-          echo "▶ Running Gradle bootJar with $SPRING_PROFILE profile..."
-          ./gradlew --no-daemon clean bootJar \
+          ./gradlew clean bootJar \
           -Dspring.profiles.active=$SPRING_PROFILE \
           -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties
 
