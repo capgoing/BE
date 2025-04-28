@@ -74,6 +74,9 @@ bootJar {
 	}
 }
 
+
 springBoot {
 	mainClass = 'com.going.server.ServerApplication'
 }
+
+
