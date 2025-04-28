@@ -9,6 +9,7 @@ import com.going.server.domain.graph.exception.NodeNotFoundException;
 import com.going.server.domain.graph.repository.GraphEdgeRepository;
 import com.going.server.domain.graph.repository.GraphNodeRepository;
 import com.going.server.domain.graph.repository.GraphRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,17 +19,11 @@ import java.util.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class GraphServiceImpl implements GraphService {
 
-    private final GraphRepository graphRepository;
-    private final GraphNodeRepository graphNodeRepository;
-    private final GraphEdgeRepository graphEdgeRepository;
-
-    public GraphServiceImpl(GraphRepository graphRepository, GraphNodeRepository graphNodeRepository, GraphEdgeRepository graphEdgeRepository) {
-        this.graphRepository = graphRepository;
-        this.graphNodeRepository = graphNodeRepository;
-        this.graphEdgeRepository = graphEdgeRepository;
-    }
+    final GraphRepository graphRepository;
+    final GraphNodeRepository graphNodeRepository;
 
     @Override
     public GraphListDto getGraphList() {
@@ -71,8 +66,18 @@ public class GraphServiceImpl implements GraphService {
 
     @Override
     public NodeDto getNode(Long graphId, Long nodeId) {
-        graphRepository.getByGraph(graphId);
-        GraphNode node = graphNodeRepository.getByNode(nodeId);
+        Graph graph = graphRepository.getByGraph(graphId);
+        //노드 찾기
+        GraphNode node = null;
+        for (GraphNode n : graph.getNodes()) {
+            if (n.getNodeId().equals(nodeId)) {
+                node = n;
+                break;
+            }
+        }
+        if (node == null) {
+            throw new NodeNotFoundException(); // 직접 만든 예외 던지기
+        }
         return NodeDto.from(node,null);
     }
 
