@@ -61,6 +61,10 @@ task copyYml(type: Copy){
 	}
 }
 
-tasks.withType(Jar){
-	enabled = false
+
+tasks.named('jar') {
+	configure {
+		enabled = false
+	}
 }
+
