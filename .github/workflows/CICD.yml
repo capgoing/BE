@@ -69,6 +69,7 @@ jobs:
           name: jar_files
           path: ${{ env.LATEST_JAR }}
 
+
       - name: Upload Dockerfile to Artifact
         uses: actions/upload-artifact@v4
         with:
