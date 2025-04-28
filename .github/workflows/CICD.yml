@@ -59,12 +59,15 @@ jobs:
           echo "Tests failed. Please check the test report/logs for details."
           exit 1
 
+      - name: Find latest jar file
+        id: find-jar
+        run: echo "LATEST_JAR=$(ls -t build/libs/*.jar | head -n 1)" >> $GITHUB_ENV
+
       - name: Upload jar file to Artifact
         uses: actions/upload-artifact@v4
         with:
           name: jar_files
-          path: |
-            $(ls -t build/libs/*.jar | head -n 1)
+          path: ${{ env.LATEST_JAR }}
 
       - name: Upload Dockerfile to Artifact
         uses: actions/upload-artifact@v4
