@@ -5,6 +5,8 @@ import com.going.server.domain.graph.dto.*;
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphEdge;
 import com.going.server.domain.graph.entity.GraphNode;
+import com.going.server.domain.graph.exception.NodeNotFoundException;
+import com.going.server.domain.graph.repository.GraphEdgeRepository;
 import com.going.server.domain.graph.repository.GraphNodeRepository;
 import com.going.server.domain.graph.repository.GraphRepository;
 import lombok.ToString;
@@ -20,10 +22,12 @@ public class GraphServiceImpl implements GraphService {
 
     private final GraphRepository graphRepository;
     private final GraphNodeRepository graphNodeRepository;
+    private final GraphEdgeRepository graphEdgeRepository;
 
-    public GraphServiceImpl(GraphRepository graphRepository, GraphNodeRepository graphNodeRepository) {
+    public GraphServiceImpl(GraphRepository graphRepository, GraphNodeRepository graphNodeRepository, GraphEdgeRepository graphEdgeRepository) {
         this.graphRepository = graphRepository;
         this.graphNodeRepository = graphNodeRepository;
+        this.graphEdgeRepository = graphEdgeRepository;
     }
 
     @Override
@@ -75,67 +79,50 @@ public class GraphServiceImpl implements GraphService {
     @Override
     @Transactional
     public void addNode(Long graphId, NodeAddDto nodeAddDto) {
-        //graphId로 그래프 찾기
-        graphRepository.getByGraph(graphId);
-
-        //부모노드id로 부모노드 찾기
-        GraphNode parentNode = graphNodeRepository.getByNode(Long.parseLong(nodeAddDto.getParentId()));
-        Long group =Long.parseLong(parentNode.getGroup())+1;
+        Graph graph = graphRepository.getByGraph(graphId);
+        GraphNode parentNode = null;
+        for (GraphNode node : graph.getNodes()) {
+            if (node.getNodeId().equals(Long.parseLong(nodeAddDto.getParentId()))) {
+                parentNode = node;
+                break;
+            }
+        }
+        if (parentNode == null) {
+            throw new NodeNotFoundException(); // 직접 만든 예외 던지기
+        }
+        //graphNode parentNode = graphNodeRepository.getByNode(Long.parseLong(nodeAddDto.getParentId()));
+        Long group = Long.parseLong(parentNode.getGroup()) + 1;
         Long newNodeId = graphNodeRepository.findMaxNodeId() + 1;
 
-        //새로운 Node 엔티티 생성
         GraphNode nodeEntity = GraphNode.builder()
                 .nodeId(newNodeId)
                 .label(nodeAddDto.getNodeLabel())
                 .group(group.toString())
-                .level(parentNode.getLevel()+1)
+                .level(parentNode.getLevel() + 1)
                 .includeSentence(nodeAddDto.getIncludeSentence())
                 .build();
-        //DB에 노드 저장
         GraphNode newNode = graphNodeRepository.save(nodeEntity);
 
-        //Source: 연결선의 출발점 -> 부모노드 id
-        //Target: 연결선의 도착점 -> 새로 추가한 노드 id
-        //edge 연결
         GraphEdge newEdge = GraphEdge.builder()
                 .source(parentNode.getNodeId().toString())
                 .label(nodeAddDto.getEdgeLabel())
                 .target(newNode)
                 .build();
-        if(parentNode.getEdges() == null) {
+        if (parentNode.getEdges() == null) {
             parentNode.setEdges(new HashSet<>());
         }
         parentNode.getEdges().add(newEdge);
         graphNodeRepository.save(parentNode);
 
-        /* 추가 후 응답 dto 생성 로직 -> 불필요*/
-//        Graph graph = graphRepository.getByGraph(graphId);
-//        List<NodeDto> nodeDtoList = new ArrayList<>();
-//        List<EdgeDto> edgeDtoList = new ArrayList<>();
-//
-//        for (GraphNode node : graph.getNodes()) {
-//            NodeDto nodeDto = NodeDto.from(node, null);
-//            nodeDtoList.add(nodeDto);
-//
-//            if (node.getEdges() != null) {
-//                for (GraphEdge edge : node.getEdges()) {
-//                    EdgeDto edgeDto = EdgeDto.from(edge.getSource(),edge.getTarget().getNodeId().toString(),edge.getLabel());
-//                    edgeDtoList.add(edgeDto);
-//                }
-//            }
-//        }
-//        //새 노드,엣지 추가
-//        NodeDto newNodeDto = NodeDto.from(newNode, null);
-//        EdgeDto newEdgeDto = EdgeDto.from(
-//                newEdge.getSource(),
-//                newEdge.getTarget().getNodeId().toString(),
-//                newEdge.getLabel()
-//        );
-//        nodeDtoList.add(newNodeDto);
-//        edgeDtoList.add(newEdgeDto);
-//
-//        return KnowledgeGraphDto.of(nodeDtoList,edgeDtoList);
+        graph = graphRepository.getByGraph(graphId);
+
+        if (graph.getNodes() == null) {
+            graph.setNodes(new ArrayList<>());
+        }
+        graph.getNodes().add(newNode);
+        graphRepository.save(graph);
     }
+
 
     @Override
     public void deleteNode(Long graphId, Long nodeId) {
