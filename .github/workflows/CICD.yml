@@ -63,7 +63,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jar_files
-          path: build/libs/*.jar
+          path: |
+            $(ls -t build/libs/*.jar | head -n 1)
 
       - name: Upload Dockerfile to Artifact
         uses: actions/upload-artifact@v4
