@@ -37,17 +37,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+
+      - name: Set Spring Profile Based on Branch
+        id: set-profile
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "SPRING_PROFILE=prod" >> $GITHUB_ENV
+          else
+            echo "SPRING_PROFILE=dev" >> $GITHUB_ENV
+          fi
+
       - name: Verify Backend_Config files
         run: ls -al Backend_Config
 
-      - name: Build and Test with Gradle Wrapper
-        env:
-          SPRING_PROFILES_ACTIVE: test
+      - name: Build with Gradle Wrapper
         run: |
-          echo "▶ Running Gradle build and test..."
-          ./gradlew --no-daemon clean build test \
-          -Dspring.profiles.active=test \
-          -Dspring.config.location=classpath:/,file:./Backend_Config/application-test.properties
+          echo "▶ Running Gradle bootJar with $SPRING_PROFILE profile..."
+          ./gradlew --no-daemon clean bootJar \
+          -Dspring.profiles.active=$SPRING_PROFILE \
+          -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties
 
       - name: Show test results summary
         if: success()
@@ -69,7 +77,6 @@ jobs:
         with:
           name: jar_files
           path: ${{ env.LATEST_JAR }}
-
 
       - name: Upload Dockerfile to Artifact
         uses: actions/upload-artifact@v4
