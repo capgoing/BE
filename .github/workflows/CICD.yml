@@ -60,6 +60,8 @@ jobs:
 
       - name: List the contents of buid/libs
         run: |
+          echo "▶ 🐱current working directory.. "
+          pwd
           echo "▶ 🐱Listing contents of build/libs directory..."
           ls -R build/libs
 
