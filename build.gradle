@@ -60,3 +60,7 @@ task copyYml(type: Copy){
 		into 'src/main/resources'
 	}
 }
+
+tasks.withType(Jar){
+	enabled = false
+}
