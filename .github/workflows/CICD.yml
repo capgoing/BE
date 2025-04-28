@@ -59,19 +59,12 @@ jobs:
           -Dspring.profiles.active=$SPRING_PROFILE \
           -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties
 
-
-      - name: List the contents of buid/libs
+      - name: List the contents of build/libs
         run: |
           echo "▶ 🐱current working directory.. "
           pwd
           echo "▶ 🐱Listing contents of build/libs directory..."
           ls -R build/libs
-
-      - name: Check jar manifest
-        run: |
-          echo "▶ Checking built jar manifest..."
-          unzip -p build/libs/server-0.0.1-SNAPSHOT.jar META-INF/MANIFEST.MF
-          echo "Main-Class from JAR: $(unzip -p build/libs/server-0.0.1-SNAPSHOT.jar META-INF/MANIFEST.MF | grep Main-Class)"
 
       - name: Upload jar file to Artifact
         uses: actions/upload-artifact@v4
@@ -118,12 +111,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Verify build/libs contains server jar
-        run: |
-          echo "▶ 🐱 Verifying that build/libs contains the server JAR..."
-          ls build/libs
-
 
       - name: Build, tag, and push image to DockerHub
         run: |
