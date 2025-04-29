@@ -39,26 +39,21 @@ jobs:
           ls -al Backend_Config
           echo "Checking application files:"
           ls -al Backend_Config/application*.properties
-          echo "File contents:"
-          cat Backend_Config/application.properties
-          cat Backend_Config/application-test.properties
 
-      - name: Build and Test with Gradle Wrapper
+      - name: Build with Gradle Wrapper
         env:
           SPRING_PROFILES_ACTIVE: test
         run: |
-          echo "▶ Running Gradle build and test..."
-          ./gradlew --no-daemon clean build test \
-          -Dspring.profiles.active=test \
-          -Dspring.config.additional-location=file:./Backend_Config/application.properties,file:./Backend_Config/application-test.properties
+          echo "▶ Running Gradle build..."
+          ./gradlew --no-daemon clean build
 
-      - name: Show test results summary
+      - name: Show build results
         if: success()
         run: |
-          echo "All Spring Boot tests passed successfully!"
+          echo "Build completed successfully!"
 
-      - name: Mark failure if tests failed
+      - name: Mark failure if build failed
         if: failure()
         run: |
-          echo "Tests failed. Please check the test logs for detail"
+          echo "Build failed. Please check the logs for detail"
           exit 1
