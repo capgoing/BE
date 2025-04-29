@@ -70,11 +70,11 @@ bootJar {
 	enabled = true
 	manifest {
 		attributes(
-				'Main-Class': 'com.going.server.ServerApplication'
+				'Main-Class': 'org.springframework.boot.loader.JarLauncher',
+				'Start-Class': 'com.going.server.ServerApplication'
 		)
 	}
 }
-
 
 springBoot {
 	mainClass = 'com.going.server.ServerApplication'
