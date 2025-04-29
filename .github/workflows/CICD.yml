@@ -55,7 +55,9 @@ jobs:
           echo "▶ Building with $SPRING_PROFILE profile..."
           ./gradlew clean bootJar -x test \
           -Dspring.profiles.active=$SPRING_PROFILE \
-          -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties
+          -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties \
+          --no-daemon \
+          --stacktrace
 
       - name: Verify JAR
         run: |
