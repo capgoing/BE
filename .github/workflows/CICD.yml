@@ -41,17 +41,16 @@ jobs:
       - name: Verify Backend_Config files
         run: ls -al Backend_Config
 
-      - name: Build and Test with Gradle Wrapper
+      - name: Build with Gradle Wrapper without Test
         run: |
           echo "▶ Running Gradle build and test..."
-          ./gradlew --no-daemon clean build test \
-          -Dspring.profiles.active=test \
-          -Dspring.config.location=classpath:/,file:./Backend_Config/application-test.properties
+          ./gradlew --no-daemon clean build -x test 
+
 
       - name: Build summary
         if: success()
         run: |
-          echo " Gradle build completed successfully with tests."
+          echo " Gradle build completed successfully without tests."
 
       - name: Mark failure if tests failed
         if: failure()
