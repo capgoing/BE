@@ -40,6 +40,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
 
       - name: Set Spring Profile
         id: set-profile
@@ -74,7 +75,7 @@ jobs:
           fi
 
           echo "▶ Checking Spring Boot loader..."
-          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "BOOT-INF/lib/spring-boot-loader"; then
+          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "org/springframework/boot/loader/"; then
             echo "✅ Spring Boot loader found"
           else
             echo "❌ Spring Boot loader not found"
@@ -136,6 +137,7 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          platforms: linux/amd64
 
   deploy:
     name: Deploy to EC2
@@ -154,9 +156,31 @@ jobs:
             export DOCKER_IMAGE="${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest"
             export DOCKER_COMPOSE_PATH="${{ secrets.DOCKER_COMPOSE_PATH }}"
 
+            # 백업 디렉토리 생성
+            BACKUP_DIR="/home/ubuntu/backup/$(date +%Y%m%d_%H%M%S)"
+            mkdir -p $BACKUP_DIR
+
+            # 현재 실행 중인 컨테이너 백업
+            docker ps -a > $BACKUP_DIR/running_containers.txt
+            docker images > $BACKUP_DIR/docker_images.txt
+
             cd /home/ubuntu/scripts
             ./rolling-update.sh
 
-            docker compose -f $DOCKER_COMPOSE_PATH down
+            # 이전 컨테이너 중지 및 제거
+            docker compose -f $DOCKER_COMPOSE_PATH down || true
+
+            # 새로운 이미지 풀
             docker compose -f $DOCKER_COMPOSE_PATH pull
+
+            # 새로운 컨테이너 시작
             docker compose -f $DOCKER_COMPOSE_PATH up --build -d
+
+            # 헬스체크
+            sleep 30
+            if docker ps | grep -q "server"; then
+              echo "✅ Deployment successful"
+            else
+              echo "❌ Deployment failed"
+              exit 1
+            fi
