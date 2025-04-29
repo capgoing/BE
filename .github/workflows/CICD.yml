@@ -36,6 +36,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
 
       - name: Verify Backend_Config files
         run: ls -al Backend_Config
@@ -109,6 +110,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+
       - name: Get short SHA
         id: slug
         run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
@@ -168,3 +170,4 @@ jobs:
             
             echo "Starting new deployment..."
             docker compose -f $DOCKER_COMPOSE_PATH up -d
+
