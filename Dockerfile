@@ -6,4 +6,4 @@ WORKDIR /app
 COPY build/libs/server-0.0.1-SNAPSHOT.jar app.jar
 
 # JAR 파일 실행
-ENTRYPOINT ["java", "-cp", "app.jar", "com.going.server.ServerApplication"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
