@@ -39,6 +39,9 @@ jobs:
           ls -al Backend_Config
           echo "Checking application files:"
           ls -al Backend_Config/application*.properties
+          echo "File contents:"
+          cat Backend_Config/application.properties
+          cat Backend_Config/application-test.properties
 
       - name: Build and Test with Gradle Wrapper
         env:
@@ -47,7 +50,7 @@ jobs:
           echo "▶ Running Gradle build and test..."
           ./gradlew --no-daemon clean build test \
           -Dspring.profiles.active=test \
-          -Dspring.config.location=classpath:/,file:./Backend_Config/application.properties,file:./Backend_Config/application-test.properties
+          -Dspring.config.additional-location=file:./Backend_Config/application.properties,file:./Backend_Config/application-test.properties
 
       - name: Show test results summary
         if: success()
