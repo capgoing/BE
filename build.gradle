@@ -77,6 +77,10 @@ bootJar {
 	from {
 		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
 	}
+	layered {
+		enabled = true
+		includeLayerTools = true
+	}
 }
 
 springBoot {
