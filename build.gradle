@@ -44,6 +44,10 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 	ignoreFailures = true
+	testLogging {
+		events "passed", "skipped", "failed"
+		showStandardStreams = true
+	}
 }
 
 task copyYml(type: Copy) {
