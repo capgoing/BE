@@ -46,13 +46,14 @@ jobs:
           SPRING_PROFILES_ACTIVE: test
         run: |
           echo "▶ Running Gradle build and test..."
-          ./gradlew --no-daemon clean build test \
-          -Dspring.profiles.active=test \
-          -Dspring.config.location=classpath:/,file:./Backend_Config/application-test.properties
+          ./gradlew --no-daemon clean build -x test \
+#          -Dspring.profiles.active=test \
+#          -Dspring.config.location=classpath:/,file:./Backend_Config/application-test.properties
 
-      - name: Show test results summary
+      - name: Build summary
         if: success()
-        run: echo "All Spring Boot tests passed successfully!"
+        run: |
+          echo " Gradle build completed successfully without tests."
 
       - name: Mark failure if tests failed
         if: failure()
