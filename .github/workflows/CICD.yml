@@ -63,12 +63,16 @@ jobs:
           jar tf build/libs/server-0.0.1-SNAPSHOT.jar
           
           echo "▶ Verifying main class exists..."
-          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "com/going/server/ServerApplication.class"; then
+          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "BOOT-INF/classes/com/going/server/ServerApplication.class"; then
             echo " Main class found in JAR file"
           else
             echo " Main class not found in JAR file"
             exit 1
           fi
+
+          echo "▶ Checking MANIFEST.MF..."
+          jar xf build/libs/server-0.0.1-SNAPSHOT.jar META-INF/MANIFEST.MF
+          cat META-INF/MANIFEST.MF
 
       - name: List the contents of build/libs
         run: |
