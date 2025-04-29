@@ -76,6 +76,7 @@ jobs:
 
           echo "▶ Checking Spring Boot loader..."
           if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "org/springframework/boot/loader/"; then
+          
             echo "✅ Spring Boot loader found"
           else
             echo "❌ Spring Boot loader not found"
