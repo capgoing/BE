@@ -57,6 +57,8 @@ task copyYml(type: Copy) {
 	into 'src/main/resources'
 }
 
+processResources.dependsOn copyYml
+
 jar {
 	enabled = false
 }
