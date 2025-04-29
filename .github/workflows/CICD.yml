@@ -57,7 +57,8 @@ jobs:
           -Dspring.profiles.active=$SPRING_PROFILE \
           -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties \
           --no-daemon \
-          --stacktrace
+          --stacktrace \
+          --info
 
       - name: Verify JAR
         run: |
