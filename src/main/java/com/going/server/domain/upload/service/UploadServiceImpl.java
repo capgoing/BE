@@ -15,7 +15,9 @@ import com.going.server.domain.upload.dto.UploadResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -30,10 +32,13 @@ public class UploadServiceImpl implements  UploadService {
     private final GraphNodeRepository graphNodeRepository;
     private final GraphEdgeRepository graphEdgeRepository;
     private final GraphRepository graphRepository;
+    private final RestTemplate restTemplate = new RestTemplate();
     @Value("${ocr.api.url}")
     private String apiUrl;
     @Value("${ocr.api.secret-key}")
     private String secretKey;
+    @Value("${unsplash.access-key}")
+    private String unsplashKey;
 
     @Override
     public UploadResponseDto uploadFile(UploadRequestDto dto) {
@@ -53,16 +58,17 @@ public class UploadServiceImpl implements  UploadService {
             //node 데이터 파싱코드
             List<GraphNode> nodeList = new ArrayList<>();
             for (JsonNode node : nodesNode) {
+                String label = node.get("label").asText();
                 GraphNode graphNode = GraphNode.builder()
                         .nodeId(Long.parseLong(node.get("id").asText()))
-                        .label(node.get("label").asText())
+                        .label(label)
                         .group(node.get("group").asText())
                         .level(node.get("level").asLong())
                         .includeSentence(node.get("includeSentence").asText())
+                        .image(getImage(label))
                         .build();
                 nodeList.add(graphNode);
             }
-
             //DB에 저장
             graphNodeRepository.saveAll(nodeList);
 
@@ -138,5 +144,18 @@ public class UploadServiceImpl implements  UploadService {
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    public String getImage(String keyword) {
+        String url =  "https://api.unsplash.com/search/photos?query=" + keyword + "&per_page=1&client_id=" + unsplashKey;
+        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+
+        List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody().get("results");
+        if (results != null && !results.isEmpty()) {
+            Map<String, Object> firstResult = results.get(0);
+            Map<String, String> urls = (Map<String, String>) firstResult.get("urls");
+            return urls.get("regular"); // 또는 "small", "thumb" 등
+        }
+        return null;
     }
 }

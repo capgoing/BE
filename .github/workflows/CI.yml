@@ -38,20 +38,18 @@ jobs:
         run: ls -al Backend_Config
 
 
-      - name: Build and Test with Gradle Wrapper
-        env:
-          SPRING_PROFILES_ACTIVE: test
+      - name: Build without tests
         run: |
-          echo "▶ Running Gradle build and test..."
-          ./gradlew --no-daemon clean build test \
-          -Dspring.profiles.active=test \
-          -Dspring.config.location=classpath:/,file:./Backend_Config/application-test.properties
+          echo "▶ Running Gradle build without test"
+          ./gradlew --no-daemon clean build -x test
 
+#           테스트 코드가 생기면 아래 명령어에서 -x test 제거할 것
+#           ./gradlew --no-daemon clean build
 
-      - name: Show test results summary
+      - name: Build summary
         if: success()
         run: |
-          echo "All Spring Boot tests passed successfully!"
+          echo " Gradle build completed successfully without tests."
 
       - name: Mark failure if tests failed
         if: failure()

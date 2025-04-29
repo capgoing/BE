@@ -15,7 +15,7 @@ public class NodeDto {
     private String image; //노드 이미지 주소
     private String includeSentence; //노드 확대 시 나올 설명
 
-    public static NodeDto from(GraphNode node, String image) {
-        return NodeDto.builder().id(node.getNodeId().toString()).label(node.getLabel()).level(node.getLevel()).image(image).includeSentence(node.getIncludeSentence()).build();
+    public static NodeDto from(GraphNode node) {
+        return NodeDto.builder().id(node.getNodeId().toString()).label(node.getLabel()).level(node.getLevel()).image(node.getImage()).includeSentence(node.getIncludeSentence()).build();
     }
 }

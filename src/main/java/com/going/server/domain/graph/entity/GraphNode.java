@@ -26,6 +26,7 @@ public class GraphNode {
     private String group;
     private Long level;
     private String includeSentence; //해당 노드(단어)가 포함된 문장
+    private String image;
 
 //    @Relationship(type = "HAS_GRAPH", direction = Relationship.Direction.INCOMING)
 //    private Graph graph;

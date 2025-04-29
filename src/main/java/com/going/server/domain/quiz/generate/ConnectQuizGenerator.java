@@ -22,7 +22,7 @@ public class ConnectQuizGenerator implements QuizGenerator<ConnectQuizDto> {
         List<EdgeDto> edgeDtoList = new ArrayList<>();
 
         for (GraphNode node : graph.getNodes()) {
-            NodeDto nodeDto = NodeDto.from(node, null);
+            NodeDto nodeDto = NodeDto.from(node);
             nodeDtoList.add(nodeDto);
 
             if (node.getEdges() != null) {
