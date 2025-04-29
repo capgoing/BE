@@ -10,4 +10,5 @@ public interface GraphRepository extends Neo4jRepository<Graph, Long> {
     default Graph getByGraph(Long graphId) {
         return findById(graphId).orElseThrow(GraphNotFoundException::new);
     }
+
 }
