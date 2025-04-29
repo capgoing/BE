@@ -79,6 +79,7 @@ bootJar {
 	layered {
 		enabled = true
 		includeLayerTools = true
+
 	}
 }
 
