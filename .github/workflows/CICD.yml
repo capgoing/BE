@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD FOR DEVELOP
 
 on:
   push:
@@ -10,20 +10,16 @@ env:
   DOCKERHUB_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
 
 jobs:
-  build:
-    name: Build and Test
+  CI:
+    name: Continuous Integration
     runs-on: ubuntu-latest
     permissions:
       contents: read
 
-    outputs:
-      sha7: ${{ steps.slug.outputs.sha7 }}
-
     steps:
       - name: Get short SHA
         id: slug
-        run: |
-          echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+        run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Checkout with submodules
         uses: actions/checkout@v4
@@ -40,113 +36,117 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
-      - name: Set Spring Profile
-        id: set-profile
+      - name: Verify Backend_Config files
+        run: ls -al Backend_Config
+
+      - name: Build and Test with Gradle Wrapper
+        env:
+          SPRING_PROFILES_ACTIVE: test
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
-            echo "SPRING_PROFILE=prod" >> $GITHUB_ENV
-          else
-            echo "SPRING_PROFILE=dev" >> $GITHUB_ENV
-          fi
+          echo "▶ Running Gradle build and test..."
+          ./gradlew --no-daemon clean build test \
+          -Dspring.profiles.active=test \
+          -Dspring.config.location=classpath:/,file:./Backend_Config/application-test.properties
 
-      - name: Build with Gradle
+      - name: Show test results summary
+        if: success()
+        run: echo "All Spring Boot tests passed successfully!"
+
+      - name: Mark failure if tests failed
+        if: failure()
         run: |
-          echo "▶ Building with $SPRING_PROFILE profile..."
-          ./gradlew clean bootJar -x test \
-          -Dspring.profiles.active=$SPRING_PROFILE \
-          -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties \
-          --no-daemon \
-          --stacktrace \
-          --info
+          echo "Tests failed. Please check the test report/logs for details."
+          exit 1
 
-      - name: Verify JAR
-        run: |
-          echo "▶ Verifying JAR file..."
-          jar tf build/libs/server-0.0.1-SNAPSHOT.jar
-          
-          echo "▶ Checking main class..."
-          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "com/going/server/ServerApplication.class"; then
-            echo "✅ Main class found"
-          else
-            echo "❌ Main class not found"
-            exit 1
-          fi
-
-          echo "▶ Checking Spring Boot loader..."
-          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "org/springframework/boot/loader/"; then
-          
-            echo "✅ Spring Boot loader found"
-          else
-            echo "❌ Spring Boot loader not found"
-            exit 1
-          fi
-
-          echo "▶ Verifying manifest..."
-          jar xf build/libs/server-0.0.1-SNAPSHOT.jar META-INF/MANIFEST.MF
-          if grep -q "Main-Class: org.springframework.boot.loader.JarLauncher" META-INF/MANIFEST.MF && \
-             grep -q "Start-Class: com.going.server.ServerApplication" META-INF/MANIFEST.MF; then
-            echo "✅ Manifest attributes are correct"
-          else
-            echo "❌ Manifest attributes are incorrect"
-            exit 1
-          fi
-
-          echo "▶ Testing JAR execution..."
-          java -jar build/libs/server-0.0.1-SNAPSHOT.jar --version
-
-      - name: Upload JAR
+      - name: Upload jar file to Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: jar-file
-          path: build/libs/server-0.0.1-SNAPSHOT.jar
+          name: jar_files
+          path: build/libs/*.jar
 
-  docker:
-    name: Build and Push Docker Image
-    needs: build
+      - name: Upload Dockerfile to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dockerfile
+          path: ./Dockerfile
+
+  CD_Delivery_to_DockerHub:
+    name: CD_Delivery_to_DockerHub
+    needs: CI
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
 
     steps:
-      - name: Checkout
+      - name: Checkout with submodules
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           submodules: recursive
+          fetch-depth: 0
 
-      - name: Download JAR
+      - name: Download jar file from Artifact
         uses: actions/download-artifact@v4
         with:
-          name: jar-file
+          name: jar_files
           path: build/libs
 
-      - name: Login to Docker Hub
+      - name: Download Dockerfile file from Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Dockerfile
+          path: ./
+
+      - name: Update git submodules
+        run: git submodule update --init --recursive
+
+
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ needs.build.outputs.sha7 }}
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          platforms: linux/amd64
+      - name: Get short SHA
+        id: slug
+        run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
-  deploy:
-    name: Deploy to EC2
-    needs: docker
+      - name: Build, tag, and push image to DockerHub
+        id: build-image
+        env:
+          USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          IMAGE_TAG: ${{ steps.slug.outputs.sha7 }}
+
+        run: |
+          docker build -t $USERNAME/$DOCKERHUB_REPOSITORY:$IMAGE_TAG -t $USERNAME/$DOCKERHUB_REPOSITORY:latest .
+          docker push $USERNAME/$DOCKERHUB_REPOSITORY --all-tags
+          echo "image=$USERNAME/$DOCKERHUB_REPOSITORY:$IMAGE_TAG&latest" >> $GITHUB_OUTPUT
+
+
+  CD_Deploy:
+    name: CD_Deploy
+    needs: CD_Delivery_to_DockerHub
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to EC2
+
+      - name: Checkout with submodules
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Update git submodules
+        run: git submodule update --init --recursive
+
+      - name: Get short SHA
+        id: slug
+        run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      - name: Executing remote ssh commands
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.REMOTE_IP }}
@@ -156,32 +156,15 @@ jobs:
           script: |
             export DOCKER_IMAGE="${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest"
             export DOCKER_COMPOSE_PATH="${{ secrets.DOCKER_COMPOSE_PATH }}"
-
-            # 백업 디렉토리 생성
-            BACKUP_DIR="/home/ubuntu/backup/$(date +%Y%m%d_%H%M%S)"
-            mkdir -p $BACKUP_DIR
-
-            # 현재 실행 중인 컨테이너 백업
-            docker ps -a > $BACKUP_DIR/running_containers.txt
-            docker images > $BACKUP_DIR/docker_images.txt
-
+            
             cd /home/ubuntu/scripts
             ./rolling-update.sh
-
-            # 이전 컨테이너 중지 및 제거
-            docker compose -f $DOCKER_COMPOSE_PATH down || true
-
-            # 새로운 이미지 풀
+            
+             echo "Stopping current containers..."
+            docker compose -f $DOCKER_COMPOSE_PATH down
+            
+            echo "Pulling the latest image..."
             docker compose -f $DOCKER_COMPOSE_PATH pull
-
-            # 새로운 컨테이너 시작
-            docker compose -f $DOCKER_COMPOSE_PATH up --build -d
-
-            # 헬스체크
-            sleep 30
-            if docker ps | grep -q "server"; then
-              echo "✅ Deployment successful"
-            else
-              echo "❌ Deployment failed"
-              exit 1
-            fi
+            
+            echo "Starting new deployment..."
+            docker compose -f $DOCKER_COMPOSE_PATH up -d
