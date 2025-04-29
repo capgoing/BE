@@ -53,9 +53,22 @@ jobs:
       - name: Build BootJar (No Clean)
         run: |
           echo "▶ Building bootJar with $SPRING_PROFILE profile..."
-          ./gradlew copyYml bootJar -x test \
+          ./gradlew clean copyYml bootJar -x test \
           -Dspring.profiles.active=$SPRING_PROFILE \
           -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties
+
+      - name: Verify JAR Contents
+        run: |
+          echo "▶ Checking JAR file structure..."
+          jar tf build/libs/server-0.0.1-SNAPSHOT.jar
+          
+          echo "▶ Verifying main class exists..."
+          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "com/going/server/ServerApplication.class"; then
+            echo " Main class found in JAR file"
+          else
+            echo " Main class not found in JAR file"
+            exit 1
+          fi
 
       - name: List the contents of build/libs
         run: |
