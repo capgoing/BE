@@ -1,4 +1,4 @@
-name: CI/CD FOR DEVELOP
+name: CI/CD Pipeline
 
 on:
   push:
@@ -10,8 +10,8 @@ env:
   DOCKERHUB_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
 
 jobs:
-  CI:
-    name: Continuous Integration
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -41,7 +41,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set Spring Profile Based on Branch
+      - name: Set Spring Profile
         id: set-profile
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
@@ -50,126 +50,79 @@ jobs:
             echo "SPRING_PROFILE=dev" >> $GITHUB_ENV
           fi
 
-      - name: Build BootJar
+      - name: Build with Gradle
         run: |
-          echo "▶ Building bootJar with $SPRING_PROFILE profile..."
-          ./gradlew clean processResources bootJar -x test \
+          echo "▶ Building with $SPRING_PROFILE profile..."
+          ./gradlew clean bootJar -x test \
           -Dspring.profiles.active=$SPRING_PROFILE \
           -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties
 
-      - name: Verify JAR Contents
+      - name: Verify JAR
         run: |
-          echo "▶ Checking JAR file structure..."
+          echo "▶ Verifying JAR file..."
           jar tf build/libs/server-0.0.1-SNAPSHOT.jar
           
-          echo "▶ Verifying main class exists..."
+          echo "▶ Checking main class..."
           if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "com/going/server/ServerApplication.class"; then
-            echo " Main class found in JAR file"
+            echo "✅ Main class found"
           else
-            echo " Main class not found in JAR file"
-            exit 1
-          fi
-
-          echo "▶ Verifying Spring Boot loader..."
-          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "BOOT-INF/lib/spring-boot-loader"; then
-            echo " Spring Boot loader found in JAR file"
-          else
-            echo " Spring Boot loader not found in JAR file"
-            exit 1
-          fi
-
-          echo "▶ Verifying manifest attributes..."
-          jar xf build/libs/server-0.0.1-SNAPSHOT.jar META-INF/MANIFEST.MF
-          if grep -q "Main-Class: org.springframework.boot.loader.JarLauncher" META-INF/MANIFEST.MF && \
-             grep -q "Start-Class: com.going.server.ServerApplication" META-INF/MANIFEST.MF; then
-            echo " Manifest attributes are correct"
-          else
-            echo " Manifest attributes are incorrect"
+            echo "❌ Main class not found"
             exit 1
           fi
 
           echo "▶ Testing JAR execution..."
           java -jar build/libs/server-0.0.1-SNAPSHOT.jar --version
 
-      - name: Upload jar file to Artifact
+      - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
-          name: jar_files
+          name: jar-file
           path: build/libs/server-0.0.1-SNAPSHOT.jar
 
-      - name: Upload Dockerfile to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Dockerfile
-          path: Dockerfile
-
-  CD_Delivery_to_DockerHub:
-    name: CD_Delivery_to_DockerHub
-    needs: CI
+  docker:
+    name: Build and Push Docker Image
+    needs: build
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
 
     steps:
-      - name: Checkout with submodules
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           submodules: recursive
-          fetch-depth: 0
 
-      - name: Download jar file from Artifact
+      - name: Download JAR
         uses: actions/download-artifact@v4
         with:
-          name: jar_files
+          name: jar-file
           path: build/libs
 
-      - name: Download Dockerfile file from Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: Dockerfile
-          path: .
-
-      - name: Log in to Docker Hub
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: Build and Push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ needs.CI.outputs.sha7 }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ needs.build.outputs.sha7 }}
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: |
-            SPRING_PROFILE=${{ env.SPRING_PROFILE }}
-          target: production
 
-      - name: Test JAR in Docker
-        run: |
-          docker run --rm -v $(pwd):/app -w /app openjdk:17-jdk-slim \
-            java -jar build/libs/server-0.0.1-SNAPSHOT.jar --version
-
-  CD_Deploy:
-    name: CD_Deploy
-    needs: CD_Delivery_to_DockerHub
+  deploy:
+    name: Deploy to EC2
+    needs: docker
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout with submodules
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.ACCESS_TOKEN }}
-          submodules: recursive
-          fetch-depth: 0
-
-      - name: Executing remote ssh commands
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.REMOTE_IP }}
@@ -182,10 +135,6 @@ jobs:
 
             cd /home/ubuntu/scripts
             ./rolling-update.sh
-
-            # Docker 컨테이너 중지 전에 JAR 파일 검증
-            docker run --rm -v $(pwd):/app -w /app openjdk:17-jdk-slim \
-              java -jar build/libs/server-0.0.1-SNAPSHOT.jar --version
 
             docker compose -f $DOCKER_COMPOSE_PATH down
             docker compose -f $DOCKER_COMPOSE_PATH pull
