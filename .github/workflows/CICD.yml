@@ -71,7 +71,7 @@ jobs:
           fi
 
           echo "▶ Verifying Spring Boot loader..."
-          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "org/springframework/boot/loader/JarLauncher.class"; then
+          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "BOOT-INF/lib/spring-boot-loader"; then
             echo " Spring Boot loader found in JAR file"
           else
             echo " Spring Boot loader not found in JAR file"
