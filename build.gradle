@@ -76,6 +76,7 @@ bootJar {
 		enabled = true
 		includeLayerTools = true
 	}
+	includeSystemScope = true
 }
 
 springBoot {

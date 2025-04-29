@@ -70,6 +70,24 @@ jobs:
             exit 1
           fi
 
+          echo "▶ Checking Spring Boot loader..."
+          if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "BOOT-INF/lib/spring-boot-loader"; then
+            echo "✅ Spring Boot loader found"
+          else
+            echo "❌ Spring Boot loader not found"
+            exit 1
+          fi
+
+          echo "▶ Verifying manifest..."
+          jar xf build/libs/server-0.0.1-SNAPSHOT.jar META-INF/MANIFEST.MF
+          if grep -q "Main-Class: org.springframework.boot.loader.JarLauncher" META-INF/MANIFEST.MF && \
+             grep -q "Start-Class: com.going.server.ServerApplication" META-INF/MANIFEST.MF; then
+            echo "✅ Manifest attributes are correct"
+          else
+            echo "❌ Manifest attributes are incorrect"
+            exit 1
+          fi
+
           echo "▶ Testing JAR execution..."
           java -jar build/libs/server-0.0.1-SNAPSHOT.jar --version
 
