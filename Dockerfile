@@ -1,9 +1,14 @@
-FROM openjdk:17-alpine
+FROM openjdk:17-jdk-slim as builder
 
 WORKDIR /app
+COPY . .
+RUN ./gradlew clean bootJar -x test
 
-# JAR 파일 복사
-COPY build/libs/server-0.0.1-SNAPSHOT.jar app.jar
+FROM openjdk:17-jre-slim
 
-# JAR 파일 실행
+WORKDIR /app
+COPY --from=builder /app/build/libs/server-0.0.1-SNAPSHOT.jar app.jar
+
+EXPOSE 8080
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
