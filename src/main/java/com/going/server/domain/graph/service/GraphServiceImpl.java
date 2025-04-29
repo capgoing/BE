@@ -9,6 +9,7 @@ import com.going.server.domain.graph.exception.NodeNotFoundException;
 import com.going.server.domain.graph.repository.GraphEdgeRepository;
 import com.going.server.domain.graph.repository.GraphNodeRepository;
 import com.going.server.domain.graph.repository.GraphRepository;
+import com.going.server.domain.upload.service.UploadServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class GraphServiceImpl implements GraphService {
 
     final GraphRepository graphRepository;
     final GraphNodeRepository graphNodeRepository;
+    private final UploadServiceImpl uploadServiceImpl;
 
     @Override
     public GraphListDto getGraphList() {
@@ -54,7 +56,7 @@ public class GraphServiceImpl implements GraphService {
         List<EdgeDto> edgeDtoList = new ArrayList<>();
 
         for (GraphNode node : graph.getNodes()) {
-            NodeDto nodeDto = NodeDto.from(node, null);
+            NodeDto nodeDto = NodeDto.from(node);
             nodeDtoList.add(nodeDto);
 
             if (node.getEdges() != null) {
@@ -82,7 +84,7 @@ public class GraphServiceImpl implements GraphService {
         if (node == null) {
             throw new NodeNotFoundException(); // 직접 만든 예외 던지기
         }
-        return NodeDto.from(node,null);
+        return NodeDto.from(node);
     }
 
     @Override
@@ -109,6 +111,7 @@ public class GraphServiceImpl implements GraphService {
                 .group(group.toString())
                 .level(parentNode.getLevel() + 1)
                 .includeSentence(null)
+                .image(uploadServiceImpl.getImage(nodeAddDto.getNodeLabel()))
                 .build();
         GraphNode newNode = graphNodeRepository.save(nodeEntity);
 
