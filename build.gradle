@@ -72,20 +72,13 @@ bootJar {
 	archiveVersion = '0.0.1-SNAPSHOT'
 	manifest {
 		attributes(
-			'Main-Class': 'org.springframework.boot.loader.JarLauncher',
-			'Start-Class': 'com.going.server.ServerApplication'
+			'Main-Class': 'com.going.server.ServerApplication'
 		)
-	}
-	layered {
-		enabled = true
-		includeLayerTools = true
-
 	}
 }
 
 springBoot {
 	mainClass = 'com.going.server.ServerApplication'
-	buildInfo()
 }
 
 
