@@ -68,11 +68,16 @@ jar {
 
 bootJar {
 	enabled = true
+	archiveBaseName = 'server'
+	archiveVersion = '0.0.1-SNAPSHOT'
 	manifest {
 		attributes(
 				'Main-Class': 'org.springframework.boot.loader.JarLauncher',
 				'Start-Class': 'com.going.server.ServerApplication'
 		)
+	}
+	layered {
+		enabled = true
 	}
 }
 
