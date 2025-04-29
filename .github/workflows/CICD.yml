@@ -98,7 +98,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: jar_files
-          path: .
+          path: build/libs
 
       - name: Download Dockerfile file from Artifact
         uses: actions/download-artifact@v4
