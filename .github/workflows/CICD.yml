@@ -50,10 +50,10 @@ jobs:
             echo "SPRING_PROFILE=dev" >> $GITHUB_ENV
           fi
 
-      - name: Build BootJar (No Clean)
+      - name: Build BootJar
         run: |
           echo "▶ Building bootJar with $SPRING_PROFILE profile..."
-          ./gradlew clean copyYml bootJar -x test \
+          ./gradlew clean bootJar -x test \
           -Dspring.profiles.active=$SPRING_PROFILE \
           -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties
 
@@ -64,22 +64,15 @@ jobs:
           
           echo "▶ Verifying main class exists..."
           if jar tf build/libs/server-0.0.1-SNAPSHOT.jar | grep -q "BOOT-INF/classes/com/going/server/ServerApplication.class"; then
-            echo " Main class found in JAR file"
+            echo "✅ Main class found in JAR file"
           else
-            echo " Main class not found in JAR file"
+            echo "❌ Main class not found in JAR file"
             exit 1
           fi
 
           echo "▶ Checking MANIFEST.MF..."
           jar xf build/libs/server-0.0.1-SNAPSHOT.jar META-INF/MANIFEST.MF
           cat META-INF/MANIFEST.MF
-
-      - name: List the contents of build/libs
-        run: |
-          echo "▶ 🐱current working directory.. "
-          pwd
-          echo "▶ 🐱Listing contents of build/libs directory..."
-          ls -R build/libs
 
       - name: Upload jar file to Artifact
         uses: actions/upload-artifact@v4
@@ -127,11 +120,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build, tag, and push image to DockerHub
-        run: |
-          echo "▶ Building Docker image..."
-          docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ needs.CI.outputs.sha7 }} -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }} --all-tags
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ needs.CI.outputs.sha7 }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
 
   CD_Deploy:
     name: CD_Deploy
