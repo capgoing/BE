@@ -14,6 +14,4 @@ public class NodeAddDto {
     String nodeLabel;
     @NotBlank(message = "추가할 노드의 관계(edgeLabel)를 입력해주세요.")
     String edgeLabel;
-    @NotBlank(message = "문장을 입력해주세요")
-    String includeSentence;
 }

@@ -108,7 +108,7 @@ public class GraphServiceImpl implements GraphService {
                 .label(nodeAddDto.getNodeLabel())
                 .group(group.toString())
                 .level(parentNode.getLevel() + 1)
-                .includeSentence(nodeAddDto.getIncludeSentence())
+                .includeSentence(null)
                 .build();
         GraphNode newNode = graphNodeRepository.save(nodeEntity);
 
