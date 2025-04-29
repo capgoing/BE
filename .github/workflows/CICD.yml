@@ -53,7 +53,7 @@ jobs:
       - name: Build BootJar
         run: |
           echo "▶ Building bootJar with $SPRING_PROFILE profile..."
-          ./gradlew clean copyYml bootJar -x test \
+          ./gradlew clean bootJar -x test \
           -Dspring.profiles.active=$SPRING_PROFILE \
           -Dspring.config.location=classpath:/,file:./Backend_Config/application-$SPRING_PROFILE.properties
 
