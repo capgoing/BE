@@ -2,7 +2,6 @@ package com.going.server.domain.chatbot.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class CreateChatbotRequestDto {
