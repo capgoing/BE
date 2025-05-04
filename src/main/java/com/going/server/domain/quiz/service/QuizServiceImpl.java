@@ -54,13 +54,13 @@ public class QuizServiceImpl implements QuizService{
                 // listenUp 모드 만점 설정
                 graph.setListenUpPerfect(true);
                 break;
-//            case "connect":
-//                if (graph.isConnectPerfect()) {
-//                    return;
-//                }
-//                // connect 모드 만점 설정
-//                graph.setConnectPerfect(true);
-//                break;
+            case "connect":
+                if (graph.isConnectPerfect()) {
+                    return;
+                }
+                // connect 모드 만점 설정
+                graph.setConnectPerfect(true);
+                break;
 //            case "picture":
 //                if (graph.isPicturePerfect()) {
 //                    return;
