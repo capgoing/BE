@@ -1,7 +1,7 @@
 package com.going.server.global.config;
 
 import org.springframework.context.annotation.Configuration;
-import com.theokanning.openai.service.OpenAiService;
+import com.theokanning.openai.OpenAiService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 

@@ -2,7 +2,7 @@ package com.going.server.domain.quiz.generate;
 
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphNode;
-import com.going.server.domain.openai.ImageCreateService;
+import com.going.server.domain.openai.service.ImageCreateService;
 import com.going.server.domain.quiz.dto.PictureQuizDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

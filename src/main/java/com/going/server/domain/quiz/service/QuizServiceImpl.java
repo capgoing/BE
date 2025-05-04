@@ -9,9 +9,11 @@ import com.going.server.domain.quiz.generate.ListenUpQuizGenerator;
 import com.going.server.domain.quiz.generate.PictureQuizGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class QuizServiceImpl implements QuizService{
     private final GraphRepository graphRepository;
     private final ListenUpQuizGenerator listenUpQuizGenerator;
@@ -19,7 +21,6 @@ public class QuizServiceImpl implements QuizService{
     private final PictureQuizGenerator pictureQuizGenerator;
 
     // 모드 별 퀴즈 생성
-
     @Override
     public QuizCreateResponseDto quizCreate(String graphIdStr, String mode) {
         Long graphId = Long.valueOf(graphIdStr);

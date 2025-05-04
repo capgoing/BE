@@ -1,7 +1,7 @@
-package com.going.server.domain.openai;
+package com.going.server.domain.openai.service;
 
 import com.theokanning.openai.image.CreateImageRequest;
-import com.theokanning.openai.service.OpenAiService;
+import com.theokanning.openai.OpenAiService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
