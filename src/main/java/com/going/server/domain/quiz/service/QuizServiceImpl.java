@@ -61,13 +61,13 @@ public class QuizServiceImpl implements QuizService{
                 // connect 모드 만점 설정
                 graph.setConnectPerfect(true);
                 break;
-//            case "picture":
-//                if (graph.isPicturePerfect()) {
-//                    return;
-//                }
-//                // picture 모드 만점 설정
-//                graph.setPicturePerfect(true);
-//                break;
+            case "picture":
+                if (graph.isPicturePerfect()) {
+                    return;
+                }
+                // picture 모드 만점 설정
+                graph.setPicturePerfect(true);
+                break;
         }
         // DB에 저장
         graphRepository.save(graph);
