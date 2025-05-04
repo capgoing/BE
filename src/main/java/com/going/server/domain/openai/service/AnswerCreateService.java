@@ -4,8 +4,7 @@ import com.going.server.domain.chatbot.entity.Chatting;
 import com.going.server.domain.chatbot.entity.Sender;
 import com.going.server.domain.openai.dto.ChatCompletionRequestDto;
 import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.service.OpenAiService;
-import jakarta.annotation.Resource;
+import com.theokanning.openai.OpenAiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AnswerCreateService {
-    @Resource(name = "getOpenAIService")
     private final OpenAiService openAiService;
 
     public String chat(List<Chatting> chatHistory, String question) {
@@ -40,7 +38,7 @@ public class AnswerCreateService {
                 .build();
 
         // OpenAI 모델에게 질문 및 응답 생성
-        return openAiService.createCompletion(request.toRequest())
+        return openAiService.createChatCompletion(request.toRequest())
                 .getChoices()
                 .get(0)
                 .getMessage()
