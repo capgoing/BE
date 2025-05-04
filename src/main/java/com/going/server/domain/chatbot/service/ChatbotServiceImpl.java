@@ -39,6 +39,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         List<String> sourceNodes = new ArrayList<>();
         Map<String, String> ragMeta = new HashMap<>();
 
+        System.out.println("createChatbotRequestDto: "  + createChatbotRequestDto.getChatContent() + createChatbotRequestDto.isNewChat());
         // 새로운 대화인 경우 기존 채팅 삭제
         if (createChatbotRequestDto.isNewChat()) {
             deletePreviousChat(graph);
