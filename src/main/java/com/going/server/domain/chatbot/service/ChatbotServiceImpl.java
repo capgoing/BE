@@ -39,9 +39,10 @@ public class ChatbotServiceImpl implements ChatbotService {
         List<String> sourceNodes = new ArrayList<>();
         Map<String, String> ragMeta = new HashMap<>();
 
+        System.out.println("createChatbotRequestDto: "  + createChatbotRequestDto.getChatContent() + createChatbotRequestDto.isNewChat());
         // 새로운 대화인 경우 기존 채팅 삭제
         if (createChatbotRequestDto.isNewChat()) {
-            deletePreviousChat(graph);
+            deletePreviousChat(graphId);
         }
 
         // 기존 채팅 내역 조회
@@ -49,6 +50,7 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         // 새로운 채팅
         String newChat = createChatbotRequestDto.getChatContent();
+
         // 새로운 채팅 repository에 저장
         Chatting chatting = Chatting.builder()
                 .graph(graph)
@@ -82,8 +84,8 @@ public class ChatbotServiceImpl implements ChatbotService {
     }
 
     // 기존 채팅 삭제 메서드
-    private void deletePreviousChat(Graph graph) {
-        chattingRepository.deleteByGraph(graph);
+    private void deletePreviousChat(Long graphId) {
+        chattingRepository.deleteByGraphId(graphId);
     }
 
 }

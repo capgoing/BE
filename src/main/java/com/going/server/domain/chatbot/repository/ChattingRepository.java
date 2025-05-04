@@ -11,13 +11,12 @@ import java.util.List;
 
 @Repository
 public interface ChattingRepository extends Neo4jRepository<Chatting, Long> {
-    // Graph로 모든 Chatting 삭제
     @Query("""
     MATCH (c:Chatting)-[:BELONGS_TO]->(g:Graph)
-    WHERE g = $graph
+    WHERE id(g) = $graphId
     DETACH DELETE c
     """)
-    void deleteByGraph(Graph graph);
+    void deleteByGraphId(Long graphId);
 
     // GraphId로 모든 Chatting 조회
     @Query("""
@@ -26,5 +25,4 @@ public interface ChattingRepository extends Neo4jRepository<Chatting, Long> {
     RETURN c ORDER BY c.createdAt
     """)
     List<Chatting> findAllByGraphId(@Param("graphId") Long graphId);
-
 }
