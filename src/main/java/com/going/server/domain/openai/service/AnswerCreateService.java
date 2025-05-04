@@ -1,8 +1,8 @@
 package com.going.server.domain.openai.service;
 
-import com.going.server.domain.chatbot.dto.ChatCompletionRequestDto;
 import com.going.server.domain.chatbot.entity.Chatting;
 import com.going.server.domain.chatbot.entity.Sender;
+import com.going.server.domain.openai.dto.ChatCompletionRequestDto;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
 import jakarta.annotation.Resource;
@@ -14,28 +14,33 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class {
-
+public class AnswerCreateService {
     @Resource(name = "getOpenAIService")
     private final OpenAiService openAiService;
 
     public String chat(List<Chatting> chatHistory, String question) {
+        // 프롬프트 설정
         String systemPrompt = """
                 당신은 초등학생을 위한 친절한 설명을 제공하는 지식 튜터입니다.
-                대답은 짧고 쉽게 설명해주세요.
+                대답은 짧고 쉽게 설명해주세요. 다른 언급 없이 한글로 대답만을 주세요.
                 """;
 
+        // 메세지 구성
         List<ChatMessage> messages = new ArrayList<>();
-        messages.add(new ChatMessage("system", systemPrompt));
-        messages.addAll(convertHistoryToMessages(chatHistory));
-        messages.add(new ChatMessage("user", question));
+        messages.add(new ChatMessage("system", systemPrompt)); // 프롬프트 설정
+        messages.addAll(convertHistoryToMessages(chatHistory)); // 기존 채팅
+        messages.add(new ChatMessage("user", question)); // 새로운 질문
 
+        // DTO 기반 요청 생성
         ChatCompletionRequestDto request = ChatCompletionRequestDto.builder()
+                .model("gpt-4o") // 4o 모델 사용
+                .temperature(0.7)
+                .maxTokens(500) // 추후 조정 예정
                 .messages(messages)
-                .model("gpt-4o")
                 .build();
 
-        return openAiService.createChatCompletion(request)
+        // OpenAI 모델에게 질문 및 응답 생성
+        return openAiService.createCompletion(request.toRequest())
                 .getChoices()
                 .get(0)
                 .getMessage()
@@ -51,6 +56,7 @@ public class {
                 .toList();
     }
 
+    // openai
     private String convertSenderToRole(Sender sender) {
         return sender == Sender.USER ? "user" : "assistant";
     }
