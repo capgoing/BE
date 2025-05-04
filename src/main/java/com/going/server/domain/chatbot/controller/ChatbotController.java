@@ -1,6 +1,7 @@
 package com.going.server.domain.chatbot.controller;
 
 import com.going.server.domain.chatbot.dto.CreateChatbotRequestDto;
+import com.going.server.domain.chatbot.dto.CreateChatbotResponseDto;
 import com.going.server.domain.chatbot.service.ChatbotService;
 import com.going.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +36,7 @@ public class ChatbotController {
     )
     public SuccessResponse<?> generateChatbotAnswer(@PathVariable String graphId,
                                                     @RequestBody CreateChatbotRequestDto createChatbotRequestDto) {
-        CreateChatbotResponseDto result = chatbotService.createAnswer(graphId, createChatbotRequestDto)
-        return SuccessResponse.of(result, HttpStatus.CREATED);
+        CreateChatbotResponseDto result = chatbotService.createAnswer(graphId, createChatbotRequestDto);
+        return SuccessResponse.of(result, "201");
     }
 }
