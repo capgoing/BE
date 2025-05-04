@@ -1,9 +1,7 @@
 package com.going.server.domain.quiz.controller;
 
 import com.going.server.domain.quiz.dto.QuizCreateResponseDto;
-import com.going.server.domain.quiz.dto.QuizSavedRequestDto;
 import com.going.server.domain.quiz.service.QuizService;
-import com.going.server.domain.quiz.service.QuizServiceImpl;
 import com.going.server.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -55,5 +53,4 @@ public class QuizController {
         quizService.updateIfPerfect(graphId, mode);
         return SuccessResponse.of(null, "200");
     }
-
 }
