@@ -4,7 +4,7 @@ import com.going.server.domain.chatbot.dto.CreateChatbotRequestDto;
 import com.going.server.domain.chatbot.dto.CreateChatbotResponseDto;
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.repository.GraphRepository;
-import com.going.server.domain.openai.dto.ChatMessage;
+import com.going.server.domain.chatbot.dto.ChatMessage;
 import com.going.server.domain.openai.service.AnswerCreateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ import java.util.List;
 @Transactional
 public class ChatbotServiceImpl implements ChatbotService {
     private final GraphRepository graphRepository;
+    private final
     private final AnswerCreateService answerCreateService;
 
     // 챗봇 응답 생성

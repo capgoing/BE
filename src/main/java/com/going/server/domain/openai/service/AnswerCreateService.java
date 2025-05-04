@@ -1,6 +1,6 @@
 package com.going.server.domain.openai.service;
 
-import com.going.server.domain.openai.dto.ChatCompletionRequestDto;
+import com.going.server.domain.chatbot.dto.ChatCompletionRequestDto;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.neo4j.driver.internal.messaging.Message;
