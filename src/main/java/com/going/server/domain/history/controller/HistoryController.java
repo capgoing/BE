@@ -10,4 +10,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "[1차구현]History", description = "수정사항 조회 통신을 위한 API")
 public class HistoryController {
+
 }

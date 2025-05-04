@@ -18,6 +18,8 @@ public class QuizServiceImpl implements QuizService{
     private final ConnectQuizGenerator connectQuizGenerator;
     private final PictureQuizGenerator pictureQuizGenerator;
 
+    // 모드 별 퀴즈 생성
+
     @Override
     public QuizCreateResponseDto quizCreate(String graphIdStr, String mode) {
         Long graphId = Long.valueOf(graphIdStr);
@@ -33,5 +35,41 @@ public class QuizServiceImpl implements QuizService{
         };
 
         return new QuizCreateResponseDto<>(graphIdStr, mode, quizDto);
+    }
+
+    // 만점일 경우 Graph Quiz 정보 업데이트
+    @Override
+    public void updateIfPerfect(String graphIdStr, String mode) {
+        Long graphId = Long.valueOf(graphIdStr);
+
+        // 404 : 지식 그래프 찾을 수 없음
+        Graph graph = graphRepository.getByGraph(graphId);
+
+        switch (mode){
+            case "listenUp":
+                // 이미 해당 모드 퀴즈가 만점일 경우 -> 넘어가기
+                if (graph.isListenUpPerfect()) {
+                    return;
+                }
+                // listenUp 모드 만점 설정
+                graph.setListenUpPerfect(true);
+                break;
+//            case "connect":
+//                if (graph.isConnectPerfect()) {
+//                    return;
+//                }
+//                // connect 모드 만점 설정
+//                graph.setConnectPerfect(true);
+//                break;
+//            case "picture":
+//                if (graph.isPicturePerfect()) {
+//                    return;
+//                }
+//                // picture 모드 만점 설정
+//                graph.setPicturePerfect(true);
+//                break;
+        }
+        // DB에 저장
+        graphRepository.save(graph);
     }
 }
