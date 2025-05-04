@@ -19,7 +19,12 @@ public interface ChattingRepository extends Neo4jRepository<Chatting, Long> {
     """)
     void deleteByGraph(Graph graph);
 
-    // Graph로 모든 Chatting 조회
-    List<Chatting> findAllByGraph(Graph graph);
+    // GraphId로 모든 Chatting 조회
+    @Query("""
+    MATCH (c:Chatting)-[:BELONGS_TO]->(g:Graph)
+    WHERE id(g) = $graphId
+    RETURN c ORDER BY c.createdAt
+    """)
+    List<Chatting> findAllByGraphId(@Param("graphId") Long graphId);
 
 }
