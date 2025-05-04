@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,7 +35,7 @@ public class ChatbotController {
     )
     public SuccessResponse<?> generateChatbotAnswer(@PathVariable String graphId,
                                                     @RequestBody CreateChatbotRequestDto createChatbotRequestDto) {
-        chatbotService.createChat(graphId, createChatbotRequestDto)
-
+        CreateChatbotResponseDto result = chatbotService.createAnswer(graphId, createChatbotRequestDto)
+        return SuccessResponse.of(result, HttpStatus.CREATED);
     }
 }
