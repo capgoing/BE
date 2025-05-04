@@ -2,9 +2,7 @@ package com.going.server.domain.chatbot.entity;
 
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.global.common.BaseEntity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Chatting extends BaseEntity {
+@Builder
+@AllArgsConstructor
+public class Chatting {
     @Id
     @GeneratedValue
     private Long id;

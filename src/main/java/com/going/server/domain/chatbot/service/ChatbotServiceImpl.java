@@ -3,6 +3,7 @@ package com.going.server.domain.chatbot.service;
 import com.going.server.domain.chatbot.dto.CreateChatbotRequestDto;
 import com.going.server.domain.chatbot.dto.CreateChatbotResponseDto;
 import com.going.server.domain.chatbot.entity.Chatting;
+import com.going.server.domain.chatbot.entity.Sender;
 import com.going.server.domain.chatbot.repository.ChattingRepository;
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.repository.GraphRepository;
@@ -44,18 +45,36 @@ public class ChatbotServiceImpl implements ChatbotService {
         }
 
         // 기존 채팅 내역 조회
-        List<Chatting> chatHistory = chattingRepository.findAllByGraph(graph);
+        List<Chatting> chatHistory = chattingRepository.findAllByGraphId(graphId);
 
+        // 새로운 채팅
         String newChat = createChatbotRequestDto.getChatContent();
+        // 새로운 채팅 repository에 저장
+        Chatting chatting = Chatting.builder()
+                .graph(graph)
+                .content(newChat)
+                .sender(Sender.USER)
+                .createdAt(LocalDateTime.now())
+                .build();
+        chattingRepository.save(chatting);
 
         // 응답 생성
         String chatContent = answerCreateService.chat(chatHistory, newChat);
+
+        // 응답 repository에 저장
+        Chatting answer = Chatting.builder()
+                .graph(graph)
+                .content(chatContent)
+                .sender(Sender.GPT)
+                .createdAt(LocalDateTime.now())
+                .build();
+        chattingRepository.save(answer);
 
         // 반환
         return CreateChatbotResponseDto.builder()
                 .chatContent(chatContent)
                 .graphId(graphStrId)
-                .createdAt(LocalDateTime.now())
+                .createdAt(answer.getCreatedAt())
                 .retrievedChunks(retrievedChunks)
                 .sourceNodes(sourceNodes)
                 .ragMeta(ragMeta)
