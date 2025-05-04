@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name="[캡스톤]Quiz", description = "퀴즈 관련 통신을 위한 API")
 public class QuizController {
-
     private final QuizService quizService;
 
     @PostMapping("/{graphId}")
@@ -25,7 +24,7 @@ public class QuizController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "201",
-                    description = "퀴즈를 성공적으로 생성하였습니다.",
+                    description = "호출에 성공하였습니다.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(example = "{\"message\":\"\"}")
@@ -42,7 +41,7 @@ public class QuizController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "퀴즈를 성공적으로 저장하였습니다.",
+                    description = "호출에 성공하였습니다.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(example = "{\"message\":\"\"}")
