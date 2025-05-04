@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.neo4j.core.schema.*;
 
+import java.time.LocalDateTime;
+
 @Node("Chatting")
 @Getter
 @Setter
@@ -22,4 +24,6 @@ public class Chatting extends BaseEntity {
     private String content; // 채팅 내용
 
     private Sender sender;
+
+    private LocalDateTime createdAt;
 }

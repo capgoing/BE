@@ -1,6 +1,7 @@
 package com.going.server.domain.openai.service;
 
 import com.going.server.domain.chatbot.dto.ChatCompletionRequestDto;
+import com.going.server.domain.chatbot.entity.Chatting;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.neo4j.driver.internal.messaging.Message;
@@ -16,7 +17,7 @@ public class AnswerCreateService {
     private final OpenAiService openAiService;
     private String prompt;
 
-    public String chat(List<Message> chatHistory, String question) {
+    public String chat(List<Chatting> chatHistory, String question) {
         ChatCompletionRequestDto request = ChatCompletionRequestDto.builder()
                 .messages(messages) // 이전 대화 목록 리스트
                 .prompt(prompt)     // 프롬프트

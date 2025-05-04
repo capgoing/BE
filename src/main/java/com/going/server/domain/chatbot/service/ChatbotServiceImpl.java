@@ -2,9 +2,10 @@ package com.going.server.domain.chatbot.service;
 
 import com.going.server.domain.chatbot.dto.CreateChatbotRequestDto;
 import com.going.server.domain.chatbot.dto.CreateChatbotResponseDto;
+import com.going.server.domain.chatbot.entity.Chatting;
+import com.going.server.domain.chatbot.repository.ChattingRepository;
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.repository.GraphRepository;
-import com.going.server.domain.chatbot.dto.ChatMessage;
 import com.going.server.domain.openai.service.AnswerCreateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,40 +13,58 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ChatbotServiceImpl implements ChatbotService {
     private final GraphRepository graphRepository;
-    private final
+    private final ChattingRepository chattingRepository;
     private final AnswerCreateService answerCreateService;
 
     // 챗봇 응답 생성
     @Override
     public CreateChatbotResponseDto createAnswer(String graphStrId, CreateChatbotRequestDto createChatbotRequestDto) {
         Long graphId = Long.valueOf(graphStrId);
+
         // 404 : 지식그래프 찾을 수 없음
         Graph graph = graphRepository.getByGraph(graphId);
 
         // TODO : RAG 관련 로직 작성
+        List<String> retrievedChunks = new ArrayList<>();
+        List<String> sourceNodes = new ArrayList<>();
+        Map<String, String> ragMeta = new HashMap<>();
+
+        // 새로운 대화인 경우 기존 채팅 삭제
+        if (createChatbotRequestDto.isNewChat()) {
+            deletePreviousChat(graph);
+        }
 
         // 기존 채팅 내역 조회
-        List<ChatMessage> chatHistory = new ArrayList<>();
-        String question = createChatbotRequestDto.getChatContent();
+        List<Chatting> chatHistory = chattingRepository.findAllByGraph(graph);
+
+        String newChat = createChatbotRequestDto.getChatContent();
 
         // 응답 생성
-        String chatContent = answerCreateService.chat(chatHistory, question);
+        String chatContent = answerCreateService.chat(chatHistory, newChat);
 
-        // response data build
+        // 반환
         return CreateChatbotResponseDto.builder()
                 .chatContent(chatContent)
                 .graphId(graphStrId)
                 .createdAt(LocalDateTime.now())
-                .retrievedChunks(null)
-                .sourceNodes(null)
-                .ragMeta(null)
+                .retrievedChunks(retrievedChunks)
+                .sourceNodes(sourceNodes)
+                .ragMeta(ragMeta)
                 .build();
     }
+
+    // 기존 채팅 삭제 메서드
+    private void deletePreviousChat(Graph graph) {
+        chattingRepository.deleteByGraph(graph);
+    }
+
 }
