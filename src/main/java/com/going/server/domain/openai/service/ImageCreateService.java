@@ -1,4 +1,4 @@
-package com.going.server.domain.openai;
+package com.going.server.domain.openai.service;
 
 import com.theokanning.openai.image.CreateImageRequest;
 import com.theokanning.openai.service.OpenAiService;
