@@ -31,11 +31,8 @@ public class UploadServiceImpl implements  UploadService {
     private final OcrService ocrService;
     private final PdfOcrService pdfOcrService;
     private final GraphNodeRepository graphNodeRepository;
-    private final GraphEdgeRepository graphEdgeRepository;
     private final GraphRepository graphRepository;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final WebClient.Builder webClientBuilder;
-    private WebClient webClient;
 
     @Value("${ocr.api.url}")
     private String apiUrl;
