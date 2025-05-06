@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -33,12 +34,17 @@ public class UploadServiceImpl implements  UploadService {
     private final GraphEdgeRepository graphEdgeRepository;
     private final GraphRepository graphRepository;
     private final RestTemplate restTemplate = new RestTemplate();
+    private final WebClient.Builder webClientBuilder;
+    private WebClient webClient;
+
     @Value("${ocr.api.url}")
     private String apiUrl;
     @Value("${ocr.api.secret-key}")
     private String secretKey;
     @Value("${unsplash.access-key}")
     private String unsplashKey;
+    @Value("${fastapi.base-url}")
+    private String fastApiUrl;
 
     @Override
     public UploadResponseDto uploadFile(UploadRequestDto dto) {
@@ -46,11 +52,14 @@ public class UploadServiceImpl implements  UploadService {
             String jsonResponse = ocrService.processOcr(dto.getFile(), apiUrl, secretKey);
             Map<String, String> paresData = pdfOcrService.parse(jsonResponse);
             String text = paresData.get("6학년 읽기자료 내용");
-            System.out.println("추출된 텍스트: " + text);
+            //System.out.println("추출된 텍스트: " + text);
+
+            //모델에 돌린 값을 받아옴
+            String response = setModelData(text);
 
             ObjectMapper mapper = new ObjectMapper();
-            InputStream is = getClass().getClassLoader().getResourceAsStream("data.json");
-            JsonNode root = mapper.readTree(is);
+            //InputStream is = getClass().getClassLoader().getResourceAsStream("data.json");
+            JsonNode root = mapper.readTree(response);
             JsonNode graph = root.get("data");
             JsonNode nodesNode = graph.get("nodes");
             JsonNode edgesNode = graph.get("edges");
@@ -157,5 +166,25 @@ public class UploadServiceImpl implements  UploadService {
             return urls.get("regular"); // 또는 "small", "thumb" 등
         }
         return null;
+    }
+
+    //FastApi 호출
+    public String setModelData(String text) {
+        WebClient webClient = WebClient.builder()
+                .baseUrl(fastApiUrl)
+                .build();
+
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("text", text);
+
+        String response = webClient.post()
+                .uri("/api/generate-gdb")
+                .header("Content-Type", "application/json")
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        //System.out.println("응답 결과: " + response);
+        return response;
     }
 }
