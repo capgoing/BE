@@ -71,7 +71,7 @@ public class UploadServiceImpl implements  UploadService {
                         .group(node.get("group").asText())
                         .level(node.get("level").asLong())
                         .includeSentence(node.get("includeSentence").asText())
-                        .image(getImage(label))
+                        .image(null)
                         .build();
                 nodeList.add(graphNode);
             }
@@ -102,8 +102,6 @@ public class UploadServiceImpl implements  UploadService {
                     System.out.println("노드 매칭 실패: source=" + sourceId + ", target=" + targetId);
                     continue;
                 }
-
-
 
                 //edge 엔티티 생성
                 GraphEdge edge = GraphEdge.builder()
