@@ -23,7 +23,7 @@ public interface GraphNodeRepository extends Neo4jRepository<GraphNode, Long> {
         WHERE toLower(n.includeSentence) CONTAINS toLower($keyword)
            OR toLower(n.label) CONTAINS toLower($keyword)
         RETURN n
-    ₩""")
+    """)
     List<GraphNode> findByKeyword(String keyword);
 
 

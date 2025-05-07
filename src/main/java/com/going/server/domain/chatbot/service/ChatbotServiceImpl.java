@@ -66,7 +66,6 @@ public class ChatbotServiceImpl implements ChatbotService {
                 "chunkCount", String.valueOf(filteredChunks.size())
         );
 
-        System.out.println("createChatbotRequestDto: "  + createChatbotRequestDto.getChatContent() + createChatbotRequestDto.isNewChat());
         // 새로운 대화인 경우 기존 채팅 삭제
         if (createChatbotRequestDto.isNewChat()) {
             deletePreviousChat(graphId);
