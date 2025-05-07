@@ -40,10 +40,6 @@ public class ChatbotServiceImpl implements ChatbotService {
         // 404 : 지식그래프 찾을 수 없음
         Graph graph = graphRepository.getByGraph(graphId);
 
-        List<String> retrievedChunks = new ArrayList<>();
-        List<String> sourceNodes = new ArrayList<>();
-        Map<String, String> ragMeta = new HashMap<>();
-
         // RAG: 사용자 질문
         String userQuestion = createChatbotRequestDto.getChatContent();
 
@@ -62,9 +58,13 @@ public class ChatbotServiceImpl implements ChatbotService {
         String finalPrompt = promptBuilder.buildPrompt(filteredChunks, userQuestion);
 
         // RAG: 메타정보 수집
-        retrievedChunks.addAll(filteredChunks);
-        sourceNodes.addAll(matchedNodes.stream().map(GraphNode::getLabel).distinct().toList());
-        ragMeta.put("chunkCount", String.valueOf(filteredChunks.size()));
+        List<String> retrievedChunks = new ArrayList<>(filteredChunks);
+        List<String> sourceNodes = new ArrayList<>(
+                matchedNodes.stream().map(GraphNode::getLabel).distinct().toList()
+        );
+        Map<String, String> ragMeta = Map.of(
+                "chunkCount", String.valueOf(filteredChunks.size())
+        );
 
         System.out.println("createChatbotRequestDto: "  + createChatbotRequestDto.getChatContent() + createChatbotRequestDto.isNewChat());
         // 새로운 대화인 경우 기존 채팅 삭제
