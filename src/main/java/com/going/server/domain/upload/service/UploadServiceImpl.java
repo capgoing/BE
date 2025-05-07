@@ -14,8 +14,7 @@ import com.going.server.domain.upload.dto.UploadRequestDto;
 import com.going.server.domain.upload.dto.UploadResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -161,6 +160,25 @@ public class UploadServiceImpl implements  UploadService {
             return urls.get("regular"); // 또는 "small", "thumb" 등
         }
         return null;
+    }
+
+    //번역 api 호출
+    public String translate(String text) {
+        String url = "https://libretranslate.com/translate";
+        Map<String, Object> body = new HashMap<>();
+        body.put("q",text);
+        body.put("source","ko");
+        body.put("target","en");
+        body.put("format","text");
+
+        //http 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
+        System.out.println("번역결과: "+response.getBody().get("translatedText"));
+        return (String) response.getBody().get("translatedText");
     }
 
     //FastApi 호출
