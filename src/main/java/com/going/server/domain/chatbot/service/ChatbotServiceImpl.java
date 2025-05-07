@@ -91,8 +91,14 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         // RAG: 유사 문장이 있을 경우 컨텍스트 활용
         if (retrievedChunks.isEmpty()) {
+            System.out.println("[INFO] RAG 미적용 - 일반 채팅 기반 응답");
+            System.out.println("[INFO] RAG 미적용 - 유사 문장 없음");
+            System.out.println("[DEBUG] matchedNodes.size(): " + matchedNodes.size());
+            System.out.println("[DEBUG] candidateSentences.size(): " + candidateSentences.size());
+            System.out.println("[DEBUG] filteredChunks.size(): " + filteredChunks.size());
             chatContent = answerCreateService.chat(chatHistory, newChat);
         } else {
+            System.out.println("[INFO] RAG 적용됨 - 유사 문장 " + retrievedChunks.size() + "개 포함");
             chatContent = answerCreateService.chatWithContext(chatHistory, finalPrompt);
         }
 
