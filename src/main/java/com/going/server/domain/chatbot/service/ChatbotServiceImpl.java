@@ -94,7 +94,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         if (retrievedChunks.isEmpty()) {
             chatContent = answerCreateService.chat(chatHistory, newChat);
         } else {
-            chatContent = answerCreateService.chatWithContext(finalPrompt);
+            chatContent = answerCreateService.chatWithContext(chatHistory, finalPrompt);
         }
 
         // 응답 repository에 저장
