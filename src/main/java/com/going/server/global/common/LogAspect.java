@@ -29,13 +29,13 @@ public class LogAspect {
         this.objectMapper = objectMapper;
     }
 
-    @Pointcut("execution(* com.going.server.domain..controller..*(..))")
-    public void controllerMethods() {}
+    @Pointcut("within(com.going.server.domain..controller..*)")
+    public void controllerLayer() {}
 
-    @Pointcut("execution(* com.going.server.domain..service..*(..))")
-    public void serviceMethods() {}
+    @Pointcut("within(com.going.server.domain..service..*)")
+    public void serviceLayer() {}
 
-    @Around("controllerMethods()")
+    @Around("controllerLayer()")
     public Object logController(ProceedingJoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null || attributes.getRequest() == null) {
@@ -60,7 +60,7 @@ public class LogAspect {
         return joinPoint.proceed();
     }
 
-    @Around("serviceMethods()")
+    @Around("serviceLayer()")
     public Object logService(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
         String className = joinPoint.getSignature().getDeclaringTypeName();
