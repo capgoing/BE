@@ -21,7 +21,7 @@ public class ClusterServiceImpl implements ClusterService {
         List<Cluster> clusters = clusterRepository.findAll();
 
         //클러스터링 결과 이미지
-        String imageUrl = clusters.get(1).getResultImg();
+        //String imageUrl = clusters.get(1).getResultImg();
 
         //클러스터링 결과 리스트 생성
         List<ClusterDto> clusterDto = new ArrayList<>();
@@ -33,7 +33,7 @@ public class ClusterServiceImpl implements ClusterService {
         });
 
         //응답 Dto 생성
-        ClusterResponseDto clusterResponseDto = ClusterResponseDto.from(clusterDto,imageUrl);
+        ClusterResponseDto clusterResponseDto = ClusterResponseDto.from(clusterDto,null);
 
         return clusterResponseDto;
     }

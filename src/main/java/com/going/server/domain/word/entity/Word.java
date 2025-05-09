@@ -16,8 +16,8 @@ public class Word {
     @GeneratedValue
     private Long id;
 
-    @Property("word_id")
-    private Long wordId;
+//    @Property("word_id")
+//    private Long wordId;
 
     @Property("compose_word")
     private String composeWord;
