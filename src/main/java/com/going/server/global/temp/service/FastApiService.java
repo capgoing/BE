@@ -1,5 +1,8 @@
 package com.going.server.global.temp.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.domain.cluster.repository.ClusterRepository;
 import com.going.server.domain.sentence.entity.Sentence;
@@ -7,13 +10,20 @@ import com.going.server.domain.sentence.repository.SentenceRepository;
 import com.going.server.domain.word.entity.Word;
 import com.going.server.domain.word.repository.WordRepository;
 import jakarta.annotation.PostConstruct;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
@@ -55,48 +65,55 @@ public class FastApiService {
 
     @Profile("!test")
     public void setCluster() {
-        Map<String, Object> requestData = Map.of("input_text", "클러스터링할 데이터 예제");
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            InputStream is = getClass().getClassLoader().getResourceAsStream("data.json");
+            JsonNode root = mapper.readTree(is);
 
-        Map<String, Object> response = webClient.post()
-                .uri(baseUrl + "/api/cluster")
-                .bodyValue(requestData)
-                .retrieve()
-                .bodyToMono(Map.class)
-                .block();
+            for (JsonNode clusterNode : root) {
+                Long clusterId = clusterNode.get("clusterId").asLong();
+                String representWord = clusterNode.get("representWord").asText();
+                String resultImg = null; // 필요 시 넣기
 
-        List<Map<String, Object>> clusters = (List<Map<String, Object>>) response.get("clusters");
-        String imageUrl = response.get("image_url").toString();
+                // Cluster 저장
+                Cluster cluster = Cluster.builder()
+                        .clusterId(clusterId)
+                        .representWord(representWord)
+                        .resultImg(resultImg)
+                        .build();
+                clusterRepository.save(cluster);
 
-        // 병렬처리를 위한 리스트
-        List<Cluster> clusterEntities = new ArrayList<>();
-        List<Word> wordEntities = new ArrayList<>();
-        List<Sentence> sentenceEntities = new ArrayList<>();
+                // Word 처리
+                JsonNode words = clusterNode.get("words");
+                JsonNode sentences = clusterNode.get("sentences");
 
-        for (Map<String, Object> cluster : clusters) {
-            Map<String, List<String>> wordSentences = (Map<String, List<String>>) cluster.get("word_sentences");
+                for (int i = 0; i < words.size(); i++) {
+                    String wordStr = words.get(i).asText();
 
-            if (wordSentences.isEmpty()) continue;
+                    Word word = Word.builder()
+                            .composeWord(wordStr)
+                            .cluster(cluster)
+                            .build();
+                    wordRepository.save(word);
 
-            String representWord = wordSentences.keySet().iterator().next();
-            Cluster clusterEntity = Cluster.toEntity(representWord, imageUrl);
-            clusterEntities.add(clusterEntity);
-
-            for (Map.Entry<String, List<String>> entry : wordSentences.entrySet()) {
-                Word wordEntity = Word.toEntity(entry.getKey(), clusterEntity);
-                wordEntities.add(wordEntity);
-
-                for (String sentence : entry.getValue()) {
-                    sentenceEntities.add(Sentence.toEntity(sentence, wordEntity));
+                    // 해당 단어에 해당하는 문장 있으면 Sentence 저장
+                    if (i < sentences.size()) {
+                        String sentenceStr = sentences.get(i).asText();
+                        Sentence sentence = Sentence.builder()
+                                .sentence(sentenceStr)
+                                .word(word)
+                                .build();
+                        sentenceRepository.save(sentence);
+                    }
                 }
             }
+
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
-        // 1. 클러스터 저장
-        clusterRepository.saveAll(clusterEntities);
-
-        // 2. 클러스터 저장 후 Word에 연결된 객체들을 저장
-        wordRepository.saveAll(wordEntities);
-        sentenceRepository.saveAll(sentenceEntities);
     }
 
 
