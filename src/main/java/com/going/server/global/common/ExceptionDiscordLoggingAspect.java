@@ -57,7 +57,7 @@ public class ExceptionDiscordLoggingAspect {
         return skipNotification.value();
     }
 
-    @AfterThrowing(pointcut = "within(com..*)", throwing = "ex")
+    @AfterThrowing(pointcut = "(@within(org.springframework.web.bind.annotation.RestController) || @within(org.springframework.stereotype.Service))", throwing = "ex")
     public void handleException(JoinPoint joinPoint, Throwable ex) {
         if (isNotificationDisabled()) {
             return;
