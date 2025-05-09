@@ -10,12 +10,23 @@ import com.going.server.domain.graph.repository.GraphEdgeRepository;
 import com.going.server.domain.graph.repository.GraphNodeRepository;
 import com.going.server.domain.graph.repository.GraphRepository;
 import com.going.server.domain.upload.service.UploadServiceImpl;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
@@ -26,6 +37,9 @@ public class GraphServiceImpl implements GraphService {
     final GraphRepository graphRepository;
     final GraphNodeRepository graphNodeRepository;
     private final UploadServiceImpl uploadServiceImpl;
+    private final RestTemplate restTemplate = new RestTemplate();
+    @Value("${unsplash.access-key}")
+    private String unsplashKey;
 
     @Override
     public GraphListDto getGraphList() {
@@ -84,6 +98,8 @@ public class GraphServiceImpl implements GraphService {
         if (node == null) {
             throw new NodeNotFoundException(); // 직접 만든 예외 던지기
         }
+        node.setImage(getImage(node.getLabel()));
+        graphNodeRepository.save(node);
         return NodeDto.from(node);
     }
 
@@ -111,7 +127,7 @@ public class GraphServiceImpl implements GraphService {
                 .group(group.toString())
                 .level(parentNode.getLevel() + 1)
                 .includeSentence(null)
-                .image(uploadServiceImpl.getImage(nodeAddDto.getNodeLabel()))
+                .image(getImage(nodeAddDto.getNodeLabel()))
                 .build();
         GraphNode newNode = graphNodeRepository.save(nodeEntity);
 
@@ -174,5 +190,41 @@ public class GraphServiceImpl implements GraphService {
         node.setIncludeSentence(nodeModifyDto.getIncludeSentence());
         //저장
         graphNodeRepository.save(node);
+    }
+
+    public String getImage(String keyword) {
+        String translateKeyword = translate(keyword);
+        try {
+            String url = "https://api.unsplash.com/search/photos?query=" + translateKeyword + "&per_page=1&client_id=" + unsplashKey;
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody().get("results");
+            if (results != null && !results.isEmpty()) {
+                Map<String, String> urls = (Map<String, String>) results.get(0).get("urls");
+                return urls.get("regular");
+            }
+        } catch (Exception e) {
+            System.out.println("이미지 검색 실패: " + keyword);
+        }
+        return null;
+    }
+
+    public String translate(String text) {
+        try {
+            String urlStr = String.format(
+                    "https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=en&dt=t&q=%s",
+                    URLEncoder.encode(text, "UTF-8")
+            );
+            HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                JsonArray json = JsonParser.parseReader(br).getAsJsonArray();
+                return json.get(0).getAsJsonArray().get(0).getAsJsonArray().get(0).getAsString();
+            }
+        } catch (Exception e) {
+            System.out.println("번역 실패: " + text);
+            return text;
+        }
     }
 }
