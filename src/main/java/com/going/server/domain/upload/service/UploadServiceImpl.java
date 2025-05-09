@@ -5,42 +5,51 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphEdge;
 import com.going.server.domain.graph.entity.GraphNode;
-import com.going.server.domain.graph.repository.GraphEdgeRepository;
 import com.going.server.domain.graph.repository.GraphNodeRepository;
 import com.going.server.domain.graph.repository.GraphRepository;
 import com.going.server.domain.ocr.OcrService;
 import com.going.server.domain.ocr.PdfOcrService;
 import com.going.server.domain.upload.dto.UploadRequestDto;
 import com.going.server.domain.upload.dto.UploadResponseDto;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
-public class UploadServiceImpl implements  UploadService {
+public class UploadServiceImpl implements UploadService {
     private final OcrService ocrService;
     private final PdfOcrService pdfOcrService;
     private final GraphNodeRepository graphNodeRepository;
     private final GraphRepository graphRepository;
-    private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${ocr.api.url}")
     private String apiUrl;
     @Value("${ocr.api.secret-key}")
     private String secretKey;
-    @Value("${unsplash.access-key}")
-    private String unsplashKey;
     @Value("${fastapi.base-url}")
     private String fastApiUrl;
+
+    private final Map<String, String> translationCache = new HashMap<>();
+    private final Map<String, String> imageCache = new HashMap<>();
 
     @Override
     public UploadResponseDto uploadFile(UploadRequestDto dto) {
@@ -149,55 +158,17 @@ public class UploadServiceImpl implements  UploadService {
         }
     }
 
-    public String getImage(String keyword) {
-        String url =  "https://api.unsplash.com/search/photos?query=" + keyword + "&per_page=1&client_id=" + unsplashKey;
-        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-
-        List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody().get("results");
-        if (results != null && !results.isEmpty()) {
-            Map<String, Object> firstResult = results.get(0);
-            Map<String, String> urls = (Map<String, String>) firstResult.get("urls");
-            return urls.get("regular"); // 또는 "small", "thumb" 등
-        }
-        return null;
-    }
-
-    //번역 api 호출
-    public String translate(String text) {
-        String url = "https://libretranslate.com/translate";
-        Map<String, Object> body = new HashMap<>();
-        body.put("q",text);
-        body.put("source","ko");
-        body.put("target","en");
-        body.put("format","text");
-
-        //http 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-        ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
-        System.out.println("번역결과: "+response.getBody().get("translatedText"));
-        return (String) response.getBody().get("translatedText");
-    }
-
-    //FastApi 호출
     public String setModelData(String text) {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(fastApiUrl)
-                .build();
-
+        WebClient webClient = WebClient.builder().baseUrl(fastApiUrl).build();
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("text", text);
 
-        String response = webClient.post()
+        return webClient.post()
                 .uri("/api/generate-gdb")
                 .header("Content-Type", "application/json")
                 .bodyValue(requestBody)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-        //System.out.println("응답 결과: " + response);
-        return response;
     }
 }
