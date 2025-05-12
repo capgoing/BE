@@ -67,7 +67,7 @@ public class ConnectQuizGenerator implements QuizGenerator<ConnectQuizDto> {
         } while (usedNodeIndices.contains(questionTargetId));
 
         NodeDto targetNode = nodeDtoList.get(questionTargetId);
-        usedNodeIndices.add(questionTargetId); // 사용한 Id 추가
+        usedNodeIndices.add(Integer.valueOf(targetNode.getId())); // 사용한 Id 추가
 
         // 정답
         String answer = targetNode.getLabel();

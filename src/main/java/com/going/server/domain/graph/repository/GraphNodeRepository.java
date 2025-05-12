@@ -25,6 +25,4 @@ public interface GraphNodeRepository extends Neo4jRepository<GraphNode, Long> {
         RETURN n
     """)
     List<GraphNode> findByKeyword(String keyword);
-
-
 }
