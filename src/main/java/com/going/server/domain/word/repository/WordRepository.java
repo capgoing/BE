@@ -10,11 +10,11 @@ import java.util.Optional;
 
 @Repository
 public interface WordRepository extends Neo4jRepository<Word, Long> {
-    Optional<Word> findByWordId(Long wordId);
+    Optional<Word> findById(Long wordId);
 
     List<Word> findByCluster_ClusterId(Long clusterId);
 
     default Word getByWord(Long wordId) {
-        return findByWordId(wordId).orElseThrow(WordNotFoundException::new);
+        return findById(wordId).orElseThrow(WordNotFoundException::new);
     }
 }

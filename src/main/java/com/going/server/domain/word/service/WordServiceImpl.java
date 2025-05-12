@@ -34,7 +34,7 @@ public class WordServiceImpl implements WordService {
         List<WordDto> wordDto = new ArrayList<>();
         words.forEach(word -> {
             Boolean isRepresent = cluster.getRepresentWord().equals(word.getComposeWord());
-            wordDto.add(WordDto.from(word.getWordId(),word.getComposeWord(),isRepresent));
+            wordDto.add(WordDto.from(word.getId(),word.getComposeWord(),isRepresent));
         });
         WordResponseDto wordResponseDto = WordResponseDto.of(cluster.getClusterId(),wordDto);
         return wordResponseDto;

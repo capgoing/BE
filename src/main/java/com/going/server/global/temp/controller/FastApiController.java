@@ -43,7 +43,7 @@ public class FastApiController {
     }
 
     @GetMapping("/save-cluster")
-    @Operation(summary = "클러스터링 결과 저장", description = "클러스터링 결과를 DB에 저장합니다.")
+    @Operation(summary = "[❌호출금지❌]클러스터링 결과 저장", description = "이 api는 호출하지 마세요")
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
