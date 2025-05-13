@@ -1,6 +1,9 @@
 package com.going.server.domain.cluster.dto;
 
+import com.going.server.domain.word.entity.Word;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -10,7 +13,8 @@ import lombok.*;
 public class ClusterDto {
     private Long clusterId;
     private String representWord;
-    public static ClusterDto from(Long clusterId, String representWord) {
-        return ClusterDto.builder().clusterId(clusterId).representWord(representWord).build();
+    private List<String> words;
+    public static ClusterDto from(Long clusterId, String representWord, List<String> words) {
+        return ClusterDto.builder().clusterId(clusterId).representWord(representWord).words(words).build();
     }
 }
