@@ -4,6 +4,8 @@ import com.going.server.domain.cluster.dto.ClusterDto;
 import com.going.server.domain.cluster.dto.ClusterResponseDto;
 import com.going.server.domain.cluster.entity.Cluster;
 import com.going.server.domain.cluster.repository.ClusterRepository;
+import com.going.server.domain.word.entity.Word;
+import com.going.server.domain.word.repository.WordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClusterServiceImpl implements ClusterService {
     private final ClusterRepository clusterRepository;
+    private final WordRepository wordRepository;
 
     @Override
     public ClusterResponseDto getCluster() {
@@ -26,9 +29,15 @@ public class ClusterServiceImpl implements ClusterService {
         //클러스터링 결과 리스트 생성
         List<ClusterDto> clusterDto = new ArrayList<>();
         clusters.forEach(cluster -> {
+            List<Word> words = wordRepository.findByCluster_ClusterId(cluster.getClusterId());
+            List<String> wordList = new ArrayList<>();
+            for (Word word : words) {
+                wordList.add(word.getComposeWord());
+            }
             clusterDto.add(ClusterDto.from(
                     cluster.getClusterId(),
-                    cluster.getRepresentWord()
+                    cluster.getRepresentWord(),
+                    wordList
             ));
         });
 
