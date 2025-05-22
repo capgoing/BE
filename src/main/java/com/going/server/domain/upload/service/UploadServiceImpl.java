@@ -55,9 +55,10 @@ public class UploadServiceImpl implements UploadService {
     public UploadResponseDto uploadFile(UploadRequestDto dto) {
         try {
             String jsonResponse = ocrService.processOcr(dto.getFile(), apiUrl, secretKey);
+            System.out.println(jsonResponse);
             Map<String, String> paresData = pdfOcrService.parse(jsonResponse);
-            String text = paresData.get("6학년 읽기자료 내용");
-            //System.out.println("추출된 텍스트: " + text);
+            String text = paresData.get("읽기자료");
+            System.out.println("추출된 텍스트: " + text);
 
             //모델에 돌린 값을 받아옴
             String response = setModelData(text);
