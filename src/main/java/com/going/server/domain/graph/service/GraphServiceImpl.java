@@ -53,7 +53,7 @@ public class GraphServiceImpl implements GraphService {
             String image = targetNode
                     .map(node -> getImage(node.getLabel()))
                     .orElse(null);
-            GraphDto graphDto = GraphDto.of(graph, image, false, false);
+            GraphDto graphDto = GraphDto.of(graph, image, graph.isListenUpPerfect(), graph.isConnectPerfect(),graph.isPicturePerfect());
             graphDtos.add(graphDto);
         }
         return GraphListDto.of(graphDtos);
