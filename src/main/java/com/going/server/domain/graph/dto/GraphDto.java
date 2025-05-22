@@ -12,9 +12,10 @@ public class GraphDto {
     private Long id;
     private String title;
     private String image;
-    private Boolean easy;
-    private Boolean hard;
-    public static GraphDto of(Graph graph, String image,Boolean easy, Boolean hard) {
-        return GraphDto.builder().id(graph.getId()).title(graph.getTitle()).image(image).easy(easy).hard(hard).build();
+    private Boolean listenQuiz;
+    private Boolean connectQuiz;
+    private Boolean pictureQuiz;
+    public static GraphDto of(Graph graph, String image,Boolean listenQuiz, Boolean connectQuiz, Boolean pictureQuiz) {
+        return GraphDto.builder().id(graph.getId()).title(graph.getTitle()).image(image).listenQuiz(listenQuiz).connectQuiz(connectQuiz).pictureQuiz(pictureQuiz).build();
     }
 }

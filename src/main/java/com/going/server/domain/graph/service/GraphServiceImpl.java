@@ -45,12 +45,20 @@ public class GraphServiceImpl implements GraphService {
     public GraphListDto getGraphList() {
         List<Graph> graphs = graphRepository.findAll();
         List<GraphDto> graphDtos = new ArrayList<>();
+
         for (Graph graph : graphs) {
-            GraphDto graphDto = GraphDto.of(graph,null,false,false);
+            Optional<GraphNode> targetNode = graph.getNodes().stream()
+                    .filter(node -> node.getNodeId() == 0)
+                    .findFirst();
+            String image = targetNode
+                    .map(node -> getImage(node.getLabel()))
+                    .orElse(null);
+            GraphDto graphDto = GraphDto.of(graph, image, graph.isListenUpPerfect(), graph.isConnectPerfect(),graph.isPicturePerfect());
             graphDtos.add(graphDto);
         }
         return GraphListDto.of(graphDtos);
     }
+
 
     @Override
     public void deleteGraph(Long graphId) {
