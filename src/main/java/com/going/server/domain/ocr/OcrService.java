@@ -37,8 +37,8 @@ public class OcrService {
 
         //응답 처리
         int responseCode = connection.getResponseCode();
-        System.out.println("responseCode = " + responseCode);
-        System.out.println("responseMessage = " + connection.getResponseMessage());
+        log.info("responseCode info = {}",responseCode);
+        log.info("responseMessage info = {} ",connection.getResponseMessage());
 
         if (responseCode != HttpURLConnection.HTTP_OK) {
             try (var errorStream = connection.getErrorStream()) {
