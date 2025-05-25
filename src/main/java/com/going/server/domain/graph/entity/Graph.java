@@ -19,6 +19,7 @@ public class Graph extends BaseEntity {
 
     private String title;
 
+    // DB에 content 추가
     private String content;
 
     private boolean listenUpPerfect; //listenUp 퀴즈 만접 여부
