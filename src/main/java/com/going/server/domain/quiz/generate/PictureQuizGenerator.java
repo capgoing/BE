@@ -72,40 +72,7 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
 
     // 이미지 생성 프롬프트 생성 메서드
 
-    // 버전1
-//    private String buildQuizImagePrompt(String answer) {
-//        return "You are given an educational description in natural language.\n\n" +
-//                "1. First, analyze the sentence to determine what kind of relationship it contains, such as:\n" +
-//                "- Cause and effect\n" +
-//                "- Inclusion or category\n" +
-//                "- Example and concept\n" +
-//                "- Behavioral actions\n" +
-//                "- General explanation\n\n" +
-//                "2. Then, generate a **cute, warm, and educational diagram-style illustration** that reflects the structure and meaning of the sentence.\n\n" +
-//                "Use **flat vector illustrations inspired by iOS emojis**, with **bright and soft colors**.\n" +
-//                "If the sentence includes multiple ideas, arrange the illustration using diagrams, arrows, or symbolic layouts that match the logical structure.\n" +
-//                "Do **not include any text or labels** in the image. Use only visuals.\n\n" +
-//                "[Description]\n" + answer;
-//    }
-
-    // 버전2
-//    public String buildQuizImagePrompt(String answer) {
-//        return "You are given an educational description in natural language.\n\n" +
-//                "1. First, analyze the sentence to determine what kind of relationship it contains, such as:\n" +
-//                "- Cause and effect\n" +
-//                "- Inclusion or category\n" +
-//                "- Example and concept\n" +
-//                "- Behavioral actions\n" +
-//                "- General explanation\n\n" +
-//                "2. Then, generate a cute, warm, and educational diagram-style illustration that reflects the structure and meaning of the sentence.\n\n" +
-//                "Use flat vector illustrations inspired by iOS emojis, with bright and soft colors.\n" +
-//                "If the sentence includes multiple ideas, arrange the illustration using symbols or visual layouts like arrows, sets, or diagrams **only when necessary to express the logical relationship**.\n" +
-//                "Do not include any text or labels in the image. Use only visuals.\n\n" +
-//                "[Description]\n" + answer;
-//    }
-
-    // 버전3
-    public static String buildQuizImagePrompt(String answer) {
+   public static String buildQuizImagePrompt(String answer) {
         return "You are given an educational description in natural language.\n\n" +
                 "1. First, analyze the sentence to determine what kind of relationship it contains, such as:\n" +
                 "- Cause and effect\n" +
@@ -120,5 +87,7 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
                 "Do not include any text or labels in the image. Use only visuals.\n\n" +
                 "[Description]\n" + answer;
     }
+
+    // 네컷 만화 생성 프롬프트 빌드 메서드
 
 }

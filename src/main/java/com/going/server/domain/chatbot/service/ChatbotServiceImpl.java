@@ -32,9 +32,22 @@ public class ChatbotServiceImpl implements ChatbotService {
     private final SimilarityFilterService similarityFilterService;
     private final PromptBuilder promptBuilder;
 
-    // 챗봇 응답 생성
+    // 원문 반환
     @Override
-    public CreateChatbotResponseDto createAnswer(String graphStrId, CreateChatbotRequestDto createChatbotRequestDto) {
+    public String getOriginalText(String graphId) {
+        Graph graph = graphRepository.getByGraph(Long.valueOf(graphId));
+        return graph.getContent();
+    }
+
+    // 요약본 생성
+    @Override
+    public String getSummaryText(String graphId) {
+        return "";
+    }
+
+    // RAG 챗봇 응답 생성
+    @Override
+    public CreateChatbotResponseDto createAnswerWithRAG(String graphStrId, CreateChatbotRequestDto createChatbotRequestDto) {
         Long graphId = Long.valueOf(graphStrId);
 
         // 404 : 지식그래프 찾을 수 없음
@@ -120,6 +133,24 @@ public class ChatbotServiceImpl implements ChatbotService {
                 .sourceNodes(sourceNodes)
                 .ragMeta(ragMeta)
                 .build();
+    }
+
+    // RAG 사용하지 않는 응답 생성
+    @Override
+    public CreateChatbotResponseDto createSimpleAnswer(String graphId, CreateChatbotRequestDto dto) {
+        return null;
+    }
+
+    // 4컷만화 생성
+    @Override
+    public CreateChatbotResponseDto createCartoon(String graphId, CreateChatbotRequestDto dto) {
+        return null;
+    }
+
+    // 추천 영상 생성
+    @Override
+    public CreateChatbotResponseDto recommendVideo(String graphId, CreateChatbotRequestDto dto) {
+        return null;
     }
 
     // 채팅 삭제 메서드
