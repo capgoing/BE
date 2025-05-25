@@ -14,7 +14,6 @@ import com.going.server.domain.upload.dto.UploadResponseDto;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,6 @@ import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UploadServiceImpl implements UploadService {
     private final OcrService ocrService;
     private final PdfOcrService pdfOcrService;
@@ -57,10 +55,9 @@ public class UploadServiceImpl implements UploadService {
     public UploadResponseDto uploadFile(UploadRequestDto dto) {
         try {
             String jsonResponse = ocrService.processOcr(dto.getFile(), apiUrl, secretKey);
-            log.info("jsonResponse log={}",jsonResponse);
             Map<String, String> paresData = pdfOcrService.parse(jsonResponse);
-            String text = paresData.get("읽기자료");
-            log.info("text log={}",text);
+            String text = paresData.get("6학년 읽기자료 내용");
+            //System.out.println("추출된 텍스트: " + text);
 
             //모델에 돌린 값을 받아옴
             String response = setModelData(text);
@@ -135,6 +132,7 @@ public class UploadServiceImpl implements UploadService {
             String title = dto.getTitle();
             Graph graphEntity = Graph.builder()
                     .title(title)
+                    .content(text)
                     .listenUpPerfect(false)
                     .connectPerfect(false)
                     .picturePerfect(false)

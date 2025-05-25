@@ -19,6 +19,8 @@ public class Graph extends BaseEntity {
 
     private String title;
 
+    private String content;
+
     private boolean listenUpPerfect; //listenUp 퀴즈 만접 여부
     private boolean connectPerfect; //connect 퀴즈 만접 여부
     private boolean picturePerfect; //picture 퀴즈 만접 여부
