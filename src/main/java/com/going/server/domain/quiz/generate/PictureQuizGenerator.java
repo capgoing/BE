@@ -2,6 +2,7 @@ package com.going.server.domain.quiz.generate;
 
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphNode;
+import com.going.server.domain.openai.dto.ImageCreateRequestDto;
 import com.going.server.domain.openai.service.ImageCreateService;
 import com.going.server.domain.quiz.dto.PictureQuizDto;
 import lombok.AllArgsConstructor;
@@ -58,8 +59,9 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
         int answerIndex = random.nextInt(shuffledListSize);
         String answer = new ArrayList<>(selectedSentences).get(answerIndex);
 
-        String prompt = buildImagePrompt(answer);
-        String imageUrl = imageCreateService.generatePicture(prompt);
+        String prompt = buildQuizImagePrompt(answer);
+        ImageCreateRequestDto requestDto = new ImageCreateRequestDto(prompt);
+        String imageUrl = imageCreateService.generatePicture(requestDto);
 
         return PictureQuizDto.builder()
                 .imageUrl(imageUrl)
@@ -69,9 +71,54 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
     }
 
     // 이미지 생성 프롬프트 생성 메서드
-    private String buildImagePrompt(String answer) {
-        return "아래 설명을 이미지로 표현해주세요.\n\n"
-                + "[설명]\n" + answer;
+
+    // 버전1
+//    private String buildQuizImagePrompt(String answer) {
+//        return "You are given an educational description in natural language.\n\n" +
+//                "1. First, analyze the sentence to determine what kind of relationship it contains, such as:\n" +
+//                "- Cause and effect\n" +
+//                "- Inclusion or category\n" +
+//                "- Example and concept\n" +
+//                "- Behavioral actions\n" +
+//                "- General explanation\n\n" +
+//                "2. Then, generate a **cute, warm, and educational diagram-style illustration** that reflects the structure and meaning of the sentence.\n\n" +
+//                "Use **flat vector illustrations inspired by iOS emojis**, with **bright and soft colors**.\n" +
+//                "If the sentence includes multiple ideas, arrange the illustration using diagrams, arrows, or symbolic layouts that match the logical structure.\n" +
+//                "Do **not include any text or labels** in the image. Use only visuals.\n\n" +
+//                "[Description]\n" + answer;
+//    }
+
+    // 버전2
+//    public String buildQuizImagePrompt(String answer) {
+//        return "You are given an educational description in natural language.\n\n" +
+//                "1. First, analyze the sentence to determine what kind of relationship it contains, such as:\n" +
+//                "- Cause and effect\n" +
+//                "- Inclusion or category\n" +
+//                "- Example and concept\n" +
+//                "- Behavioral actions\n" +
+//                "- General explanation\n\n" +
+//                "2. Then, generate a cute, warm, and educational diagram-style illustration that reflects the structure and meaning of the sentence.\n\n" +
+//                "Use flat vector illustrations inspired by iOS emojis, with bright and soft colors.\n" +
+//                "If the sentence includes multiple ideas, arrange the illustration using symbols or visual layouts like arrows, sets, or diagrams **only when necessary to express the logical relationship**.\n" +
+//                "Do not include any text or labels in the image. Use only visuals.\n\n" +
+//                "[Description]\n" + answer;
+//    }
+
+    // 버전3
+    public static String buildQuizImagePrompt(String answer) {
+        return "You are given an educational description in natural language.\n\n" +
+                "1. First, analyze the sentence to determine what kind of relationship it contains, such as:\n" +
+                "- Cause and effect\n" +
+                "- Inclusion or category\n" +
+                "- Example and concept\n" +
+                "- Behavioral actions\n" +
+                "- General explanation\n\n" +
+                "2. Then, generate a cute, warm, and educational diagram-style illustration that reflects the structure and meaning of the sentence.\n\n" +
+                "Use flat vector illustrations inspired by iOS emojis, with bright and soft colors.\n\n" +
+                "If the sentence includes multiple ideas or relationships, use simple visual symbols like arrows or grouping layouts to represent those relationships **only when necessary**.\n" +
+                "Do **not overuse symbols**—use them only when they help express meaning clearly.\n\n" +
+                "Do not include any text or labels in the image. Use only visuals.\n\n" +
+                "[Description]\n" + answer;
     }
 
 }

@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 public class ChatbotController {
     private final ChatbotService chatbotService;
 
-    // 지금 챗봇 생성 컨트롤러 만드는 중이었음
     @PostMapping("/{graphId}")
     @Operation(summary = "[챗봇 화면] 챗봇 응답 생성", description = "챗봇 화면에서 사용자의 질문에 응답을 생성합니다.")
     @ApiResponses(

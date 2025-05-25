@@ -1,26 +1,42 @@
 package com.going.server.domain.openai.service;
 
-import com.theokanning.openai.image.CreateImageRequest;
-import com.theokanning.openai.OpenAiService;
-import jakarta.annotation.Resource;
+import com.going.server.domain.openai.dto.ImageCreateRequestDto;
+import com.going.server.domain.openai.dto.ImageCreateResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
-@RequiredArgsConstructor
 public class ImageCreateService {
 
-    @Resource(name = "getOpenAIService")
-    private final OpenAiService openAiService;
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final String openAIImageUrl;
+    private final String apiKey;
 
-    public String generatePicture(String prompt) {
-        CreateImageRequest createImageRequest = CreateImageRequest.builder()
-                .prompt(prompt)
-                .size("512x512") //사이즈
-                .n(1)
-                .build();
+    public ImageCreateService(
+            @Qualifier("openAIImageUrl") String openAIImageUrl,
+            @Qualifier("openAIKey") String apiKey
+    ) {
+        this.openAIImageUrl = openAIImageUrl;
+        this.apiKey = apiKey;
+    }
 
-        //URL로 리턴 (1시간 후 만료)
-        return openAiService.createImage(createImageRequest).getData().get(0).getUrl();
+    public String generatePicture(ImageCreateRequestDto requestDto) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<ImageCreateRequestDto> entity = new HttpEntity<>(requestDto, headers);
+
+        ResponseEntity<ImageCreateResponseDto> response = restTemplate.exchange(
+                openAIImageUrl,
+                HttpMethod.POST,
+                entity,
+                ImageCreateResponseDto.class
+        );
+
+        return response.getBody().getData().get(0).getUrl();
     }
 }
