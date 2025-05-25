@@ -11,9 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+// RAG 대화
 @Service
 @RequiredArgsConstructor
-public class AnswerCreateService {
+public class RAGAnswerCreateService {
     private final OpenAiService openAiService;
 
     // TODO : 프롬프트 튜닝 필요

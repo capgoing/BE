@@ -71,7 +71,6 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
     }
 
     // 이미지 생성 프롬프트 생성 메서드
-
    public static String buildQuizImagePrompt(String answer) {
         return "You are given an educational description in natural language.\n\n" +
                 "1. First, analyze the sentence to determine what kind of relationship it contains, such as:\n" +

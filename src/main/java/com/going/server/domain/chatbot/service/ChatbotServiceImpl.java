@@ -9,7 +9,8 @@ import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphNode;
 import com.going.server.domain.graph.repository.GraphRepository;
 import com.going.server.domain.graph.repository.GraphNodeRepository;
-import com.going.server.domain.openai.service.AnswerCreateService;
+import com.going.server.domain.openai.service.RAGAnswerCreateService;
+import com.going.server.domain.openai.service.TextSummaryCreateService;
 import com.going.server.domain.rag.service.SimilarityFilterService;
 import com.going.server.domain.rag.util.PromptBuilder;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +28,12 @@ import java.util.stream.Collectors;
 public class ChatbotServiceImpl implements ChatbotService {
     private final GraphRepository graphRepository;
     private final ChattingRepository chattingRepository;
-    private final AnswerCreateService answerCreateService;
     private final GraphNodeRepository graphNodeRepository;
     private final SimilarityFilterService similarityFilterService;
     private final PromptBuilder promptBuilder;
+    // openai 관련 service
+    private final TextSummaryCreateService textSummaryCreateService;
+    private final RAGAnswerCreateService ragAnswerCreateService;
 
     // 원문 반환
     @Override
@@ -42,7 +45,9 @@ public class ChatbotServiceImpl implements ChatbotService {
     // 요약본 생성
     @Override
     public String getSummaryText(String graphId) {
-        return "";
+        Graph graph = graphRepository.getByGraph(Long.valueOf(graphId));
+        String context = graph.getContent();  // 지식그래프 본문 내용
+        return textSummaryCreateService.summarize(context);  // 요약본 생성
     }
 
     // RAG 챗봇 응답 생성
@@ -109,10 +114,10 @@ public class ChatbotServiceImpl implements ChatbotService {
             System.out.println("[DEBUG] matchedNodes.size(): " + matchedNodes.size());
             System.out.println("[DEBUG] candidateSentences.size(): " + candidateSentences.size());
             System.out.println("[DEBUG] filteredChunks.size(): " + filteredChunks.size());
-            chatContent = answerCreateService.chat(chatHistory, newChat);
+            chatContent = ragAnswerCreateService.chat(chatHistory, newChat);
         } else {
             System.out.println("[INFO] RAG 적용됨 - 유사 문장 " + retrievedChunks.size() + "개 포함");
-            chatContent = answerCreateService.chatWithContext(chatHistory, finalPrompt);
+            chatContent = ragAnswerCreateService.chatWithContext(chatHistory, finalPrompt);
         }
 
         // 응답 repository에 저장
