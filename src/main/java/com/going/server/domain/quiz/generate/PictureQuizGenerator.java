@@ -60,7 +60,12 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
         String answer = new ArrayList<>(selectedSentences).get(answerIndex);
 
         String prompt = buildQuizImagePrompt(answer);
-        ImageCreateRequestDto requestDto = new ImageCreateRequestDto(prompt);
+        ImageCreateRequestDto requestDto = new ImageCreateRequestDto(
+                prompt,
+                "dall-e-3",
+                "vivid",
+                "1024x1024",
+                1);
         String imageUrl = imageCreateService.generatePicture(requestDto);
 
         return PictureQuizDto.builder()
