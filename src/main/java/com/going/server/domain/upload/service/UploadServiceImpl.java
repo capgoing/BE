@@ -11,30 +11,23 @@ import com.going.server.domain.ocr.OcrService;
 import com.going.server.domain.ocr.PdfOcrService;
 import com.going.server.domain.upload.dto.UploadRequestDto;
 import com.going.server.domain.upload.dto.UploadResponseDto;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import lombok.extern.slf4j.Slf4j;
+
+
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UploadServiceImpl implements UploadService {
     private final OcrService ocrService;
     private final PdfOcrService pdfOcrService;
@@ -55,9 +48,10 @@ public class UploadServiceImpl implements UploadService {
     public UploadResponseDto uploadFile(UploadRequestDto dto) {
         try {
             String jsonResponse = ocrService.processOcr(dto.getFile(), apiUrl, secretKey);
+            log.info("jsonResponse log={}",jsonResponse);
             Map<String, String> paresData = pdfOcrService.parse(jsonResponse);
-            String text = paresData.get("6학년 읽기자료 내용");
-            //System.out.println("추출된 텍스트: " + text);
+            String text = paresData.get("읽기자료");
+            log.info("text log={}",text);
 
             //모델에 돌린 값을 받아옴
             String response = setModelData(text);
