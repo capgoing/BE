@@ -2,6 +2,7 @@ package com.going.server.domain.quiz.generate;
 
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphNode;
+import com.going.server.domain.openai.dto.ImageCreateRequestDto;
 import com.going.server.domain.openai.service.ImageCreateService;
 import com.going.server.domain.quiz.dto.PictureQuizDto;
 import lombok.AllArgsConstructor;
@@ -59,7 +60,8 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
         String answer = new ArrayList<>(selectedSentences).get(answerIndex);
 
         String prompt = buildImagePrompt(answer);
-        String imageUrl = imageCreateService.generatePicture(prompt);
+        ImageCreateRequestDto requestDto = new ImageCreateRequestDto(prompt, "1024x1024", 1);
+        String imageUrl = imageCreateService.generatePicture(requestDto);
 
         return PictureQuizDto.builder()
                 .imageUrl(imageUrl)
