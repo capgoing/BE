@@ -32,9 +32,9 @@
 
 ## 👩🏻‍💻 Developers
 
-| AI & BE | AI & BE | BE | FE | FE |
-| --- | --- | --- | --- | --- |
-| <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/113489721?v=4" /> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/147326233?v=4"/> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/104489022?v=4"/> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/113487989?v=4" /> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/122111459?v=4" /> 
-| 한성대학교 | 한성대학교 | 한성대학교 | 한성대학교 | 한성대학교 | 한성대학교 |
-| 강다현 | 김혜진 | 이주연 | 양인서 | 정예빈 |
-| [@hyeonda02](https://github.com/hyeonda02) | [@khyaejin](https://github.com/khyaejin) | [@Juye0nLee](https://github.com/Juye0nLee) | [@sheepyis](https://github.com/sheepyis) | [@benniejung](https://github.com/benniejung) |
+| BE | BE | BE |
+| --- | --- | --- |
+| <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/113489721?v=4" /> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/147326233?v=4"/> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/104489022?v=4"/> |
+| 한성대학교 | 한성대학교 | 한성대학교 | 한성대학교 |
+| 강다현 | 김혜진 | 이주연 |
+| [@hyeonda02](https://github.com/hyeonda02) | [@khyaejin](https://github.com/khyaejin) | [@Juye0nLee](https://github.com/Juye0nLee) | 
