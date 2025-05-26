@@ -5,9 +5,9 @@ import com.going.server.domain.chatbot.dto.CreateChatbotResponseDto;
 
 public interface ChatbotService {
     // 원문 반환
-    String getOriginalText(String graphId);
+    CreateChatbotResponseDto getOriginalText(String graphId);
     // 요약본 생성
-    String getSummaryText(String graphId);
+    CreateChatbotResponseDto getSummaryText(String graphId);
     // RAG 챗봇 응답 생성
     CreateChatbotResponseDto createAnswerWithRAG(String graphStrId, CreateChatbotRequestDto createChatbotRequestDto);
     // RAG 사용하지 않는 응답 생성

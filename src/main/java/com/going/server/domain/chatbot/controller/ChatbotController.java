@@ -24,25 +24,34 @@ public class ChatbotController {
 
     private final ChatbotService chatbotService;
 
-    @GetMapping("/{graphId}/original")
-    @Operation(summary = "[챗봇 기능] 원문 보기", description = "그래프에 포함된 원문 텍스트를 반환합니다.")
-    @ApiResponse(responseCode = "200", description = "원문 반환 성공")
+    @PostMapping("/{graphId}/original")
+    @Operation(summary = "[챗봇] 원문 보기", description = "그래프에 포함된 원문 텍스트를 반환합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "원문 반환 성공", content = @Content(schema = @Schema(implementation = CreateChatbotResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "그래프를 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     public SuccessResponse<?> getOriginalText(@PathVariable String graphId) {
-        String original = chatbotService.getOriginalText(graphId);
-        return SuccessResponse.of(original, "200");
+        CreateChatbotResponseDto response = chatbotService.getOriginalText(graphId);
+        return SuccessResponse.of(response, "201");
     }
 
-    @GetMapping("/{graphId}/summary")
-    @Operation(summary = "[챗봇 기능] 요약본 생성하기", description = "그래프의 요약 정보를 생성합니다.")
-    @ApiResponse(responseCode = "201", description = "요약본 생성 성공")
+    @PostMapping("/{graphId}/summary")
+    @Operation(summary = "[챗봇] 요약본 생성하기", description = "그래프의 요약 정보를 생성합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "요약본 생성 성공", content = @Content(schema = @Schema(implementation = CreateChatbotResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "그래프를 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     public SuccessResponse<?> getSummaryText(@PathVariable String graphId) {
-        String summary = chatbotService.getSummaryText(graphId);
-        return SuccessResponse.of(summary, "201");
+        CreateChatbotResponseDto response = chatbotService.getSummaryText(graphId);
+        return SuccessResponse.of(response, "201");
     }
+
 
     @PostMapping("/{graphId}")
     @Operation(
-            summary = "[챗봇 화면] 챗봇 응답 생성",
+            summary = "[챗봇 기능] 챗봇 응답 생성",
             description = """
                 사용자의 질문에 따라 다양한 응답 모드를 제공합니다.
                 - `default` : 일반 응답 (기존 GPT 방식)

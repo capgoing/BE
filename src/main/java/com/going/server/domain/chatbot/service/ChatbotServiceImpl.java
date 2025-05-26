@@ -7,6 +7,7 @@ import com.going.server.domain.chatbot.entity.Sender;
 import com.going.server.domain.chatbot.repository.ChattingRepository;
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphNode;
+import com.going.server.domain.graph.exception.GraphContentNotFoundException;
 import com.going.server.domain.graph.repository.GraphRepository;
 import com.going.server.domain.graph.repository.GraphNodeRepository;
 import com.going.server.domain.openai.dto.ImageCreateRequestDto;
@@ -42,18 +43,34 @@ public class ChatbotServiceImpl implements ChatbotService {
 
     // 원문 반환
     @Override
-    public String getOriginalText(String graphId) {
+    public CreateChatbotResponseDto getOriginalText(String graphId) {
         Graph graph = graphRepository.getByGraph(Long.valueOf(graphId));
-        return graph.getContent();
+
+        return CreateChatbotResponseDto.builder()
+                .chatContent(graph.getContent())           // 원문 텍스트
+                .graphId(graphId)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     // 요약본 생성
     @Override
-    public String getSummaryText(String graphId) {
+    public CreateChatbotResponseDto getSummaryText(String graphId) {
         Graph graph = graphRepository.getByGraph(Long.valueOf(graphId));
-        String context = graph.getContent();  // 지식그래프 본문 내용
-        return textSummaryCreateService.summarize(context);  // 요약본 생성
+
+        String context = Optional.ofNullable(graph.getContent())
+                .filter(s -> !s.trim().isEmpty())
+                .orElseThrow(GraphContentNotFoundException::new);
+
+        String summary = textSummaryCreateService.summarize(context);
+
+        return CreateChatbotResponseDto.builder()
+                .chatContent(summary)                      // 요약 텍스트
+                .graphId(graphId)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
+
 
     // RAG 챗봇 응답 생성
     @Override
