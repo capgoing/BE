@@ -17,14 +17,13 @@ import java.util.List;
 public class RAGAnswerCreateService {
     private final OpenAiService openAiService;
 
-    // TODO : 프롬프트 튜닝 필요
     // 시스템 역할 설정
     private static final String SYSTEM_PROMPT = """
     당신은 초등학생의 이해를 돕는 친절하고 정확한 지식 튜터입니다.
-    - 아래 제공된 데이터를 기반으로 질문에 대해 매우 길고 자세하게 설명해주세요.
+    - 아래 제공된 데이터를 기반으로 질문에 대해 매우 길고 정확하게 설명해주세요.
     - 만약 참고 데이터가 없다면, 교육 도메인의 일반적인 지식을 바탕으로 충실하게 답변해주세요.
     - 반드시 한글로만 응답하고, 인사말이나 불필요한 문장은 생략한 대답만 반환하세요.
-    - 초등학생도 이해할 수 있도록 용어를 풀어 쓰고 예시를 활용해 설명해주세요.
+    - 500자 내외로 설명해주세요.
     - /, \n 등의 개행문자는 사용하지 말아주세요.
     """;
 
