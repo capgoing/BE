@@ -1,79 +1,40 @@
-## 2025 캡스톤 디자인 Capgoing Backend Repository
-### 깃 컨벤션
+<div align="center"> <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&text=생각잇기%20BE&fontSize=30&fontAlign=50" alt="header"/> </div>
 
-<aside>
-💡 Title :  아이콘 + [커밋태그] + 내용
-
----
-
-ex) ✨[Feat] 깃허브 로그인/회원가입 API 구현
-
-</aside>
-
-→ Issue, Pr 템플릿 만들어놓음. 참고해주세요!
-
-<aside>
-💡 Git Rule
-
----
-
-1. 구현하고자 하는 것을 `issue` 로 만든다.
-2. `Github-Project` 에서 해당 `issue` 를 `In-progress` 로 변경한다.
-3. 이슈 번호와 수행 목표에 맞게 branch 생성
-4. `issue` 에 체크리스트를 채우며 개발을 진행한다. `commit은 자주!` 
-5. 개발이 끝났으면 `Pull&Rquest` 에서 PR을 진행 → PR Template에서 꼭!! 이슈 닫기
-6. PR이 끝났으면 작업한 **branch 삭제 (Local & Remote 모두!!)**
-7. 새로운 Branch 분기 전  `main branch` `pull` 받기!
+## 🧠 딥러닝 기반 지식 그래프 생성 시스템
+> 최근 생성형 AI 기술은 텍스트 생성, 문서 요약, 번역 등 다양한 영역에서 활용되며 큰 주목을 받고 있습니다. 그러나 사실과 무관한 내용을 그럴듯하게 만들어내는 한계가 존재합니다.
+> 이는 특히 **정보성 자료에서 정보의 신뢰성을 해치는 심각한 요인**이 될 수 있습니다.
+> 이러한 문제를 해결하기 위해, 생각잇기 시스템은 생성형 AI의 기반 데이터를 **구조화된 지식그래프 형태로 가공**하여 AI의 **의미 기반 응답 정확도**를 높이고자 합니다.
 
 
-> Confilct를 줄이기 위해 가능한! 작업 영역이 안겹치게!
-`겹치게 된다면 서로 알려주기..!!`
-> 
-</aside>
+## ✨ 주요기능
+1. 텍스트가 담긴 PDF 파일을 업로드합니다.
+2. PDF에서 텍스트를 추출한 뒤, 직접 학습시킨 지식그래프 생성 모델을 통해 주요 개념과 관계를 시각적인 지식그래프로 구성합니다.
+3. 그래프의 노드를 더블 클릭하면 해당 문장이 포함된 문맥과 관련 이미지를 확인할 수 있으며, TTS 기술로 음성 출력도 가능합니다.
+4. 생성된 그래프를 바탕으로 RAG 기반 챗봇을 통해 정확하고 맥락 있는 질의응답이 가능합니다.
+5. 지식그래프 내용을 기반으로 3가지 형태의 퀴즈를 통해 자기 점검이 가능합니다.
 
-<aside>
-💡 Git Command
+## 🛠️ 주요 기술
+- **개발언어**: Java, JavaScript, Cypher Query, Python
+- **개발환경**: Spring Boot, React, Neo4j Aura, Docker, Docker-Compose
+- **개발도구**: IntelliJ IDEA, Visual Studio Code 
+- **주요기술**: 
+  - koBERT : 관계 분류를 위한 사전 학습 모델 활용 및 파인튜닝
+  - Stanza : 한국어 형태로 분석 및 의존 구문 분석
+  - KMeans, Sentence Transformers : 문장 임베딩 생성, 의미 기반 클러스터링에 활용
+  - NetworkX : 지식 그래프 구조 생성, BFS 기반 계층화
+  - Git Actions + DockerHub : 코드 push 시 테스트, Docker 이미지 빌드 및 배포 자동화
+  - Clova OCR : PDF 텍스트 추출
+  - ReactFlow+D3-force : 지식 그래프 시각화
 
----
+## ⚙️ 시스템 아키텍쳐
+![image 41](https://github.com/user-attachments/assets/ccfa5e4f-8a61-43be-bdda-40008af743bc)
 
-1. branch 관련 명령어
-    
-    > **git branch** : branch 조회 및 현재 branch를 알 수 있다.
-    **git branch <만들 branch> : branch 생성**
-    **git checkout <이동할 branch>** : branch 이동 
-    **git branch -d <삭제할 branch>** : Local에서 branch 삭제
-    > 
-2. Push 관련 명령어
-    
-    > **git add . 
-    gitmoji -c
-    git push**
 
-</aside>
+## 👩🏻‍💻 Developers
 
-## **🎯 Commit Convention**
-
-- feat : 새로운 기능 추가
-- fix : 버그 수정
-- docs : 문서 수정
-- style : 코드 포맷팅, 세미콜론 누락, 코드 변경이 없는 경우
-- refactor: 코드 리펙토링
-- test: 테스트 코드, 리펙토링 테스트 코드 추가
-- chore : 빌드 업무 수정, 패키지 매니저 수정
-
-## **💡 PR Convetion**
-
-| 아이콘 | 코드 | 설명 |
-| --- | --- | --- |
-| 🎨 | :art | 코드의 구조/형태 개선 |
-| ⚡️ | :zap | 성능 개선 |
-| 🔥 | :fire | 코드/파일 삭제 |
-| 🐛 | :bug | 버그 수정 |
-| 🚑 | :ambulance | 긴급 수정 |
-| ✨ | :sparkles | 새 기능 |
-| 💄 | :lipstick | UI/스타일 파일 추가/수정 |
-| ⏪ | :rewind | 변경 내용 되돌리기 |
-| 🔀 | :twisted_rightwards_arrows | 브랜치 합병 |
-| 💡 | :bulb | 주석 추가/수정 |
-| 🗃 | :card_file_box | 데이버베이스 관련 수정 |
-
+| AI & BE | AI & BE | BE | FE | FE |
+| --- | --- | --- | --- | --- |
+| <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/113489721?v=4" /> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/147326233?v=4"/> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/104489022?v=4"/> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/113487989?v=4" /> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/122111459?v=4" /> 
+| 한성대학교 | 한성대학교 | 한성대학교 | 한성대학교 | 한성대학교 | 한성대학교 |
+| 강다현 | 김혜진 | 이주연 | 양인서 | 정예빈 |
+| [@hyeonda02](https://github.com/hyeonda02) | [@khyaejin](https://github.com/khyaejin) | [@Juye0nLee](https://github.com/Juye0nLee) | [@sheepyis](https://github.com/sheepyis) | [@benniejung](https://github.com/benniejung) |
