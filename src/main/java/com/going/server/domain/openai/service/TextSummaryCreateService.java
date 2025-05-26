@@ -34,7 +34,6 @@ public class TextSummaryCreateService {
         - Use Markdown formatting actively:
           - Use `###` for headings, `**bold**` for emphasis, `-`, `1.` etc. for sublists
           - Use `---` for section separation
-          - Use `<details><summary>💡 Notes</summary>...</details>` to collapse additional info
         - Only use the following emojis:  
           📍🖇💡⚙🔧🔍📑✔💭✨
         - **Respond only in Korean**, and **output the summary only**, without any extra commentary.
