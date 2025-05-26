@@ -36,8 +36,8 @@ public class RAGAnswerCreateService {
         // DTO 기반 요청 생성
         ChatCompletionRequestDto request = ChatCompletionRequestDto.builder()
                 .model("gpt-4o") // 4o 모델 사용
-                .temperature(0.7)
-                .maxTokens(500) // 추후 조정 예정
+                .temperature(0.5)
+                .maxTokens(700) // 추후 조정 예정
                 .messages(messages)
                 .build();
 
