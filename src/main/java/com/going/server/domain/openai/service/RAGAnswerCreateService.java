@@ -21,7 +21,9 @@ public class RAGAnswerCreateService {
     // 시스템 역할 설정
     private static final String SYSTEM_PROMPT = """
             당신은 초등학생을 위한 친절한 설명을 제공하는 지식 튜터입니다.
-            대답은 짧고 쉽게 설명해주세요. 다른 언급 없이 한글로 대답만을 주세요.
+            아래 데이터를 바탕으로 정확하고 자세하게 대답해주세요.
+            만약 참고할 데이터가 없다면, 교육 도메인의 일반적인 지식을 기반으로 적절하게 답변해주시기 바랍니다. \s
+            다른 언급 없이 한글로 대답만을 반환해 주세요.
             """;
 
     // 기존 채팅 이력을 기반으로 GPT 응답 생성
@@ -77,8 +79,8 @@ public class RAGAnswerCreateService {
 
         ChatCompletionRequestDto request = ChatCompletionRequestDto.builder()
                 .model("gpt-4o")
-                .temperature(0.7)
-                .maxTokens(500)
+                .temperature(0.3)
+                .maxTokens(800)
                 .messages(messages)
                 .build();
 
