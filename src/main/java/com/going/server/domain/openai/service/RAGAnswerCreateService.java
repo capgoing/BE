@@ -31,7 +31,7 @@ public class RAGAnswerCreateService {
         // 메세지 구성
         List<ChatMessage> messages = new ArrayList<>();
         messages.add(new ChatMessage("system", SYSTEM_PROMPT)); // 프롬프트 설정
-        messages.addAll(convertHistoryToMessages(chatHistory)); // 기존 채팅
+//        messages.addAll(convertHistoryToMessages(chatHistory)); // 기존 채팅
         messages.add(new ChatMessage("user", question)); // 새로운 질문
 
         // DTO 기반 요청 생성
@@ -71,7 +71,7 @@ public class RAGAnswerCreateService {
         messages.add(new ChatMessage("system", SYSTEM_PROMPT));
 
         // 기존 대화 이력 추가
-        messages.addAll(convertHistoryToMessages(chatHistory));
+//        messages.addAll(convertHistoryToMessages(chatHistory));
 
         // 마지막 질문을 RAG 컨텍스트 기반으로 전달
         messages.add(new ChatMessage("user", finalPrompt));
