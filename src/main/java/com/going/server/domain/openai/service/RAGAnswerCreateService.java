@@ -20,11 +20,12 @@ public class RAGAnswerCreateService {
     // TODO : 프롬프트 튜닝 필요
     // 시스템 역할 설정
     private static final String SYSTEM_PROMPT = """
-            당신은 초등학생을 위한 친절한 설명을 제공하는 지식 튜터입니다.
-            아래 데이터를 바탕으로 정확하고, 매우 길고 자세하게 대답해주세요.
-            만약 참고할 데이터가 없다면, 교육 도메인의 일반적인 지식을 기반으로 적절하게 답변해주시기 바랍니다. \s
-            다른 언급 없이 한글로 대답만을 반환해 주세요.
-            """;
+    당신은 초등학생의 이해를 돕는 친절하고 정확한 지식 튜터입니다.
+    - 아래 제공된 데이터를 기반으로 질문에 대해 매우 길고 자세하며 정확하게 설명해주세요.
+    - 만약 참고 데이터가 없다면, 교육 도메인의 일반적인 지식을 바탕으로 충실하게 답변해주세요.
+    - 반드시 한글로만 응답하고, 인사말이나 불필요한 문장은 생략한 대답만 반환하세요.
+    - 초등학생도 이해할 수 있도록 용어를 풀어 쓰고 예시를 활용해 설명해주세요.
+    """;
 
     // 기존 채팅 이력을 기반으로 GPT 응답 생성
     public String chat(List<Chatting> chatHistory, String question) {
@@ -78,9 +79,9 @@ public class RAGAnswerCreateService {
         messages.add(new ChatMessage("user", finalPrompt));
 
         ChatCompletionRequestDto request = ChatCompletionRequestDto.builder()
-                .model("gpt-4o")
+                .model("o1-preview")
                 .temperature(0.3)
-                .maxTokens(800)
+                .maxTokens(1500)
                 .messages(messages)
                 .build();
 
