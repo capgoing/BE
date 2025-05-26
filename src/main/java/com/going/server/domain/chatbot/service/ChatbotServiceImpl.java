@@ -213,29 +213,47 @@ public class ChatbotServiceImpl implements ChatbotService {
     /// 4컷만화 생성
     @Override
     public CreateChatbotResponseDto createCartoon(String graphId, CreateChatbotRequestDto createChatbotRequestDto) {
-        // 질문 내용 추출
-        String concept = createChatbotRequestDto.getChatContent();
+        String concept = createChatbotRequestDto.getChatContent(); // 사용자 질문 → 개념
 
-        // 프롬프트 생성
+        // 개선된 프롬프트
         String prompt = """
-        Create a 4-panel educational cartoon for students (elementary to high school) based on the following concept:
-        
-        📌 Concept: %s
-        
-        ---
-        
-        ✨ Instructions:
-        - Draw four scenes (panel-style) that explain the concept step by step.
-        - Use a fun, warm, and friendly illustration style (like webtoons or iOS emoji-style).
-        - Focus on storytelling: include a start → process → challenge → conclusion.
-        - Use soft colors and flat vector style.
-        - Do NOT include any text or labels in the image.
-        - Do NOT generate separate images—combine all four scenes into one image, like a single 4-cut layout.
-        
-        The result should be fully visual and easy for Korean students to understand.
-        """.formatted(concept);
+                당신은 초등학생부터 고등학생까지의 학습자를 위한 교육용 4컷 만화를 그리는 일러스트레이터입니다.
+                
+                ---
+                
+                📌 개념: %s
+                
+                ---
+                
+                📋 작업 순서:
+                
+                1. 위에 주어진 개념을 먼저 **충분히 이해**하세요.
+                   - 해당 개념의 **의미, 특징, 맥락, 예시**를 상상하고 파악하세요.
+                   - 개념에 대한 핵심 요소를 추출하여 시각적으로 설명 가능한 흐름을 구성하세요.
+                
+                2. 다음 기준에 따라 **한 장의 이미지에 2x2 그리드(총 4컷)**로 그림을 설계하세요.
+                   - 왼쪽 위: 장면 1
+                   - 오른쪽 위: 장면 2
+                   - 왼쪽 아래: 장면 3
+                   - 오른쪽 아래: 장면 4
+                
+                3. **절대 텍스트(한글, 영어, 숫자 등 어떤 형태든 포함 금지)**를 넣지 마세요.
+                   - 라벨, 말풍선, 자막, 글자처럼 보일 수 있는 시각 요소도 금지
+                   - **오직 시각적 표현만으로** 의미가 전달되어야 합니다
+                
+                4. 스타일 조건:
+                   - **파스텔톤의 부드럽고 따뜻한 색상**
+                   - **iOS 이모지 스타일** 또는 **플랫한 웹툰 스타일**
+                   - 복잡한 배경 없이 **간단한 배경과 상징**으로 표현
+                   - 필요한 경우 **화살표, 흐름선, 상징 기호**를 적절히 사용 (과도하게 사용하지 않음)
+                
+                ---
+                
+                🎯 목적:
+                글로만 이해하기 어려운 개념을 **누구나 직관적으로 이해할 수 있도록 시각적으로 구성된 4컷 만화로 전달**하는 것입니다.
+               """.formatted(concept);
 
-        // DALL-E 요청 생성
+        // DALL-E 이미지 요청 DTO 생성
         ImageCreateRequestDto requestDto = new ImageCreateRequestDto(
                 prompt,
                 "dall-e-3",
@@ -244,17 +262,16 @@ public class ChatbotServiceImpl implements ChatbotService {
                 1
         );
 
-        // 이미지 생성 요청
+        // 이미지 생성
         String imageUrl = imageCreateService.generatePicture(requestDto);
 
-        // 응답 반환
+        // 응답 DTO 생성
         return CreateChatbotResponseDto.builder()
-                .chatContent("🖼 요청하신 내용을 바탕으로 만든 4컷 만화입니다. 아래 이미지를 확인해보세요!\n\n" + imageUrl)
+                .chatContent(imageUrl)
                 .graphId(graphId)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
-
 
     // 추천 영상 생성
     @Override
