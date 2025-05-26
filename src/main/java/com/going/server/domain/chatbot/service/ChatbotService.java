@@ -11,9 +11,9 @@ public interface ChatbotService {
     // RAG 챗봇 응답 생성
     CreateChatbotResponseDto createAnswerWithRAG(String graphStrId, CreateChatbotRequestDto createChatbotRequestDto);
     // RAG 사용하지 않는 응답 생성
-    CreateChatbotResponseDto createSimpleAnswer(String graphId, CreateChatbotRequestDto dto);
+    CreateChatbotResponseDto createSimpleAnswer(String graphId, CreateChatbotRequestDto createChatbotRequestDto);
     // 4컷만화 생성
-    CreateChatbotResponseDto createCartoon(String graphId, CreateChatbotRequestDto dto);
+    CreateChatbotResponseDto createCartoon(String graphId, CreateChatbotRequestDto createChatbotRequestDto);
     // 추천 영상 생성
-    CreateChatbotResponseDto recommendVideo(String graphId, CreateChatbotRequestDto dto);
+    CreateChatbotResponseDto recommendVideo(String graphId, CreateChatbotRequestDto createChatbotRequestDto);
 }

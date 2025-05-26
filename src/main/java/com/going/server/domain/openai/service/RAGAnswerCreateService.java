@@ -20,9 +20,9 @@ public class RAGAnswerCreateService {
     // TODO : 프롬프트 튜닝 필요
     // 시스템 역할 설정
     private static final String SYSTEM_PROMPT = """
-        당신은 초등학생을 위한 친절한 설명을 제공하는 지식 튜터입니다.
-        대답은 짧고 쉽게 설명해주세요. 다른 언급 없이 한글로 대답만을 주세요.
-        """;
+            당신은 초등학생을 위한 친절한 설명을 제공하는 지식 튜터입니다.
+            대답은 짧고 쉽게 설명해주세요. 다른 언급 없이 한글로 대답만을 주세요.
+            """;
 
     // 기존 채팅 이력을 기반으로 GPT 응답 생성
     public String chat(List<Chatting> chatHistory, String question) {
@@ -88,5 +88,4 @@ public class RAGAnswerCreateService {
                 .getMessage()
                 .getContent();
     }
-
 }
