@@ -83,8 +83,15 @@ public class ChatbotServiceImpl implements ChatbotService {
         // RAG: 사용자 질문
         String userQuestion = createChatbotRequestDto.getChatContent();
 
+        // RAG : 키워드 추출
+        List<String> keywords = extractKeywords(userQuestion);
+        System.out.println("[RAG] 추출된 키워드: " + keywords);
+
         // RAG: 유사 노드 검색 및 문장 추출
-        List<GraphNode> matchedNodes = graphNodeRepository.findByKeyword(userQuestion);
+        List<GraphNode> matchedNodes = graphNodeRepository.findByGraphIdAndKeywords(graphId, keywords);
+//        List<GraphNode> matchedNodes = graphNodeRepository.findByGraphIdAndKeywordsWithEdges(graphId, keywords);
+        System.out.println("[RAG] matchedNodes: " + matchedNodes);
+
         List<String> candidateSentences = matchedNodes.stream()
                 .map(GraphNode::getIncludeSentence)
                 .filter(Objects::nonNull)
@@ -96,6 +103,7 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         // RAG: 최종 프롬프트 구성
         String finalPrompt = promptBuilder.buildPrompt(filteredChunks, userQuestion);
+        System.out.println("finalPrompt: " + finalPrompt);
 
         // RAG: 메타정보 수집
         List<String> retrievedChunks = new ArrayList<>(filteredChunks);
@@ -283,5 +291,19 @@ public class ChatbotServiceImpl implements ChatbotService {
     // 채팅 삭제 메서드
     private void deletePreviousChat(Long graphId) {
         chattingRepository.deleteByGraphId(graphId);
+    }
+
+
+    // RAG : 키워드 추출
+    private List<String> extractKeywords(String text) {
+        List<String> stopwords = List.of("은", "는", "이", "가", "을", "를", "에", "의", "와", "과", "에서", "하다");
+
+        return Arrays.stream(text.split("[\\s,.!?]+"))
+                .map(word -> word.replaceAll("(은|는|이|가|을|를|에|의|와|과|에서)$", "")) // ✅ 조사 제거
+                .map(String::toLowerCase)
+                .filter(word -> word.length() > 1 && !stopwords.contains(word))
+                .distinct()
+                .limit(5)
+                .collect(Collectors.toList());
     }
 }
