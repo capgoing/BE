@@ -13,28 +13,33 @@
 4. 생성된 그래프를 바탕으로 RAG 기반 챗봇을 통해 정확하고 맥락 있는 질의응답이 가능합니다.
 5. 지식그래프 내용을 기반으로 3가지 형태의 퀴즈를 통해 자기 점검이 가능합니다.
 
-## 🛠️ 주요 기술
-- **개발언어**: Java, JavaScript, Cypher Query, Python
-- **개발환경**: Spring Boot, React, Neo4j Aura, Docker, Docker-Compose
-- **개발도구**: IntelliJ IDEA, Visual Studio Code 
-- **주요기술**: 
-  - koBERT : 관계 분류를 위한 사전 학습 모델 활용 및 파인튜닝
-  - Stanza : 한국어 형태로 분석 및 의존 구문 분석
-  - KMeans, Sentence Transformers : 문장 임베딩 생성, 의미 기반 클러스터링에 활용
-  - NetworkX : 지식 그래프 구조 생성, BFS 기반 계층화
-  - Git Actions + DockerHub : 코드 push 시 테스트, Docker 이미지 빌드 및 배포 자동화
-  - Clova OCR : PDF 텍스트 추출
-  - ReactFlow+D3-force : 지식 그래프 시각화
+## 🛠️ Backend 주요 기술
+- **개발언어**: Java, Cypher Query
+- **개발환경**: Spring Boot, Neo4j Aura, Docker, Docker-Compose
+- **개발도구**: IntelliJ IDEA
+- **주요기술**:
+  - **Clova OCR**: 네이버 Clova OCR 콘솔에 템플릿을 등록하여, 해당 템플릿에 맞는 PDF 파일 입력 시 텍스트 자동 추출
+  - **Neo4j Aura**: AI 모델이 생성한 지식그래프 데이터를 Node-Edge 구조로 매핑하여 저장하는 그래프형 데이터베이스
+  - **GitHub Actions + DockerHub**: 코드 push 시 자동으로 테스트를 실행하고, Docker 이미지를 빌드 및 DockerHub에 배포하는 CI/CD 파이프라인 구성
+  - **RAG**: 
+  
 
 ## ⚙️ 시스템 아키텍쳐
 ![image 41](https://github.com/user-attachments/assets/ccfa5e4f-8a61-43be-bdda-40008af743bc)
 
+## 📂 프로젝트 구조
+
+```
+            
+```
 
 ## 👩🏻‍💻 Developers
 
 | BE | BE | BE |
-| --- | --- | --- |
-| <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/113489721?v=4" /> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/147326233?v=4"/> | <img style="width: 200px;" src="https://avatars.githubusercontent.com/u/104489022?v=4"/> |
-| 한성대학교 | 한성대학교 | 한성대학교 | 한성대학교 |
+|:---:|:---:|:---:|
+| <img src="https://avatars.githubusercontent.com/u/113489721?v=4" width="150"/> | <img src="https://avatars.githubusercontent.com/u/147326233?v=4" width="150"/> | <img src="https://avatars.githubusercontent.com/u/104489022?v=4" width="150"/> |
+| 한성대학교 | 한성대학교 | 한성대학교 | 
 | 강다현 | 김혜진 | 이주연 |
-| [@hyeonda02](https://github.com/hyeonda02) | [@khyaejin](https://github.com/khyaejin) | [@Juye0nLee](https://github.com/Juye0nLee) | 
+| Docker 인프라 구축,<br>CI/CD 자동 배포 환경 구성 | REST API 및 Graph-RAG 챗봇 구현 | REST API 구현 및<br>Cypher 쿼리를 활용한 GraphDB 구조 설계 |
+| [@hyeonda02](https://github.com/hyeonda02) | [@khyaejin](https://github.com/khyaejin) | [@Juye0nLee](https://github.com/Juye0nLee) |
+
