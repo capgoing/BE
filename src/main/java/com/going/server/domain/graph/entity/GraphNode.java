@@ -28,13 +28,6 @@ public class GraphNode {
     private String includeSentence; //해당 노드(단어)가 포함된 문장
     private String image;
 
-//    @Relationship(type = "HAS_GRAPH", direction = Relationship.Direction.INCOMING)
-//    private Graph graph;
-
     @Relationship(type = "RELATED", direction = Relationship.Direction.OUTGOING)
     private Set<GraphEdge> edges;
-
-    public String getIdAsString() {
-        return id != null ? String.valueOf(id) : null;
-    }
 }

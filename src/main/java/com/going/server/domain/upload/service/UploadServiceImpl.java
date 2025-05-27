@@ -47,6 +47,7 @@ public class UploadServiceImpl implements UploadService {
     @Override
     public UploadResponseDto uploadFile(UploadRequestDto dto) {
         try {
+
             String jsonResponse = ocrService.processOcr(dto.getFile(), apiUrl, secretKey);
             log.info("jsonResponse log={}",jsonResponse);
             Map<String, String> paresData = pdfOcrService.parse(jsonResponse);
@@ -153,6 +154,7 @@ public class UploadServiceImpl implements UploadService {
         }
     }
 
+    // 모델 코드 호출
     public String setModelData(String text) {
         WebClient webClient = WebClient.builder().baseUrl(fastApiUrl).build();
         Map<String, String> requestBody = new HashMap<>();
@@ -166,4 +168,5 @@ public class UploadServiceImpl implements UploadService {
                 .bodyToMono(String.class)
                 .block();
     }
+
 }
