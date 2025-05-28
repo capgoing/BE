@@ -33,12 +33,12 @@ public class GraphRAGService {
      * 본 메서드는 LangChain 없이 구현한 Spring 기반 GraphRAG의 핵심 흐름입니다.
      */
     public CreateChatbotResponseDto createAnswerWithGraphRAG(
-            Long graphId,
+            Long dbId,
             String userQuestion,
             List<Chatting> chatHistory
     ) {
-        Graph graph = graphRepository.getByGraph(graphId);
-        log.info("[GraphRAG] graphId: {}, question: {}", graphId, userQuestion);
+        Graph graph = graphRepository.getByGraph(dbId);
+        log.info("[GraphRAG] dbId: {}, question: {}", dbId, userQuestion);
 
         // 1. 질문 → Cypher 쿼리 생성
         String cypherQuery = cypherQueryGenerator.generate(userQuestion).trim()
@@ -48,7 +48,7 @@ public class GraphRAGService {
         log.info("[GraphRAG] Generated Cypher Query:\n{}", cypherQuery);
 
         // 2. 쿼리 실행 → 문맥(context) 및 노드 라벨 추출
-        List<GraphQueryResult> queryResults = graphQueryExecutor.runQuery(graphId, cypherQuery);
+        List<GraphQueryResult> queryResults = graphQueryExecutor.runQuery(dbId, cypherQuery);
         List<String> contextChunks = queryResults.stream()
                 .map(GraphQueryResult::getSentence)
                 .toList();
@@ -76,7 +76,7 @@ public class GraphRAGService {
 
         return CreateChatbotResponseDto.of(
                 response,
-                graphId.toString(),
+                dbId.toString(),
                 answer.getCreatedAt(),
                 contextChunks,
                 sourceNodes

@@ -42,7 +42,8 @@ public class ChatbotServiceImpl implements ChatbotService {
     // 원문 반환
     @Override
     public CreateChatbotResponseDto getOriginalText(String graphId) {
-        Graph graph = graphRepository.getByGraph(Long.valueOf(graphId));
+        Long dbId = graphRepository.findDbIdByGraphId(Long.valueOf(graphId));
+        Graph graph = graphRepository.getByGraph(dbId);
 
         return CreateChatbotResponseDto.builder()
                 .chatContent(graph.getContent())           // 원문 텍스트
@@ -54,7 +55,8 @@ public class ChatbotServiceImpl implements ChatbotService {
     // 요약본 생성
     @Override
     public CreateChatbotResponseDto getSummaryText(String graphId) {
-        Graph graph = graphRepository.getByGraph(Long.valueOf(graphId));
+        Long dbId = graphRepository.findDbIdByGraphId(Long.valueOf(graphId));
+        Graph graph = graphRepository.getByGraph(dbId);
 
         String context = Optional.ofNullable(graph.getContent())
                 .filter(s -> !s.trim().isEmpty())
@@ -72,12 +74,11 @@ public class ChatbotServiceImpl implements ChatbotService {
     // GraphRAG 챗봇 응답 생성
     @Override
     public CreateChatbotResponseDto createAnswerWithRAG(String graphStrId, CreateChatbotRequestDto requestDto) {
-        Long graphId = Long.valueOf(graphStrId);
-        // 404 : 지식그래프 찾을 수 없음
-        Graph graph = graphRepository.getByGraph(graphId);
+        Long dbId = graphRepository.findDbIdByGraphId(Long.valueOf(graphStrId));
+        Graph graph = graphRepository.getByGraph(dbId);
 
         if (requestDto.isNewChat()) {
-            deletePreviousChat(graphId);
+            deletePreviousChat(dbId);
         }
 
         Chatting userChat = Chatting.builder()
@@ -88,11 +89,11 @@ public class ChatbotServiceImpl implements ChatbotService {
                 .build();
         chattingRepository.save(userChat);
 
-        List<Chatting> chatHistory = chattingRepository.findAllByGraphId(graphId);
+        List<Chatting> chatHistory = chattingRepository.findAllByGraphId(dbId);
 
         // RAG 응답 생성 (응답 + 메타 포함)
         CreateChatbotResponseDto responseDto = graphRAGService.createAnswerWithGraphRAG(
-                graphId,
+                dbId,
                 requestDto.getChatContent(),
                 chatHistory
         );
@@ -107,18 +108,16 @@ public class ChatbotServiceImpl implements ChatbotService {
     // 기본 응답 생성
     @Override
     public CreateChatbotResponseDto createSimpleAnswer(String graphStrId, CreateChatbotRequestDto createChatbotRequestDto) {
-        Long graphId = Long.valueOf(graphStrId);
-
-        // 404 : 지식그래프 찾을 수 없음
-        Graph graph = graphRepository.getByGraph(graphId);
+        Long dbId = graphRepository.findDbIdByGraphId(Long.valueOf(graphStrId));
+        Graph graph = graphRepository.getByGraph(dbId);
 
         // 새로운 대화인 경우 기존 채팅 삭제
         if (createChatbotRequestDto.isNewChat()) {
-            deletePreviousChat(graphId);
+            deletePreviousChat(dbId);
         }
 
         // 기존 채팅 내역 조회
-        List<Chatting> chatHistory = chattingRepository.findAllByGraphId(graphId);
+        List<Chatting> chatHistory = chattingRepository.findAllByGraphId(dbId);
 
         // 사용자 입력 채팅
         String newChat = createChatbotRequestDto.getChatContent();

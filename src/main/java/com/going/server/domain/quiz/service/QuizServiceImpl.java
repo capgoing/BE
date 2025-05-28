@@ -23,10 +23,9 @@ public class QuizServiceImpl implements QuizService{
     // 모드 별 퀴즈 생성
     @Override
     public QuizCreateResponseDto quizCreate(String graphIdStr, String mode) {
-        Long graphId = Long.valueOf(graphIdStr);
+        Long dbId = graphRepository.findDbIdByGraphId(Long.valueOf(graphIdStr));
+        Graph graph = graphRepository.getByGraph(dbId);
 
-        // 404 : 지식그래프 찾을 수 없음
-        Graph graph = graphRepository.getByGraph(graphId);
 
         Object quizDto = switch (mode) {
             case "listenUp" -> listenUpQuizGenerator.generate(graph);
@@ -41,10 +40,8 @@ public class QuizServiceImpl implements QuizService{
     // 만점일 경우 Graph Quiz 정보 업데이트
     @Override
     public void updateIfPerfect(String graphIdStr, String mode) {
-        Long graphId = Long.valueOf(graphIdStr);
-
-        // 404 : 지식 그래프 찾을 수 없음
-        Graph graph = graphRepository.getByGraph(graphId);
+        Long dbId = graphRepository.findDbIdByGraphId(Long.valueOf(graphIdStr));
+        Graph graph = graphRepository.getByGraph(dbId);
 
         switch (mode){
             case "listenUp":

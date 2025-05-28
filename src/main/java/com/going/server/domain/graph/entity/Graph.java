@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.neo4j.core.schema.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Node("Graph")
@@ -29,11 +30,8 @@ public class Graph extends BaseEntity {
     private boolean connectPerfect; //connect 퀴즈 만접 여부
     private boolean picturePerfect; //picture 퀴즈 만접 여부
 
+    @Builder.Default
     @Relationship(type = "HAS_NODE", direction = Relationship.Direction.OUTGOING)
-    private List<GraphNode> nodes;
+    private List<GraphNode> nodes = new ArrayList<>();
 
-    // Long → String 변환 (프론트 전송 시)
-    public String getIdAsString() {
-        return id != null ? String.valueOf(id) : null;
-    }
 }

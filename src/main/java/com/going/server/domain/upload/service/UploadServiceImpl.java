@@ -58,8 +58,7 @@ public class UploadServiceImpl implements UploadService {
             Map<String, String> paresData = pdfOcrService.parse(jsonResponse);
             String text = paresData.get("읽기자료");
             log.info("text log={}",text);
-
-            //모델에 돌린 값을 받아옴
+             //모델에 돌린 값을 받아옴
             String response = setModelData(text);
 
             ObjectMapper mapper = new ObjectMapper();

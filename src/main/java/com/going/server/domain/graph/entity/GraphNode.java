@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,9 +30,9 @@ public class GraphNode {
     private String includeSentence; //해당 노드(단어)가 포함된 문장
     private String image;
 
-//    @Transient  // Neo4j가 매핑하지 않음
+    @Builder.Default
     @ToString.Exclude
     @JsonIgnore
     @Relationship(type = "RELATED", direction = Relationship.Direction.OUTGOING)
-    private Set<GraphEdge> edges;
+    private Set<GraphEdge> edges = new HashSet<>();
 }
