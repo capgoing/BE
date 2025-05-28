@@ -64,7 +64,7 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
                 prompt,
                 "dall-e-3",
                 "vivid",
-                "1024x1024",
+                "900x900",
                 1);
         String imageUrl = imageCreateService.generatePicture(requestDto);
 
