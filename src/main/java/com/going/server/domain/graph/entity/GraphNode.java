@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class GraphNode {
     private String includeSentence; //해당 노드(단어)가 포함된 문장
     private String image;
 
+    @ToString.Exclude
+    @JsonIgnore
     @Relationship(type = "RELATED", direction = Relationship.Direction.OUTGOING)
     private Set<GraphEdge> edges;
 }
