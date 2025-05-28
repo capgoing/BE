@@ -70,7 +70,7 @@ public class GraphServiceImpl implements GraphService {
         if (graph.getNodes() != null) {
             graph.getNodes().forEach(node -> graphNodeRepository.deleteById(node.getId()));
         }
-        graphRepository.deleteById(graph.getId());
+        graphRepository.deleteById(dbId);
     }
 
     @Transactional(readOnly = true)
