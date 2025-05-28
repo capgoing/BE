@@ -31,6 +31,12 @@ public class GraphRAGService {
     /**
      * 사용자 질문에 대해 Cypher 쿼리 → 그래프 정보 검색 → 프롬프트 생성 → LLM 응답 생성
      * 본 메서드는 LangChain 없이 구현한 Spring 기반 GraphRAG의 핵심 흐름입니다.
+     *
+     *     private LocalDateTime createdAt;
+     *     private List<String> retrievedTriples; //관계 중심의 3요소 표현 ("물 -상태변화→ 응고")
+     *     private List<String> sourceNodes; //질의에 사용된 핵심 노드들 ("물", "응고" 등)
+     *     private List<String> 증강할때쓴자료; //LLM에 넘긴 context 문장들 (이름은 `augmentedSentences` 등으로 변경 권장)
+     *     -> 이렇게 결과 나오도록 정리
      */
     public CreateChatbotResponseDto createAnswerWithGraphRAG(
             Long dbId,
@@ -74,11 +80,20 @@ public class GraphRAGService {
         chattingRepository.save(answer);
         log.info("[GraphRAG] Response saved to DB");
 
+        // 임시 retrievedTriples 설정
+        List<String> retrievedTriples = List.of(
+                "(물)-[:RELATED {label: '상태변화'}]->(기화)",
+                "(기화)-[:RELATED {label: '조건'}]->(높은 온도)",
+                "(수증기)-[:RELATED {label: '응결'}]->(물방울)",
+                "(물)-[:RELATED {label: '응고'}]->(얼음)",
+                "(응고)-[:RELATED {label: '예시'}]->(겨울철 얼어붙은 길)"
+        );
+
         return CreateChatbotResponseDto.of(
                 response,
                 dbId.toString(),
                 answer.getCreatedAt(),
-                contextChunks,
+                retrievedTriples,
                 sourceNodes
         );
     }
