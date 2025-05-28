@@ -21,20 +21,17 @@ public interface GraphRepository extends Neo4jRepository<Graph, Long> {
         return findGraphWithEdgesByGraphId(graphId).orElseThrow(GraphNotFoundException::new);
     }
 
+    @Query("MATCH (g:Graph) WHERE g.id = $graphId RETURN g")
+    Optional<Graph> findByGraphId(@Param("graphId") Long graphId);
+
     // 그래프 + 노드 + 엣지까지 전부 fetch
     @Query("""
-    MATCH (g:Graph {id: $graphId})-[:HAS_NODE]->(n:GraphNode)
-    OPTIONAL MATCH (n)-[r:RELATED]->(m:GraphNode)
-    WITH g, collect(DISTINCT n) as nodes, collect(DISTINCT r) as rels, collect(DISTINCT m) as targets
-    RETURN g, nodes, rels, targets
-""")
-    Optional<Graph> findGraphWithEdgesByGraphId(Long graphId);
-
-
-    @Query("""
 MATCH (g:Graph {id: $graphId})-[:HAS_NODE]->(n:GraphNode)
-OPTIONAL MATCH (n)-[r:RELATED]->(m:GraphNode)
-RETURN g, collect(n), collect(r), collect(m)
+OPTIONAL MATCH (n)-[r]->(m:GraphNode)
+RETURN g, collect(DISTINCT n) as nodes, collect(DISTINCT r) as rels, collect(DISTINCT m) as targets
 """)
-    Graph findGraphWithEdges(Long graphId);
+    Optional<Graph> findGraphWithEdgesByGraphId(@Param("graphId") Long graphId);
+
+    @Query("MATCH (g:Graph) RETURN max(g.id)")
+    Long findMaxGraphId();
 }

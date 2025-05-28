@@ -74,24 +74,35 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public KnowledgeGraphDto getGraph(Long graphId) {
         Graph graph = graphRepository.getByGraph(graphId);
+        log.info("[getGraph] 조회된 Graph ID: {}, Title: {}", graph.getId(), graph.getTitle());
 
         List<NodeDto> nodeDtoList = new ArrayList<>();
         List<EdgeDto> edgeDtoList = new ArrayList<>();
 
-        for (GraphNode node : graph.getNodes()) {
+        List<GraphNode> nodes = graph.getNodes();
+        if (nodes == null || nodes.isEmpty()) {
+            log.warn("[getGraph] 해당 그래프에는 노드가 없습니다.");
+            return KnowledgeGraphDto.of(nodeDtoList, edgeDtoList);
+        }
+
+        for (GraphNode node : nodes) {
+            if (node == null) continue;
+
+            log.debug("[getGraph] 노드 추가 - ID: {}, Label: {}", node.getNodeId(), node.getLabel());
             nodeDtoList.add(NodeDto.from(node));
 
-            if (node.getEdges() != null) {
-                for (GraphEdge edge : node.getEdges()) {
-                    // 엣지 대상 노드도 제대로 fetch된 상태여야 함
-                    if (edge.getTarget() != null) {
-                        edgeDtoList.add(EdgeDto.from(
-                                edge.getSource(),
-                                edge.getTarget().getNodeId().toString(),
-                                edge.getLabel()
-                        ));
-                    }
-                }
+            Set<GraphEdge> edges = node.getEdges();
+            if (edges == null || edges.isEmpty()) continue;
+
+            for (GraphEdge edge : edges) {
+                if (edge == null || edge.getTarget() == null) continue;
+
+                String sourceId = edge.getSource();
+                String targetId = edge.getTarget().getNodeId().toString();
+                String label = edge.getLabel();
+
+                log.debug("[getGraph] 엣지 추가 - Source: {}, Target: {}, Label: {}", sourceId, targetId, label);
+                edgeDtoList.add(EdgeDto.from(sourceId, targetId, label));
             }
         }
 

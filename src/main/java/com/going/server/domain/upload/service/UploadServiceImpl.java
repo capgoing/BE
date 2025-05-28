@@ -144,7 +144,9 @@ public class UploadServiceImpl implements UploadService {
 
             //그래프 생성
             String title = dto.getTitle();
+            Long nextGraphId = graphRepository.findMaxGraphId();
             Graph graphEntity = Graph.builder()
+                    .id(nextGraphId == null ? 1L : nextGraphId + 1) //id 직접 세팅
                     .title(title)
                     .content(text)
                     .listenUpPerfect(false)
