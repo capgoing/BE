@@ -6,13 +6,11 @@ import com.going.server.domain.chatbot.entity.Chatting;
 import com.going.server.domain.chatbot.entity.Sender;
 import com.going.server.domain.chatbot.repository.ChattingRepository;
 import com.going.server.domain.graph.entity.Graph;
-import com.going.server.domain.graph.entity.GraphNode;
 import com.going.server.domain.graph.exception.GraphContentNotFoundException;
 import com.going.server.domain.graph.repository.GraphRepository;
 import com.going.server.domain.graph.repository.GraphNodeRepository;
 import com.going.server.domain.openai.dto.ImageCreateRequestDto;
 import com.going.server.domain.openai.service.ImageCreateService;
-import com.going.server.domain.openai.service.RAGAnswerCreateService;
 import com.going.server.domain.openai.service.SimpleAnswerCreateService;
 import com.going.server.domain.openai.service.TextSummaryCreateService;
 import com.going.server.domain.rag.service.GraphRAGService;
@@ -24,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +38,6 @@ public class ChatbotServiceImpl implements ChatbotService {
     private final ImageCreateService imageCreateService;
     // graphRAG
     private final GraphRAGService graphRAGService;
-    private final RAGAnswerCreateService ragAnswerCreateService;
 
     // 원문 반환
     @Override
@@ -78,16 +73,13 @@ public class ChatbotServiceImpl implements ChatbotService {
     @Override
     public CreateChatbotResponseDto createAnswerWithRAG(String graphStrId, CreateChatbotRequestDto requestDto) {
         Long graphId = Long.valueOf(graphStrId);
-
         // 404 : 지식그래프 찾을 수 없음
         Graph graph = graphRepository.getByGraph(graphId);
 
-        // 새로운 대화인 경우 기존 채팅 삭제
         if (requestDto.isNewChat()) {
             deletePreviousChat(graphId);
         }
 
-        // 사용자 입력 채팅 저장
         Chatting userChat = Chatting.builder()
                 .graph(graph)
                 .content(requestDto.getChatContent())
@@ -96,20 +88,17 @@ public class ChatbotServiceImpl implements ChatbotService {
                 .build();
         chattingRepository.save(userChat);
 
+        List<Chatting> chatHistory = chattingRepository.findAllByGraphId(graphId);
+
         // RAG 응답 생성 (응답 + 메타 포함)
-        CreateChatbotResponseDto responseDto = graphRAGService.createAnswerWithRAG(
+        CreateChatbotResponseDto responseDto = graphRAGService.createAnswerWithGraphRAG(
                 graphId,
                 requestDto.getChatContent(),
-                requestDto.isNewChat()
+                chatHistory
         );
 
         // 응답 채팅 저장
-        Chatting gptChat = Chatting.builder()
-                .graph(graph)
-                .content(responseDto.getChatContent())
-                .sender(Sender.GPT)
-                .createdAt(responseDto.getCreatedAt())
-                .build();
+        Chatting gptChat = Chatting.ofGPT(graph, responseDto.getChatContent());
         chattingRepository.save(gptChat);
 
         return responseDto;
