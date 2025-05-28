@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GraphNodeRepository extends Neo4jRepository<GraphNode, Long> {
+
     Optional<GraphNode> findByNodeId(Long nodeId);
     default GraphNode getByNode(Long nodeId) {
         return findByNodeId(nodeId).orElseThrow(NodeNotFoundException::new);

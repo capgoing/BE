@@ -26,4 +26,22 @@ public class Chatting {
     private Sender sender;
 
     private LocalDateTime createdAt;
+
+    public static Chatting ofUser(Graph graph, String content) {
+        return Chatting.builder()
+                .graph(graph)
+                .content(content)
+                .sender(Sender.USER)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    public static Chatting ofGPT(Graph graph, String content) {
+        return Chatting.builder()
+                .graph(graph)
+                .content(content)
+                .sender(Sender.GPT)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
 }

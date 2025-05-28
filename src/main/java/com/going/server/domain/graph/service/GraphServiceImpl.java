@@ -44,6 +44,7 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public GraphListDto getGraphList() {
         List<Graph> graphs = graphRepository.findAll();
+
         List<GraphDto> graphDtos = new ArrayList<>();
 
         for (Graph graph : graphs) {
@@ -62,7 +63,9 @@ public class GraphServiceImpl implements GraphService {
 
     @Override
     public void deleteGraph(Long graphId) {
-        Graph graph = graphRepository.getByGraph(graphId);
+        Long dbId = graphRepository.findDbIdByGraphId(Long.valueOf(graphId));
+        Graph graph = graphRepository.getByGraph(dbId);
+
         //그래프에 연결된 노드 삭제
         if (graph.getNodes() != null) {
             graph.getNodes().forEach(node -> graphNodeRepository.deleteById(node.getId()));
@@ -70,31 +73,52 @@ public class GraphServiceImpl implements GraphService {
         graphRepository.deleteById(graph.getId());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public KnowledgeGraphDto getGraph(Long graphId) {
-        Graph graph = graphRepository.getByGraph(graphId);
+        Long dbId = graphRepository.findDbIdByGraphId(graphId);
+        Graph graph = graphRepository.getByGraph(dbId);
+        log.info("[getGraph] 조회된 Graph ID: {}, Title: {}", graph.getId(), graph.getTitle());
 
         List<NodeDto> nodeDtoList = new ArrayList<>();
         List<EdgeDto> edgeDtoList = new ArrayList<>();
 
-        for (GraphNode node : graph.getNodes()) {
-            NodeDto nodeDto = NodeDto.from(node);
-            nodeDtoList.add(nodeDto);
+        List<GraphNode> nodes = graph.getNodes();
+        if (nodes == null || nodes.isEmpty()) {
+            log.warn("[getGraph] 해당 그래프에는 노드가 없습니다.");
+            return KnowledgeGraphDto.of(nodeDtoList, edgeDtoList);
+        }
 
-            if (node.getEdges() != null) {
-                for (GraphEdge edge : node.getEdges()) {
-                    EdgeDto edgeDto = EdgeDto.from(edge.getSource(),edge.getTarget().getNodeId().toString(),edge.getLabel());
-                    edgeDtoList.add(edgeDto);
-                }
+        for (GraphNode node : nodes) {
+            if (node == null) continue;
+
+            log.debug("[getGraph] 노드 추가 - ID: {}, Label: {}", node.getNodeId(), node.getLabel());
+            nodeDtoList.add(NodeDto.from(node));
+
+            Set<GraphEdge> edges = node.getEdges();
+            if (edges == null || edges.isEmpty()) continue;
+
+            for (GraphEdge edge : edges) {
+                if (edge == null || edge.getTarget() == null) continue;
+
+                String sourceId = edge.getSource();
+                String targetId = edge.getTarget().getNodeId().toString();
+                String label = edge.getLabel();
+
+                log.debug("[getGraph] 엣지 추가 - Source: {}, Target: {}, Label: {}", sourceId, targetId, label);
+                edgeDtoList.add(EdgeDto.from(sourceId, targetId, label));
             }
         }
 
         return KnowledgeGraphDto.of(nodeDtoList, edgeDtoList);
     }
 
+
     @Override
     public NodeDto getNode(Long graphId, Long nodeId) {
-        Graph graph = graphRepository.getByGraph(graphId);
+        Long dbId = graphRepository.findDbIdByGraphId(graphId);
+        Graph graph = graphRepository.getByGraph(dbId);
+
         //노드 찾기
         GraphNode node = null;
         for (GraphNode n : graph.getNodes()) {
@@ -114,7 +138,9 @@ public class GraphServiceImpl implements GraphService {
     @Override
     @Transactional
     public void addNode(Long graphId, NodeAddDto nodeAddDto) {
-        Graph graph = graphRepository.getByGraph(graphId);
+        Long dbId = graphRepository.findDbIdByGraphId(graphId);
+        Graph graph = graphRepository.getByGraph(dbId);
+
         GraphNode parentNode = null;
         for (GraphNode node : graph.getNodes()) {
             if (node.getNodeId().equals(Long.parseLong(nodeAddDto.getParentId()))) {
@@ -150,7 +176,7 @@ public class GraphServiceImpl implements GraphService {
         parentNode.getEdges().add(newEdge);
         graphNodeRepository.save(parentNode);
 
-        graph = graphRepository.getByGraph(graphId);
+        graph = graphRepository.getByGraph(dbId);
 
         if (graph.getNodes() == null) {
             graph.setNodes(new ArrayList<>());
@@ -163,7 +189,8 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public void deleteNode(Long graphId, Long nodeId) {
         //그래프 검증
-        Graph graph = graphRepository.getByGraph(graphId);
+        Long dbId = graphRepository.findDbIdByGraphId(graphId);
+        Graph graph = graphRepository.getByGraph(dbId);
         GraphNode node = null;
         for (GraphNode n : graph.getNodes()) {
             if (n.getNodeId().equals(nodeId)) {
@@ -181,7 +208,8 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public void modifyNode(Long graphId, Long nodeId, NodeModifyDto nodeModifyDto) {
         //그래프 검증
-        Graph graph = graphRepository.getByGraph(graphId);
+        Long dbId = graphRepository.findDbIdByGraphId(graphId);
+        Graph graph = graphRepository.getByGraph(dbId);
         //노드 찾기
         GraphNode node = null;
         for (GraphNode n : graph.getNodes()) {

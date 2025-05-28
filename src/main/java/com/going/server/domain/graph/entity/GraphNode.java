@@ -1,12 +1,12 @@
 package com.going.server.domain.graph.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +14,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor  // Neo4j가 생성자 주입 대신 setter 기반으로 생성할 수 있도록 해줌
 public class GraphNode {
     @Id
     @GeneratedValue
@@ -28,13 +30,9 @@ public class GraphNode {
     private String includeSentence; //해당 노드(단어)가 포함된 문장
     private String image;
 
-//    @Relationship(type = "HAS_GRAPH", direction = Relationship.Direction.INCOMING)
-//    private Graph graph;
-
+    @Builder.Default
+    @ToString.Exclude
+    @JsonIgnore
     @Relationship(type = "RELATED", direction = Relationship.Direction.OUTGOING)
-    private Set<GraphEdge> edges;
-
-    public String getIdAsString() {
-        return id != null ? String.valueOf(id) : null;
-    }
+    private Set<GraphEdge> edges = new HashSet<>();
 }

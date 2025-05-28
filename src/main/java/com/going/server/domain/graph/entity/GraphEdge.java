@@ -1,11 +1,15 @@
 package com.going.server.domain.graph.entity;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.neo4j.core.schema.*;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.RelationshipProperties;
+import org.springframework.data.neo4j.core.schema.TargetNode;
 
-import java.util.ArrayList;
+import java.util.Objects;
 
 @RelationshipProperties
 @Getter
@@ -15,32 +19,30 @@ public class GraphEdge {
 
     @Id
     @GeneratedValue
-    private Long id; // Neo4j 내부 ID
+    private Long id;
 
+    @EqualsAndHashCode.Include
     private String source;
 
-    private String label; // 관계 라벨
+    @EqualsAndHashCode.Include
+    private String label;
 
+    @EqualsAndHashCode.Include
     @TargetNode
-    private GraphNode target; // 연결 대상 노드
+    private GraphNode target; // 여기에 방향 붙이지 마세요
 
-//    private GraphEdge createEdge(Long edgeId, String label, GraphNode source, GraphNode target) {
-//        GraphEdge edge = new GraphEdge();
-//        edge.setEdgeId(edgeId);
-//        edge.setLabel(label);
-//        edge.setTarget(target);
-//
-//        // outbound edge를 source에 연결
-//        if (source.getEdges() == null) {
-//            source.setEdges(new ArrayList<>());
-//        }
-//        source.getEdges().add(edge);
-//        return edge;
-//    }
-
-    // Long → String 변환 (프론트 전송 시)
-    public String getIdAsString() {
-        return id != null ? String.valueOf(id) : null;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GraphEdge edge)) return false;
+        return Objects.equals(source, edge.source) &&
+                Objects.equals(label, edge.label) &&
+                target != null && edge.target != null &&
+                Objects.equals(target.getNodeId(), edge.target.getNodeId());
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(source, label, target != null ? target.getNodeId() : null);
+    }
 }

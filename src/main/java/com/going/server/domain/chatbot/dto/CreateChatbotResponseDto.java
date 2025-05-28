@@ -11,11 +11,28 @@ import java.util.Map;
 @Getter
 @Builder
 public class CreateChatbotResponseDto {
-    private String chatContent;                 // 챗봇 응답
-    private String graphId;                     // 지식그래프 ID
+    private String chatContent;
+    private String graphId;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private LocalDateTime createdAt;            // 응답 생성 시각
-    private List<String> retrievedChunks;       // RAG: 검색된 문장들
-    private List<String> sourceNodes;           //  RAG: 참조된 지식그래프 노드 ID
-    private Map<String, String> ragMeta;        //  RAG: 점수, 검색 method 등
+    private LocalDateTime createdAt;
+    private List<String> retrievedChunks;
+    private List<String> sourceNodes;
+    private Map<String, String> ragMeta;
+
+    public static CreateChatbotResponseDto of(
+            String chatContent,
+            String graphId,
+            LocalDateTime createdAt,
+            List<String> retrievedChunks,
+            List<String> sourceNodes
+    ) {
+        return CreateChatbotResponseDto.builder()
+                .chatContent(chatContent)
+                .graphId(graphId)
+                .createdAt(createdAt)
+                .retrievedChunks(retrievedChunks)
+                .sourceNodes(sourceNodes)
+                .ragMeta(Map.of("chunkCount", String.valueOf(retrievedChunks.size())))
+                .build();
+    }
 }

@@ -13,6 +13,9 @@ import com.going.server.domain.upload.dto.UploadRequestDto;
 import com.going.server.domain.upload.dto.UploadResponseDto;
 
 import lombok.RequiredArgsConstructor;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.Result;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,7 @@ public class UploadServiceImpl implements UploadService {
     private final PdfOcrService pdfOcrService;
     private final GraphNodeRepository graphNodeRepository;
     private final GraphRepository graphRepository;
+    private final Driver neo4jDriver; // Neo4j Java Driver
 
     @Value("${ocr.api.url}")
     private String apiUrl;
@@ -41,19 +45,20 @@ public class UploadServiceImpl implements UploadService {
     @Value("${fastapi.base-url}")
     private String fastApiUrl;
 
+
     private final Map<String, String> translationCache = new HashMap<>();
     private final Map<String, String> imageCache = new HashMap<>();
 
     @Override
     public UploadResponseDto uploadFile(UploadRequestDto dto) {
         try {
+
             String jsonResponse = ocrService.processOcr(dto.getFile(), apiUrl, secretKey);
             log.info("jsonResponse log={}",jsonResponse);
             Map<String, String> paresData = pdfOcrService.parse(jsonResponse);
             String text = paresData.get("읽기자료");
             log.info("text log={}",text);
-
-            //모델에 돌린 값을 받아옴
+             //모델에 돌린 값을 받아옴
             String response = setModelData(text);
 
             ObjectMapper mapper = new ObjectMapper();
@@ -95,7 +100,7 @@ public class UploadServiceImpl implements UploadService {
                 }
                 String sourceId = edgeNode.get("source").asText();
                 String targetId = edgeNode.get("target").asText();
-                String label = edgeNode.get("label").asText();
+                String relationType = edgeNode.get("label").asText();
 
                 GraphNode sourceNode = nodeIdToNode.get(sourceId);
                 GraphNode targetNode = nodeIdToNode.get(targetId);
@@ -105,16 +110,30 @@ public class UploadServiceImpl implements UploadService {
                     continue;
                 }
 
+                String dynamicCypher = String.format(
+                        "MATCH (a:GraphNode {nodeId: '%s'}), (b:GraphNode {nodeId: '%s'}) MERGE (a)-[:`%s`]->(b)",
+                        sourceId, targetId, relationType // 한글도 가능: "기능", "포함" 등
+                );
+
+                // session 통해 직접 실행
+                try (Session session = neo4jDriver.session()) {
+                    session.run(dynamicCypher);
+                }
+
                 //edge 엔티티 생성
                 GraphEdge edge = GraphEdge.builder()
                         .source(sourceId)
-                        .label(label)
+                        .label(relationType)
                         .target(targetNode)
                         .build();
 
                 // sourceNode에 edge 연결
                 if (sourceNode.getEdges() == null) {
                     sourceNode.setEdges(new HashSet<>());
+                }
+
+                if (!sourceNode.getEdges().contains(edge)) {
+                    sourceNode.getEdges().add(edge);
                 }
                 sourceNode.getEdges().add(edge);
             }
@@ -124,7 +143,9 @@ public class UploadServiceImpl implements UploadService {
 
             //그래프 생성
             String title = dto.getTitle();
+            Long nextGraphId = graphRepository.findMaxGraphId();
             Graph graphEntity = Graph.builder()
+                    .id(nextGraphId == null ? 1L : nextGraphId + 1) //id 직접 세팅
                     .title(title)
                     .content(text)
                     .listenUpPerfect(false)
@@ -153,6 +174,7 @@ public class UploadServiceImpl implements UploadService {
         }
     }
 
+    // 모델 코드 호출
     public String setModelData(String text) {
         WebClient webClient = WebClient.builder().baseUrl(fastApiUrl).build();
         Map<String, String> requestBody = new HashMap<>();
@@ -166,4 +188,5 @@ public class UploadServiceImpl implements UploadService {
                 .bodyToMono(String.class)
                 .block();
     }
+
 }
