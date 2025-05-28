@@ -77,10 +77,12 @@ public class ChatbotServiceImpl implements ChatbotService {
         Long dbId = graphRepository.findDbIdByGraphId(Long.valueOf(graphStrId));
         Graph graph = graphRepository.getByGraph(dbId);
 
+        // 새로운 채팅인 경우
         if (requestDto.isNewChat()) {
             deletePreviousChat(dbId);
         }
 
+        // 새로운 질문 추가
         Chatting userChat = Chatting.builder()
                 .graph(graph)
                 .content(requestDto.getChatContent())
@@ -89,6 +91,7 @@ public class ChatbotServiceImpl implements ChatbotService {
                 .build();
         chattingRepository.save(userChat);
 
+        // 채팅 내역 조회
         List<Chatting> chatHistory = chattingRepository.findAllByGraphId(dbId);
 
         // RAG 응답 생성 (응답 + 메타 포함)
