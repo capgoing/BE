@@ -45,6 +45,7 @@ public class UploadServiceImpl implements UploadService {
     @Value("${fastapi.base-url}")
     private String fastApiUrl;
 
+
     private final Map<String, String> translationCache = new HashMap<>();
     private final Map<String, String> imageCache = new HashMap<>();
 
