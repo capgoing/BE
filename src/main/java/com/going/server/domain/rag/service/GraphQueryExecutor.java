@@ -8,11 +8,12 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+// 2. 쿼리 실행 → 결과 추출
 @Component
 @RequiredArgsConstructor
 public class GraphQueryExecutor {
 
-    private final Driver neo4jDriver; // Neo4j Java Driver 주입
+    private final Driver neo4jDriver; // Neo4j Java Driver
 
     public List<String> runQuery(Long graphId, String cypherQuery) {
         List<String> results = new ArrayList<>();

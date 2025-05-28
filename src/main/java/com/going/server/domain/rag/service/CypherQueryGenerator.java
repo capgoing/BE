@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+// 1. 질문 → Cypher 쿼리 생성 (LLM)
 @Component
 @RequiredArgsConstructor
 public class CypherQueryGenerator {
