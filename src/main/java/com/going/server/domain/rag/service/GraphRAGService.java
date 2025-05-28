@@ -41,13 +41,22 @@ public class GraphRAGService {
         log.info("[GraphRAG] graphId: {}, question: {}", graphId, userQuestion);
 
         // 1. 질문 → Cypher 쿼리 생성
-        String cypherQuery = cypherQueryGenerator.generate(userQuestion);
+        String cypherQuery = cypherQueryGenerator.generate(userQuestion).trim()
+                .replaceAll("(?s)```cypher.*?```", "") // 마크다운 제거
+                .replaceAll("```", "")                // 남은 ``` 제거
+                .trim();
         log.info("[GraphRAG] Generated Cypher Query:\n{}", cypherQuery);
 
         // 2. 쿼리 실행 → 문맥(context) 및 노드 라벨 추출
         List<GraphQueryResult> queryResults = graphQueryExecutor.runQuery(graphId, cypherQuery);
-        List<String> contextChunks = queryResults.stream().map(GraphQueryResult::sentence).toList();
-        List<String> sourceNodes = queryResults.stream().map(GraphQueryResult::nodeLabel).distinct().toList();
+        List<String> contextChunks = queryResults.stream()
+                .map(GraphQueryResult::getSentence)
+                .toList();
+
+        List<String> sourceNodes = queryResults.stream()
+                .map(GraphQueryResult::getNodeLabel)
+                .distinct()
+                .toList();
         log.info("[GraphRAG] Retrieved {} context chunks", contextChunks.size());
 
         // 3. 프롬프트 구성
