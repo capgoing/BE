@@ -44,6 +44,7 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public GraphListDto getGraphList() {
         List<Graph> graphs = graphRepository.findAll();
+
         List<GraphDto> graphDtos = new ArrayList<>();
 
         for (Graph graph : graphs) {
@@ -78,19 +79,25 @@ public class GraphServiceImpl implements GraphService {
         List<EdgeDto> edgeDtoList = new ArrayList<>();
 
         for (GraphNode node : graph.getNodes()) {
-            NodeDto nodeDto = NodeDto.from(node);
-            nodeDtoList.add(nodeDto);
+            nodeDtoList.add(NodeDto.from(node));
 
             if (node.getEdges() != null) {
                 for (GraphEdge edge : node.getEdges()) {
-                    EdgeDto edgeDto = EdgeDto.from(edge.getSource(),edge.getTarget().getNodeId().toString(),edge.getLabel());
-                    edgeDtoList.add(edgeDto);
+                    // 엣지 대상 노드도 제대로 fetch된 상태여야 함
+                    if (edge.getTarget() != null) {
+                        edgeDtoList.add(EdgeDto.from(
+                                edge.getSource(),
+                                edge.getTarget().getNodeId().toString(),
+                                edge.getLabel()
+                        ));
+                    }
                 }
             }
         }
 
         return KnowledgeGraphDto.of(nodeDtoList, edgeDtoList);
     }
+
 
     @Override
     public NodeDto getNode(Long graphId, Long nodeId) {

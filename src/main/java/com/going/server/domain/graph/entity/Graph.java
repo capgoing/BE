@@ -15,7 +15,10 @@ import java.util.List;
 public class Graph extends BaseEntity {
     @Id
     @GeneratedValue
-    private Long id; //그래프 id -> 프론트와 통신에서는 String 값으로 사용
+    private Long dbId; // 내부 관리용 elementId와 연결됨
+
+    @Property("id")
+    private Long id; // 우리가 직접 사용하는 명시적 ID
 
     private String title;
 

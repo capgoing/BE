@@ -1,5 +1,6 @@
 package com.going.server.domain.graph.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,11 +20,16 @@ public class GraphEdge {
     @GeneratedValue
     private Long id; // Neo4j 내부 ID
 
+    @EqualsAndHashCode.Include
     private String source;
 
+    @EqualsAndHashCode.Include
     private String label; // 관계 라벨
 
+    @EqualsAndHashCode.Include
     @TargetNode
+    @Relationship(type = "RELATED", direction = Relationship.Direction.INCOMING)
+    @JsonIgnore
     private GraphNode target; // 연결 대상 노드
 
     @Override
