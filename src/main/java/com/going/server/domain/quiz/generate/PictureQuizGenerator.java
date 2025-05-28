@@ -18,7 +18,7 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
     @Override
     public PictureQuizDto generate(Graph graph) {
         Random random = new Random();
-        Set<String> shuffled = new HashSet<>(); // 보기로 제공할 랜덤 문장들(중복 방지)
+//        Set<String> shuffled = new HashSet<>(); // 보기로 제공할 랜덤 문장들(중복 방지)
         int shuffledListSize = 3; // 총 보기 수 (정답 포함)
         List<String> candidateSentences = new ArrayList<>(); // 전처리한 includeSentence
 
@@ -64,7 +64,8 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
                 prompt,
                 "dall-e-3",
                 "vivid",
-                "512x512",
+                "standard",
+                "1024x1024",
                 1);
         String imageUrl = imageCreateService.generatePicture(requestDto);
 
