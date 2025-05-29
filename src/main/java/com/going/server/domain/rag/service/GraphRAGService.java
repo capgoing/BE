@@ -70,6 +70,9 @@ public class GraphRAGService {
                 .toList();
 
         log.info("[GraphRAG] Retrieved {} context chunks", contextChunks.size());
+        retrievedTriples.forEach(triple ->
+                log.info("[GraphRAG] Triple: {}", triple)
+        );
         log.info("[GraphRAG] Retrieved {} triples", retrievedTriples.size());
 
         // 3. 프롬프트 구성
@@ -86,7 +89,6 @@ public class GraphRAGService {
         // 5. 응답 저장
         Chatting answer = Chatting.ofGPT(graph, response);
         chattingRepository.save(answer);
-        log.info("[GraphRAG] Response saved to DB");
 
         return CreateChatbotResponseDto.of(
                 response,

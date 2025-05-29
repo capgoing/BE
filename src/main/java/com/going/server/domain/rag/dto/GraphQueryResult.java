@@ -14,6 +14,11 @@ public class GraphQueryResult {
 
     public String toTripleString() {
         if (sourceLabel == null || relationLabel == null || targetLabel == null) return null;
+
+        // 혹시 내부 문자열이 "null"로 들어오는 것도 막기
+        if ("null".equals(sourceLabel) || "null".equals(relationLabel) || "null".equals(targetLabel)) return null;
+
         return String.format("(%s)-[:RELATED {label: '%s'}]->(%s)", sourceLabel, relationLabel, targetLabel);
     }
+
 }

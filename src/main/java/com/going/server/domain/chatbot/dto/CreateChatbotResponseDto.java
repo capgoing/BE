@@ -19,14 +19,12 @@ public class CreateChatbotResponseDto {
     private List<String> retrievedTriples; //관계 중심의 3요소 표현 ("물 -상태변화→ 응고")
     private List<String> sourceNodes; //질의에 사용된 핵심 노드들 ("물", "응고" 등)
 
-    private Map<String, String> ragMeta; //(ex: 사용한 쿼리문 등)
-
     public static CreateChatbotResponseDto of(
             String chatContent,
             String graphId,
             LocalDateTime createdAt,
             List<String> contextChunks,
-            List<String> retrievedChunks,
+            List<String> retrievedTriples,
             List<String> sourceNodes
     ) {
         return CreateChatbotResponseDto.builder()
@@ -34,9 +32,8 @@ public class CreateChatbotResponseDto {
                 .graphId(graphId)
                 .createdAt(createdAt)
                 .contextChunks(contextChunks)
-                .retrievedTriples(retrievedChunks)
+                .retrievedTriples(retrievedTriples)
                 .sourceNodes(sourceNodes)
-                .ragMeta(Map.of("chunkCount", String.valueOf(retrievedChunks.size())))
                 .build();
     }
 }
