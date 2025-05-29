@@ -14,26 +14,45 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GraphQueryExecutor {
 
-    private final Driver neo4jDriver; // Neo4j Java Driver
+    private final Driver neo4jDriver;
 
     public List<GraphQueryResult> runQuery(Long graphId, String cypherQuery) {
         List<GraphQueryResult> results = new ArrayList<>();
 
         try (Session session = neo4jDriver.session()) {
             Result result = session.run(cypherQuery);
+
             while (result.hasNext()) {
                 Record record = result.next();
 
-                // 필드 이름은 Cypher 쿼리 결과와 일치해야 함
-                String sentence = record.get("sentence").asString("");
-                String nodeLabel = record.get("nodeLabel").asString("");
+                String sentence = getSafeString(record, "sentence");
+                String nodeLabel = getSafeString(record, "nodeLabel");
 
-                results.add(new GraphQueryResult(sentence, nodeLabel));
+                String sourceLabel = getSafeString(record, "sourceLabel");
+                String relationLabel = getSafeString(record, "relationLabel");
+                String targetLabel = getSafeString(record, "targetLabel");
+
+                results.add(new GraphQueryResult(
+                        sentence,
+                        nodeLabel,
+                        sourceLabel,
+                        relationLabel,
+                        targetLabel
+                ));
             }
+
         } catch (Exception e) {
+            System.err.println("[GraphRAG] Cypher 쿼리 실행 중 오류 발생:");
             e.printStackTrace();
         }
 
         return results;
+    }
+
+    // 안전한 String 추출 (null-safe)
+    private String getSafeString(Record record, String key) {
+        return record.containsKey(key) && !record.get(key).isNull()
+                ? record.get(key).asString()
+                : null;
     }
 }
