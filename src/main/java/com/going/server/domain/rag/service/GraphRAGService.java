@@ -56,6 +56,8 @@ public class GraphRAGService {
             // 문장
         List<String> contextChunks = queryResults.stream()
                 .map(GraphQueryResult::getSentence)
+                .filter(s -> s != null && !s.isBlank())
+                .distinct()
                 .toList();
             // 관계 트리플
         List<String> retrievedTriples = queryResults.stream()
