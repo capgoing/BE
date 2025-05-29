@@ -76,8 +76,5 @@
 | [@hyeonda02](https://github.com/hyeonda02) | [@khyaejin](https://github.com/khyaejin) | [@Juye0nLee](https://github.com/Juye0nLee) |
 
 ## 📹 시연
-
-🔗 
-
-🔗 
+📽️ [시연영상 보러가기](https://youtu.be/ZFLXmLuSHH4?si=eCBQumG1x9cOOdDe)
 
