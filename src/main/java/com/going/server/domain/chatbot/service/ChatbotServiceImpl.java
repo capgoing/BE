@@ -203,6 +203,7 @@ public class ChatbotServiceImpl implements ChatbotService {
                 prompt,
                 "dall-e-3",
                 "vivid",
+                "standard",
                 "1024x1024",
                 1
         );

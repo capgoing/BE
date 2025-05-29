@@ -2,6 +2,7 @@ package com.going.server.domain.quiz.generate;
 
 import com.going.server.domain.graph.entity.Graph;
 import com.going.server.domain.graph.entity.GraphNode;
+import com.going.server.domain.graph.repository.GraphRepository;
 import com.going.server.domain.openai.dto.ImageCreateRequestDto;
 import com.going.server.domain.openai.service.ImageCreateService;
 import com.going.server.domain.quiz.dto.PictureQuizDto;
@@ -14,58 +15,61 @@ import java.util.*;
 @AllArgsConstructor
 public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
     private final ImageCreateService imageCreateService;
+    private final GraphRepository graphRepository;
 
     @Override
-    public PictureQuizDto generate(Graph graph) {
+    public PictureQuizDto generate(Graph currentGraph) {
         Random random = new Random();
-        Set<String> shuffled = new HashSet<>(); // 보기로 제공할 랜덤 문장들(중복 방지)
-        int shuffledListSize = 3; // 총 보기 수 (정답 포함)
-        List<String> candidateSentences = new ArrayList<>(); // 전처리한 includeSentence
+        int shuffledListSize = 3;
 
-        // 그래프 노드를 돌면서 문장 후보 수집
-        for (GraphNode node : graph.getNodes()) {
-            // IncludeSentence가 비어있는 경우 넘어가기
-            if (node.getIncludeSentence() == null || node.getIncludeSentence().isBlank()) continue;
+        // 정답 후보 문장: 현재 그래프에서 수집
+        List<String> answerCandidates = extractCandidateSentences(currentGraph);
 
-            // "." 으로 문장 나누기
-            String[] splitSentences = node.getIncludeSentence().split("\\.");
+        if (answerCandidates.isEmpty()) {
+            throw new IllegalStateException("현재 그래프에서 사용할 수 있는 문장이 없습니다.");
+        }
 
-            for (String rawSentence : splitSentences) {
-                String sentence = rawSentence.trim();
-                if (sentence.isBlank()) continue; // 공백은 스킵
-                if (sentence.split("\\s+").length < 5) continue; // 5단어 미만은 스킵
+        // 정답 1개 선택
+        Collections.shuffle(answerCandidates, random);
+        String answer = answerCandidates.get(0);
 
-                candidateSentences.add(sentence);
+        // 오답 후보 문장: 다른 그래프들에서 수집
+        List<Graph> allGraphs = graphRepository.findAll();
+        List<String> distractorCandidates = new ArrayList<>();
+        for (Graph graph : allGraphs) {
+            if (!graph.equals(currentGraph)) {
+                distractorCandidates.addAll(extractCandidateSentences(graph));
             }
         }
 
-        // 후보 문장이 부족할 경우 방어
-        if (candidateSentences.size() < shuffledListSize) {
-            throw new IllegalStateException("생성 가능한 문장이 부족합니다.");
+        // 오답이 부족한 경우: 현재 그래프에서 추가 확보
+        if (distractorCandidates.size() < shuffledListSize - 1) {
+            distractorCandidates.addAll(answerCandidates.subList(1, Math.min(answerCandidates.size(), shuffledListSize)));
         }
 
-        // 랜덤으로 문장 선택
-        Collections.shuffle(candidateSentences, random);
-
-        // 보기용 문장 추가
+        // 선지 셔플 및 정답 포함해서 뽑기
+        Collections.shuffle(distractorCandidates, random);
         Set<String> selectedSentences = new LinkedHashSet<>();
+        selectedSentences.add(answer);
         int index = 0;
-        while (selectedSentences.size() < shuffledListSize && index < candidateSentences.size()) {
-            selectedSentences.add(candidateSentences.get(index));
+        while (selectedSentences.size() < shuffledListSize && index < distractorCandidates.size()) {
+            selectedSentences.add(distractorCandidates.get(index));
             index++;
         }
 
-        // 무작위로 정답 보기 설정
-        int answerIndex = random.nextInt(shuffledListSize);
-        String answer = new ArrayList<>(selectedSentences).get(answerIndex);
+        if (selectedSentences.size() < shuffledListSize) {
+            throw new IllegalStateException("문제가 될 문장이 충분하지 않습니다.");
+        }
 
         String prompt = buildQuizImagePrompt(answer);
         ImageCreateRequestDto requestDto = new ImageCreateRequestDto(
                 prompt,
                 "dall-e-3",
                 "vivid",
-                "512x512",
-                1);
+                "standard",
+                "1024x1024",
+                1
+        );
         String imageUrl = imageCreateService.generatePicture(requestDto);
 
         return PictureQuizDto.builder()
@@ -73,6 +77,26 @@ public class PictureQuizGenerator implements QuizGenerator<PictureQuizDto> {
                 .shuffled(selectedSentences)
                 .answer(answer)
                 .build();
+    }
+
+    // 문장 후보 추출 메서드 분리
+    private List<String> extractCandidateSentences(Graph graph) {
+        List<String> sentences = new ArrayList<>();
+
+        for (GraphNode node : graph.getNodes()) {
+            String raw = node.getIncludeSentence();
+            if (raw == null || raw.isBlank()) continue;
+
+            String[] split = raw.split("\\.");
+            for (String s : split) {
+                String trimmed = s.trim();
+                if (trimmed.isBlank()) continue;
+                if (trimmed.split("\\s+").length < 5) continue;
+                sentences.add(trimmed);
+            }
+        }
+
+        return sentences;
     }
 
     // 이미지 생성 프롬프트 생성 메서드

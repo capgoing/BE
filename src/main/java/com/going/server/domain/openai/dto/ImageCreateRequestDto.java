@@ -11,8 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ImageCreateRequestDto {
     private String prompt;
-    private String model = "dall-e-3";
-    private String style = "vivid";
-    private String size = "1024x1024";
+    private String model;
+    private String style;
+    private String quality;
+    private String size;
     private int n = 1;
 }
