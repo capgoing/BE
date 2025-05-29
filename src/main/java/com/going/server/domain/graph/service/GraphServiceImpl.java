@@ -49,7 +49,7 @@ public class GraphServiceImpl implements GraphService {
 
         for (Graph graph : graphs) {
             Optional<GraphNode> targetNode = graph.getNodes().stream()
-                    .filter(node -> node.getNodeId() == 0)
+                    .filter(node -> node.getLevel() == 0)
                     .findFirst();
             String image = targetNode
                     .map(node -> getImage(node.getLabel()))
