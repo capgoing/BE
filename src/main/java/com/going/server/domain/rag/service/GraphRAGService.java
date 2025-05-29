@@ -32,13 +32,7 @@ public class GraphRAGService {
 
     /**
      * 사용자 질문에 대해 Cypher 쿼리 → 그래프 정보 검색 → 프롬프트 생성 → LLM 응답 생성
-     * 본 메서드는 LangChain 없이 구현한 Spring 기반 GraphRAG의 핵심 흐름입니다.
-     *
-     *     private LocalDateTime createdAt;
-     *     private List<String> retrievedTriples; //관계 중심의 3요소 표현 ("물 -상태변화→ 응고")
-     *     private List<String> sourceNodes; //질의에 사용된 핵심 노드들 ("물", "응고" 등)
-     *     private List<String> 증강할때쓴자료; //LLM에 넘긴 context 문장들 (이름은 `augmentedSentences` 등으로 변경 권장)
-     *     -> 이렇게 결과 나오도록 정리
+     * LangChain 없이 구현한 Spring 기반 GraphRAG의 핵심 흐름
      */
     public CreateChatbotResponseDto createAnswerWithGraphRAG(
             Long dbId,
