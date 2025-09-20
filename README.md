@@ -70,7 +70,6 @@
 | BE | BE | BE |
 |:---:|:---:|:---:|
 | <img src="https://avatars.githubusercontent.com/u/113489721?v=4" width="150"/> | <img src="https://avatars.githubusercontent.com/u/147326233?v=4" width="150"/> | <img src="https://avatars.githubusercontent.com/u/104489022?v=4" width="150"/> |
-| 한성대학교 | 한성대학교 | 한성대학교 | 
 | 강다현 | 김혜진 | 이주연 |
 | Docker 인프라 구축<br>CI/CD 자동 배포 환경 구성 | REST API 구현 <br>Graph-RAG 챗봇 구현 | REST API 구현 <br>Cypher 쿼리 GraphDB 구조 설계 |
 | [@hyeonda02](https://github.com/hyeonda02) | [@khyaejin](https://github.com/khyaejin) | [@Juye0nLee](https://github.com/Juye0nLee) |
